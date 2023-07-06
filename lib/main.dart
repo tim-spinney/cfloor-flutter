@@ -30,7 +30,11 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CFloor Editor'),
+        centerTitle: true,
+        title: Text(
+          'CFloor Editor',
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: const CodeEditor(),

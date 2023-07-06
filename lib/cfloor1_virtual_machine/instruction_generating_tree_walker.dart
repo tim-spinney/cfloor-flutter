@@ -10,17 +10,29 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
   final ConsoleState _consoleState;
   int _nextRegister = 0;
   final VirtualMachine virtualMachine = VirtualMachine();
+  final Set<String> _variableNames = {};
+  final List<String> semanticErrors = [];
 
   InstructionGeneratingTreeWalker(this._consoleState);
 
-  TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
+  @override
+  void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
+    final variableName = ctx.assignment()!.Identifier()!.text!;
+    _variableNames.add(variableName);
+  }
+
+  @override
+  void exitAssignStatement(AssignStatementContext ctx) {
+    final variableName = ctx.assignment()!.Identifier()!.text!;
+    _checkDeclareBeforeUse(variableName, ctx.assignment()!);
+  }
 
   @override
   void exitAssignment(AssignmentContext ctx) {
     final variableName = ctx.Identifier()!.text!;
     DataSource? dataSource;
     if(ctx.readRealExpression() != null) {
-      final destination = allocateRegister();
+      final destination = _allocateRegister();
       final textRange = _getTextRange(ctx.readRealExpression()!);
       virtualMachine.instructions.add(ReadRealExpression(textRange, _consoleState, destination));
       dataSource = destination.toSource();
@@ -77,7 +89,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     final targetRegister =
       leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-      allocateRegister()
+      _allocateRegister()
     ;
     virtualMachine.instructions.add(
       MathExpression(
@@ -95,6 +107,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
+      _checkDeclareBeforeUse(ctx.Identifier()!.text!, ctx);
       return VariableMemorySource(virtualMachine.memory, ctx.Identifier()!.text!);
     } else if(ctx.Number() != null) {
       return ConstantDataSource(double.parse(ctx.Number()!.text!));
@@ -103,5 +116,14 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     }
   }
 
-  RegisterDataDestination allocateRegister() => RegisterDataDestination(virtualMachine.memory, _nextRegister++);
+  TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
+
+  _checkDeclareBeforeUse(String variableName, ParserRuleContext ctx) {
+    if(!_variableNames.contains(variableName)) {
+      semanticErrors.add(
+          'Semantic error at line ${ctx.start!.line}:${ctx.start!.charPositionInLine}: variable name $variableName needs to be declared before use.');
+    }
+  }
+
+  RegisterDataDestination _allocateRegister() => RegisterDataDestination(virtualMachine.memory, _nextRegister++);
 }

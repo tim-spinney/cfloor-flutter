@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:antlr4/antlr4.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../cfloor1_virtual_machine/virtual_machine.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
@@ -30,7 +31,7 @@ class _CodeEditorState extends State<CodeEditor> {
   VirtualMachine? _virtualMachine;
   bool _isRunning = false;
   int _instructionIndex = 0;
-  List<String> _syntaxErrors = [];
+  List<String> _compileErrors = [];
 
   @override
   void dispose() {
@@ -47,12 +48,12 @@ class _CodeEditorState extends State<CodeEditor> {
     } else {
       _consoleState.reset();
       final errorCollector = ErrorCollector();
-      final vm = _compile(errorCollector);
+      final generator = _compile(errorCollector);
       setState(() {
-        _syntaxErrors = errorCollector.errors;
+        _compileErrors = errorCollector.errors + generator.semanticErrors;
         _instructionIndex = 0;
-        if(errorCollector.errors.isEmpty) {
-          _virtualMachine = vm;
+        if(_compileErrors.isEmpty) {
+          _virtualMachine = generator.virtualMachine;
           _isRunning = true;
         } else {
           _virtualMachine = null;
@@ -61,7 +62,7 @@ class _CodeEditorState extends State<CodeEditor> {
     }
   }
 
-  VirtualMachine _compile(ErrorCollector errorCollector) {
+  InstructionGeneratingTreeWalker _compile(ErrorCollector errorCollector) {
     final parser = CFloor1Parser(
         CommonTokenStream(
             CFloor1Lexer(
@@ -72,7 +73,7 @@ class _CodeEditorState extends State<CodeEditor> {
     parser.addErrorListener(errorCollector);
     final instructionGenerator = InstructionGeneratingTreeWalker(_consoleState);
     ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
-    return instructionGenerator.virtualMachine;
+    return instructionGenerator;
   }
 
   _advanceStep() {
@@ -125,6 +126,9 @@ class _CodeEditorState extends State<CodeEditor> {
                     textAlignVertical: TextAlignVertical.top,
                     maxLines: null,
                     expands: true,
+                    style: GoogleFonts.robotoMono(
+                      fontSize: 14,
+                    ),
                   ),
           ),
         ),
@@ -140,16 +144,16 @@ class _CodeEditorState extends State<CodeEditor> {
               ),
               if(_virtualMachine != null) MemoryView(memory: _virtualMachine!.memory),
               const Divider(),
-              _syntaxErrors.isEmpty
+              _compileErrors.isEmpty
                 ? ExecutionConsole(
                   consoleState: _consoleState,
                   submitInput: _submitInput,
                 )
                 : Expanded(
                   child: ListView.builder(
-                    itemCount: _syntaxErrors.length,
+                    itemCount: _compileErrors.length,
                     itemBuilder: (context, index) => Text(
-                      _syntaxErrors[index],
+                      _compileErrors[index],
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -177,19 +181,19 @@ class ExecutionCodeView extends StatelessWidget {
         children:[
           TextSpan(
               text: codeText.substring(0, currentExpressionRange.start),
-              style: TextStyle(
+              style: GoogleFonts.robotoMono(
                 color: Theme.of(context).colorScheme.onSurface,
               )
           ),
           TextSpan(
             text: codeText.substring(currentExpressionRange.start, currentExpressionRange.end + 1),
-            style: TextStyle(
+            style: GoogleFonts.robotoMono(
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           ),
           TextSpan(
               text: codeText.substring(currentExpressionRange.end + 1),
-              style: TextStyle(
+              style: GoogleFonts.robotoMono(
                 color: Theme.of(context).colorScheme.onSurface,
               )
           ),

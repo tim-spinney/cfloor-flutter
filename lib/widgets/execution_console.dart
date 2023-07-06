@@ -1,5 +1,6 @@
 import 'package:cfloor_flutter/console_state.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ExecutionConsole extends StatefulWidget {
   final ConsoleState consoleState;
@@ -54,6 +55,7 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
             itemCount: widget.consoleState.consoleOutput.length,
             itemBuilder: (context, index) => Text(
               widget.consoleState.consoleOutput[index],
+              style: GoogleFonts.robotoMono(),
             ),
           ),
           if(widget.consoleState.isWaitingForInput) Form(
