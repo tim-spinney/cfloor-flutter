@@ -1,11 +1,9 @@
-
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/generated/CFloor1Parser.dart';
-import 'package:cfloor_flutter/interpreter2/expressions.dart';
-import 'package:cfloor_flutter/interpreter2/memory.dart';
-import 'package:cfloor_flutter/console_state.dart';
-
+import 'expressions.dart';
+import 'memory.dart';
+import '../generated/CFloor1Parser.dart';
 import '../generated/CFloor1BaseListener.dart';
+import '../console_state.dart';
 
 class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
   final ConsoleState _consoleState;

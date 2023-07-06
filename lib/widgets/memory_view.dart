@@ -1,5 +1,5 @@
-import 'package:cfloor_flutter/interpreter2/memory.dart';
 import 'package:flutter/material.dart';
+import '../cfloor1_virtual_machine/memory.dart';
 
 class MemoryView extends StatelessWidget {
   final CFloor1Memory memory;

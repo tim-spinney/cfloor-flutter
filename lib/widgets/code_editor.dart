@@ -1,16 +1,15 @@
-import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/interpreter2/expressions.dart';
-import 'package:cfloor_flutter/interpreter2/memory.dart';
-import 'package:cfloor_flutter/widgets/execution_console.dart';
-import 'package:cfloor_flutter/widgets/memory_view.dart';
 import 'package:flutter/material.dart';
-
+import 'package:antlr4/antlr4.dart';
+import 'execution_controls.dart';
+import 'memory_view.dart';
+import 'execution_console.dart';
+import '../cfloor1_virtual_machine/expressions.dart';
+import '../cfloor1_virtual_machine/memory.dart';
+import '../cfloor1_virtual_machine/error_collector.dart';
+import '../cfloor1_virtual_machine/instruction_generating_tree_walker.dart';
 import '../generated/CFloor1Lexer.dart';
 import '../generated/CFloor1Parser.dart';
-import '../interpreter2/error_collector.dart';
-import '../interpreter2/instruction_generating_tree_walker.dart';
 import '../console_state.dart';
-import 'execution_controls.dart';
 
 class CodeEditor extends StatefulWidget {
   const CodeEditor({super.key});
