@@ -1,4 +1,5 @@
 import 'package:antlr4/antlr4.dart';
+import 'package:cfloor_flutter/cfloor1_virtual_machine/virtual_machine.dart';
 import 'expressions.dart';
 import 'memory.dart';
 import '../generated/CFloor1Parser.dart';
@@ -7,11 +8,10 @@ import '../console_state.dart';
 
 class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
   final ConsoleState _consoleState;
-  final List<Expression> instructions = [];
-  final CFloor1Memory _memory;
   int _nextRegister = 0;
+  final VirtualMachine virtualMachine = VirtualMachine();
 
-  InstructionGeneratingTreeWalker(this._consoleState, this._memory);
+  InstructionGeneratingTreeWalker(this._consoleState);
 
   TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 
@@ -22,16 +22,16 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     if(ctx.readRealExpression() != null) {
       final destination = allocateRegister();
       final textRange = _getTextRange(ctx.readRealExpression()!);
-      instructions.add(ReadRealExpression(textRange, _consoleState, destination));
+      virtualMachine.instructions.add(ReadRealExpression(textRange, _consoleState, destination));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
     }
     if(dataSource != null) {
-      instructions.add(
+      virtualMachine.instructions.add(
           AssignmentExpression(
             _getTextRange(ctx),
-            VariableDataDestination(_memory, variableName),
+            VariableDataDestination(virtualMachine.memory, variableName),
             dataSource,
           )
       );
@@ -43,16 +43,16 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
   void exitWriteStatement(WriteStatementContext ctx) {
     if(ctx.Identifier() != null) {
       final variableName = ctx.Identifier()!.text!;
-      instructions.add(
+      virtualMachine.instructions.add(
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
-          VariableMemorySource(_memory, variableName),
+          VariableMemorySource(virtualMachine.memory, variableName),
         )
       );
     } else if(ctx.Number() != null) {
       final value = double.parse(ctx.Number()!.text!);
-      instructions.add(
+      virtualMachine.instructions.add(
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
@@ -61,7 +61,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      instructions.add(StringLiteralWriteExpression(_getTextRange(ctx), _consoleState, value));
+      virtualMachine.instructions.add(StringLiteralWriteExpression(_getTextRange(ctx), _consoleState, value));
     }
   }
 
@@ -79,7 +79,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
       allocateRegister()
     ;
-    instructions.add(
+    virtualMachine.instructions.add(
       MathExpression(
         _getTextRange(ctx),
         mathOperator,
@@ -95,7 +95,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
-      return VariableMemorySource(_memory, ctx.Identifier()!.text!);
+      return VariableMemorySource(virtualMachine.memory, ctx.Identifier()!.text!);
     } else if(ctx.Number() != null) {
       return ConstantDataSource(double.parse(ctx.Number()!.text!));
     } else {
@@ -103,5 +103,5 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     }
   }
 
-  RegisterDataDestination allocateRegister() => RegisterDataDestination(_memory, _nextRegister++);
+  RegisterDataDestination allocateRegister() => RegisterDataDestination(virtualMachine.memory, _nextRegister++);
 }

@@ -93,11 +93,11 @@ class ReadRealExpression extends Expression {
 
   @override
   void evaluate() {
-    _consoleState.setIsWaitingForInput(true);
+    _consoleState.isWaitingForInput = true;
   }
 
   void complete(double value) {
     destination.set(value);
-    _consoleState.setIsWaitingForInput(false);
+    _consoleState.isWaitingForInput = false;
   }
 }

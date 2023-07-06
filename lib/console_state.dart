@@ -5,6 +5,10 @@ class ConsoleState extends ChangeNotifier {
   final List<String> consoleOutput = [];
   bool _isWaitingForInput = false;
   bool get isWaitingForInput => _isWaitingForInput;
+  set isWaitingForInput(bool isWaitingForInput) {
+    _isWaitingForInput = isWaitingForInput;
+    notifyListeners();
+  }
 
   void addConsoleOutput(String output) {
     consoleOutput.add(output);
@@ -14,11 +18,6 @@ class ConsoleState extends ChangeNotifier {
   void reset() {
     consoleOutput.clear();
     _isWaitingForInput = false;
-    notifyListeners();
-  }
-
-  void setIsWaitingForInput(bool isWaitingForInput) {
-    _isWaitingForInput = isWaitingForInput;
     notifyListeners();
   }
 }

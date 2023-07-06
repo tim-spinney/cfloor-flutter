@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:antlr4/antlr4.dart';
+import '../cfloor1_virtual_machine/virtual_machine.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import '../cfloor1_virtual_machine/expressions.dart';
-import '../cfloor1_virtual_machine/memory.dart';
 import '../cfloor1_virtual_machine/error_collector.dart';
 import '../cfloor1_virtual_machine/instruction_generating_tree_walker.dart';
 import '../generated/CFloor1Lexer.dart';
@@ -27,11 +27,10 @@ write(x);
 class _CodeEditorState extends State<CodeEditor> {
   final ConsoleState _consoleState = ConsoleState();
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
-  List<Expression>? _instructions;
-  CFloor1Memory? _memory;
+  VirtualMachine? _virtualMachine;
   bool _isRunning = false;
   int _instructionIndex = 0;
-  bool _hasSyntaxErrors = false;
+  List<String> _syntaxErrors = [];
 
   @override
   void dispose() {
@@ -43,46 +42,46 @@ class _CodeEditorState extends State<CodeEditor> {
     if(_isRunning) {
       setState(() {
         _isRunning = false;
+        _consoleState.isWaitingForInput = false;
       });
     } else {
       _consoleState.reset();
-      final newMemory = CFloor1Memory();
-      final parser = CFloor1Parser(
-        CommonTokenStream(
-          CFloor1Lexer(
-            InputStream.fromString(_sourceCodeController.text)
-          )
-        )
-      );
       final errorCollector = ErrorCollector();
-      parser.addErrorListener(errorCollector);
-      final instructionGenerator = InstructionGeneratingTreeWalker(_consoleState, newMemory);
-      ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
-      for (final error in errorCollector.errors) {
-        _consoleState.addConsoleOutput(error);
-      }
+      final vm = _compile(errorCollector);
       setState(() {
-        _hasSyntaxErrors = errorCollector.errors.isNotEmpty;
+        _syntaxErrors = errorCollector.errors;
         _instructionIndex = 0;
-        if(_hasSyntaxErrors) {
-          _instructions = null;
-          _memory = null;
-        } else {
-          _instructions = instructionGenerator.instructions;
-          _memory = newMemory;
+        if(errorCollector.errors.isEmpty) {
+          _virtualMachine = vm;
           _isRunning = true;
+        } else {
+          _virtualMachine = null;
         }
       });
     }
   }
 
+  VirtualMachine _compile(ErrorCollector errorCollector) {
+    final parser = CFloor1Parser(
+        CommonTokenStream(
+            CFloor1Lexer(
+                InputStream.fromString(_sourceCodeController.text)
+            )
+        )
+    );
+    parser.addErrorListener(errorCollector);
+    final instructionGenerator = InstructionGeneratingTreeWalker(_consoleState);
+    ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
+    return instructionGenerator.virtualMachine;
+  }
+
   _advanceStep() {
     setState(() {
-      final instruction = _instructions![_instructionIndex];
+      final instruction = _virtualMachine!.getInstruction(_instructionIndex);
       instruction.evaluate();
       if(!_consoleState.isWaitingForInput) {
         _instructionIndex++;
-        if(_instructionIndex == _instructions!.length) {
+        if(_instructionIndex == _virtualMachine!.instructions.length) {
           _isRunning = false;
         }
       }
@@ -90,7 +89,7 @@ class _CodeEditorState extends State<CodeEditor> {
   }
 
   void _submitInput(double value) {
-    (_instructions![_instructionIndex] as ReadRealExpression).complete(value);
+    (_virtualMachine!.instructions[_instructionIndex] as ReadRealExpression).complete(value);
     setState(() {
       _instructionIndex++;
     });
@@ -116,7 +115,7 @@ class _CodeEditorState extends State<CodeEditor> {
             child: _isRunning
                 ? ExecutionCodeView(
                   codeText: _sourceCodeController.text,
-                  currentExpressionRange: _instructions![_instructionIndex].textRange,
+                  currentExpressionRange: _virtualMachine!.getInstruction(_instructionIndex).textRange,
                 )
                 : TextFormField(
                     controller: _sourceCodeController,
@@ -139,13 +138,24 @@ class _CodeEditorState extends State<CodeEditor> {
                 toggleRunning: _toggleRunning,
                 advanceStep: _advanceStep,
               ),
-              if(_memory != null) MemoryView(memory: _memory!),
+              if(_virtualMachine != null) MemoryView(memory: _virtualMachine!.memory),
               const Divider(),
-              ExecutionConsole(
-                consoleState: _consoleState,
-                isShowingErrors: _hasSyntaxErrors,
-                submitInput: _submitInput,
-              )
+              _syntaxErrors.isEmpty
+                ? ExecutionConsole(
+                  consoleState: _consoleState,
+                  submitInput: _submitInput,
+                )
+                : Expanded(
+                  child: ListView.builder(
+                    itemCount: _syntaxErrors.length,
+                    itemBuilder: (context, index) => Text(
+                      _syntaxErrors[index],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
