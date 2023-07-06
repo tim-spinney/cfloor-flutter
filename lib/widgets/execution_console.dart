@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 class ExecutionConsole extends StatefulWidget {
   final ConsoleState consoleState;
-  final bool hasSyntaxErrors;
+  final bool isShowingErrors;
   final void Function(double input) submitInput;
 
   const ExecutionConsole({
     super.key,
     required this.consoleState,
-    required this.hasSyntaxErrors,
+    required this.isShowingErrors,
     required this.submitInput
   });
 
@@ -56,7 +56,7 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
             itemCount: widget.consoleState.consoleOutput.length,
             itemBuilder: (context, index) => Text(
               widget.consoleState.consoleOutput[index],
-              style: widget.hasSyntaxErrors
+              style: widget.isShowingErrors
                   ? const TextStyle(color: Colors.red)
                   : null,
             ),

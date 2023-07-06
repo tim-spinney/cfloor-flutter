@@ -1,5 +1,3 @@
-
-
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/interpreter2/expressions.dart';
 import 'package:cfloor_flutter/interpreter2/memory.dart';
@@ -28,7 +26,7 @@ write(x);
 ''';
 
 class _CodeEditorState extends State<CodeEditor> {
-  final ConsoleState _interpreterState = ConsoleState();
+  final ConsoleState _consoleState = ConsoleState();
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   List<Expression>? _instructions;
   CFloor1Memory? _memory;
@@ -48,7 +46,7 @@ class _CodeEditorState extends State<CodeEditor> {
         _isRunning = false;
       });
     } else {
-      _interpreterState.reset();
+      _consoleState.reset();
       final newMemory = CFloor1Memory();
       final parser = CFloor1Parser(
         CommonTokenStream(
@@ -59,10 +57,10 @@ class _CodeEditorState extends State<CodeEditor> {
       );
       final errorCollector = ErrorCollector();
       parser.addErrorListener(errorCollector);
-      final instructionGenerator = InstructionGeneratingTreeWalker(_interpreterState, newMemory);
+      final instructionGenerator = InstructionGeneratingTreeWalker(_consoleState, newMemory);
       ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
       for (final error in errorCollector.errors) {
-        _interpreterState.addConsoleOutput(error);
+        _consoleState.addConsoleOutput(error);
       }
       setState(() {
         _hasSyntaxErrors = errorCollector.errors.isNotEmpty;
@@ -83,7 +81,7 @@ class _CodeEditorState extends State<CodeEditor> {
     setState(() {
       final instruction = _instructions![_instructionIndex];
       instruction.evaluate();
-      if(!_interpreterState.isWaitingForInput) {
+      if(!_consoleState.isWaitingForInput) {
         _instructionIndex++;
         if(_instructionIndex == _instructions!.length) {
           _isRunning = false;
@@ -138,15 +136,15 @@ class _CodeEditorState extends State<CodeEditor> {
             children: [
               ExecutionControls(
                 isRunning: _isRunning,
-                interpreterState: _interpreterState,
+                interpreterState: _consoleState,
                 toggleRunning: _toggleRunning,
                 advanceStep: _advanceStep,
               ),
               if(_memory != null) MemoryView(memory: _memory!),
               const Divider(),
               ExecutionConsole(
-                consoleState: _interpreterState,
-                hasSyntaxErrors: _hasSyntaxErrors,
+                consoleState: _consoleState,
+                isShowingErrors: _hasSyntaxErrors,
                 submitInput: _submitInput,
               )
             ],

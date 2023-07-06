@@ -62,14 +62,14 @@ class AssignmentExpression extends Expression {
 }
 
 class NumericWriteExpression extends Expression {
-  final ConsoleState _state;
+  final ConsoleState _consoleState;
   final DataSource source;
 
-  NumericWriteExpression(super.textRange, this._state, this.source);
+  NumericWriteExpression(super.textRange, this._consoleState, this.source);
 
   @override
   void evaluate() {
-    _state.addConsoleOutput(source.get().toString());
+    _consoleState.addConsoleOutput(source.get().toString());
   }
 }
 
@@ -86,18 +86,18 @@ class StringLiteralWriteExpression extends Expression {
 }
 
 class ReadRealExpression extends Expression {
-  final ConsoleState _state;
+  final ConsoleState _consoleState;
   final DataDestination destination;
 
-  ReadRealExpression(super.textRange, this._state, this.destination);
+  ReadRealExpression(super.textRange, this._consoleState, this.destination);
 
   @override
   void evaluate() {
-    _state.setIsWaitingForInput(true);
+    _consoleState.setIsWaitingForInput(true);
   }
 
   void complete(double value) {
     destination.set(value);
-    _state.setIsWaitingForInput(false);
+    _consoleState.setIsWaitingForInput(false);
   }
 }

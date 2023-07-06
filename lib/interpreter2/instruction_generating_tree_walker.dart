@@ -8,12 +8,12 @@ import 'package:cfloor_flutter/console_state.dart';
 import '../generated/CFloor1BaseListener.dart';
 
 class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
-  final ConsoleState _state;
+  final ConsoleState _consoleState;
   final List<Expression> instructions = [];
   final CFloor1Memory _memory;
   int _nextRegister = 0;
 
-  InstructionGeneratingTreeWalker(this._state, this._memory);
+  InstructionGeneratingTreeWalker(this._consoleState, this._memory);
 
   TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 
@@ -24,7 +24,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     if(ctx.readRealExpression() != null) {
       final destination = allocateRegister();
       final textRange = _getTextRange(ctx.readRealExpression()!);
-      instructions.add(ReadRealExpression(textRange, _state, destination));
+      instructions.add(ReadRealExpression(textRange, _consoleState, destination));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
@@ -48,7 +48,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       instructions.add(
         NumericWriteExpression(
           _getTextRange(ctx),
-          _state,
+          _consoleState,
           VariableMemorySource(_memory, variableName),
         )
       );
@@ -57,13 +57,13 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       instructions.add(
         NumericWriteExpression(
           _getTextRange(ctx),
-          _state,
+          _consoleState,
           ConstantDataSource(value),
         )
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      instructions.add(StringLiteralWriteExpression(_getTextRange(ctx), _state, value));
+      instructions.add(StringLiteralWriteExpression(_getTextRange(ctx), _consoleState, value));
     }
   }
 

@@ -13,7 +13,6 @@ class ErrorCollector extends BaseErrorListener {
       String msg,
       RecognitionException? e
       ) {
-    print('Syntax error at line $line:$charPositionInLine: $msg');
     errors.add('Syntax error at line $line:$charPositionInLine: $msg');
   }
 }
