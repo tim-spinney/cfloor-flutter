@@ -3,6 +3,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/interpreter2/expressions.dart';
 import 'package:cfloor_flutter/interpreter2/memory.dart';
+import 'package:cfloor_flutter/widgets/execution_console.dart';
 import 'package:cfloor_flutter/widgets/memory_view.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,8 @@ import '../generated/CFloor1Lexer.dart';
 import '../generated/CFloor1Parser.dart';
 import '../interpreter2/error_collector.dart';
 import '../interpreter2/instruction_generating_tree_walker.dart';
-import '../interpreter_state.dart';
+import '../console_state.dart';
+import 'execution_controls.dart';
 
 class CodeEditor extends StatefulWidget {
   const CodeEditor({super.key});
@@ -19,14 +21,15 @@ class CodeEditor extends StatefulWidget {
   State<CodeEditor> createState() => _CodeEditorState();
 }
 
-class _CodeEditorState extends State<CodeEditor> {
-  final InterpreterState _interpreterState = InterpreterState();
-  final TextEditingController _sourceCodeController = TextEditingController(text: '''
+const _sampleProgram = '''
 real x = 1.0;
 x = x + 2;
-write(x);''');
-  final TextEditingController _inputController = TextEditingController();
-  final _inputFormKey = GlobalKey<FormState>();
+write(x);
+''';
+
+class _CodeEditorState extends State<CodeEditor> {
+  final ConsoleState _interpreterState = ConsoleState();
+  final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   List<Expression>? _instructions;
   CFloor1Memory? _memory;
   bool _isRunning = false;
@@ -37,19 +40,23 @@ write(x);''');
   void dispose() {
     super.dispose();
     _sourceCodeController.dispose();
-    _inputController.dispose();
   }
 
-  _onRunPressed() {
+  _toggleRunning() {
     if(_isRunning) {
       setState(() {
         _isRunning = false;
       });
     } else {
-      _reset();
+      _interpreterState.reset();
       final newMemory = CFloor1Memory();
-      final parser = CFloor1Parser(CommonTokenStream(
-          CFloor1Lexer(InputStream.fromString(_sourceCodeController.text))));
+      final parser = CFloor1Parser(
+        CommonTokenStream(
+          CFloor1Lexer(
+            InputStream.fromString(_sourceCodeController.text)
+          )
+        )
+      );
       final errorCollector = ErrorCollector();
       parser.addErrorListener(errorCollector);
       final instructionGenerator = InstructionGeneratingTreeWalker(_interpreterState, newMemory);
@@ -59,16 +66,20 @@ write(x);''');
       }
       setState(() {
         _hasSyntaxErrors = errorCollector.errors.isNotEmpty;
-        if(!_hasSyntaxErrors) {
-          _memory = newMemory;
+        _instructionIndex = 0;
+        if(_hasSyntaxErrors) {
+          _instructions = null;
+          _memory = null;
+        } else {
           _instructions = instructionGenerator.instructions;
+          _memory = newMemory;
           _isRunning = true;
         }
       });
     }
   }
 
-  _onStep() {
+  _advanceStep() {
     setState(() {
       final instruction = _instructions![_instructionIndex];
       instruction.evaluate();
@@ -81,50 +92,11 @@ write(x);''');
     });
   }
 
-  _reset() {
+  void _submitInput(double value) {
+    (_instructions![_instructionIndex] as ReadRealExpression).complete(value);
     setState(() {
-      _interpreterState.reset();
-      _isRunning = false;
-      _instructions = null;
-      _memory = null;
-      _instructionIndex = 0;
+      _instructionIndex++;
     });
-  }
-
-  List<TextSpan> _splitTextAroundCurrentExpression() {
-    final currentTextRange = _instructions![_instructionIndex].textRange;
-    final fullText = _sourceCodeController.text;
-    return [
-      TextSpan(
-        text: fullText.substring(0, currentTextRange.start),
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-        )
-      ),
-      TextSpan(
-        text: fullText.substring(currentTextRange.start, currentTextRange.end + 1),
-        style: TextStyle(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      ),
-      TextSpan(
-        text: fullText.substring(currentTextRange.end + 1),
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-        )
-      ),
-    ];
-  }
-
-  _onInputSubmitted() {
-    if(_inputFormKey.currentState!.validate()) {
-      final value = double.parse(_inputController.text);
-      (_instructions![_instructionIndex] as ReadRealExpression).complete(value);
-      _inputController.clear();
-      setState(() {
-        _instructionIndex++;
-      });
-    }
   }
 
   @override
@@ -145,10 +117,9 @@ write(x);''');
               ),
             ),
             child: _isRunning
-                ? RichText(
-                  text: TextSpan(
-                    children: _splitTextAroundCurrentExpression(),
-                  ),
+                ? ExecutionCodeView(
+                  codeText: _sourceCodeController.text,
+                  currentExpressionRange: _instructions![_instructionIndex].textRange,
                 )
                 : TextFormField(
                     controller: _sourceCodeController,
@@ -165,80 +136,58 @@ write(x);''');
           flex: 1,
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    onPressed: _onRunPressed,
-                    tooltip: _isRunning ? 'Stop' : 'Run',
-                    icon: _isRunning
-                        ? const Icon(Icons.stop)
-                        : const Icon(Icons.play_arrow),
-                  ),
-
-                  if(_isRunning) AnimatedBuilder(
-                    animation: _interpreterState,
-                    builder: (context, value) => IconButton(
-                      onPressed: _interpreterState.isWaitingForInput ? null : _onStep,
-                      tooltip: 'Step',
-                      icon: const Icon(Icons.arrow_forward),
-                    ),
-                  )
-                ]
+              ExecutionControls(
+                isRunning: _isRunning,
+                interpreterState: _interpreterState,
+                toggleRunning: _toggleRunning,
+                advanceStep: _advanceStep,
               ),
               if(_memory != null) MemoryView(memory: _memory!),
               const Divider(),
-              AnimatedBuilder(
-                animation: _interpreterState,
-                builder: (context, value) => Column(
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _interpreterState.consoleOutput.length,
-                      itemBuilder: (context, index) => Text(
-                        _interpreterState.consoleOutput[index],
-                        style: _hasSyntaxErrors
-                            ? const TextStyle(color: Colors.red)
-                            : null,
-                      ),
-                    ),
-                    if(_interpreterState.isWaitingForInput) Form(
-                      key: _inputFormKey,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 256,
-                            child: TextFormField(
-                              expands: false,
-                              controller: _inputController,
-                              decoration: const InputDecoration(
-                                hintText: 'Enter a number here',
-                              ),
-                              validator: (value) {
-                                if(value == null || value.isEmpty) {
-                                  return 'Please enter a number';
-                                }
-                                if(double.tryParse(value) == null) {
-                                  return 'Please enter a valid number';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: _onInputSubmitted,
-                            child: const Text('Submit'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]
-                ),
-              ),
+              ExecutionConsole(
+                consoleState: _interpreterState,
+                hasSyntaxErrors: _hasSyntaxErrors,
+                submitInput: _submitInput,
+              )
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class ExecutionCodeView extends StatelessWidget {
+  final String codeText;
+  final TextRange currentExpressionRange;
+
+  const ExecutionCodeView({super.key, required this.codeText, required this.currentExpressionRange});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        children:[
+          TextSpan(
+              text: codeText.substring(0, currentExpressionRange.start),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              )
+          ),
+          TextSpan(
+            text: codeText.substring(currentExpressionRange.start, currentExpressionRange.end + 1),
+            style: TextStyle(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          TextSpan(
+              text: codeText.substring(currentExpressionRange.end + 1),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              )
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 
 import 'package:flutter/foundation.dart';
 
-class InterpreterState extends ChangeNotifier {
+class ConsoleState extends ChangeNotifier {
   final List<String> consoleOutput = [];
   bool _isWaitingForInput = false;
   bool get isWaitingForInput => _isWaitingForInput;

@@ -1,11 +1,11 @@
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/interpreter_state.dart';
+import 'package:cfloor_flutter/console_state.dart';
 import 'package:flutter/foundation.dart';
 import '../generated/CFloor1BaseListener.dart';
 import '../generated/CFloor1Parser.dart';
 
 class TreeWalkingInterpreter extends CFloor1BaseListener {
-  final InterpreterState _state;
+  final ConsoleState _state;
   final Set<String> _types = {'real'};
   final Map<String, String> _declaredVariableTypes = {};
   final Map<String, double> _declaredVariableValues = {};

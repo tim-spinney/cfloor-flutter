@@ -1,7 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'generated/CFloor1Lexer.dart';
 import 'interpreter2/memory.dart';
-import 'interpreter_state.dart';
+import 'console_state.dart';
 import 'widgets/code_editor.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ void main() {
     write(x);
   ''';
   final parser = CFloor1Parser(CommonTokenStream(CFloor1Lexer(InputStream.fromString(input))));
-  final instructionGenerator = InstructionGeneratingTreeWalker(InterpreterState(), CFloor1Memory());
+  final instructionGenerator = InstructionGeneratingTreeWalker(ConsoleState(), CFloor1Memory());
   ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
   print(instructionGenerator.instructions);
   for (final expression in instructionGenerator.instructions) {

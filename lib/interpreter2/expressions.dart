@@ -1,4 +1,4 @@
-import 'package:cfloor_flutter/interpreter_state.dart';
+import 'package:cfloor_flutter/console_state.dart';
 
 import './memory.dart';
 
@@ -62,7 +62,7 @@ class AssignmentExpression extends Expression {
 }
 
 class NumericWriteExpression extends Expression {
-  final InterpreterState _state;
+  final ConsoleState _state;
   final DataSource source;
 
   NumericWriteExpression(super.textRange, this._state, this.source);
@@ -74,7 +74,7 @@ class NumericWriteExpression extends Expression {
 }
 
 class StringLiteralWriteExpression extends Expression {
-  final InterpreterState _state;
+  final ConsoleState _state;
   final String value;
 
   StringLiteralWriteExpression(super.textRange, this._state, this.value);
@@ -86,7 +86,7 @@ class StringLiteralWriteExpression extends Expression {
 }
 
 class ReadRealExpression extends Expression {
-  final InterpreterState _state;
+  final ConsoleState _state;
   final DataDestination destination;
 
   ReadRealExpression(super.textRange, this._state, this.destination);

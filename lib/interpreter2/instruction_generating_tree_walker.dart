@@ -3,12 +3,12 @@ import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/CFloor1Parser.dart';
 import 'package:cfloor_flutter/interpreter2/expressions.dart';
 import 'package:cfloor_flutter/interpreter2/memory.dart';
-import 'package:cfloor_flutter/interpreter_state.dart';
+import 'package:cfloor_flutter/console_state.dart';
 
 import '../generated/CFloor1BaseListener.dart';
 
 class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
-  final InterpreterState _state;
+  final ConsoleState _state;
   final List<Expression> instructions = [];
   final CFloor1Memory _memory;
   int _nextRegister = 0;
