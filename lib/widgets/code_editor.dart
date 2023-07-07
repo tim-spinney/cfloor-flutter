@@ -8,8 +8,8 @@ import 'execution_console.dart';
 import '../cfloor1_virtual_machine/expressions.dart';
 import '../cfloor1_virtual_machine/error_collector.dart';
 import '../cfloor1_virtual_machine/instruction_generating_tree_walker.dart';
-import '../generated/CFloor1Lexer.dart';
-import '../generated/CFloor1Parser.dart';
+import '../generated/cfloor1/CFloor1Lexer.dart';
+import '../generated/cfloor1/CFloor1Parser.dart';
 import '../console_state.dart';
 
 class CodeEditor extends StatefulWidget {
