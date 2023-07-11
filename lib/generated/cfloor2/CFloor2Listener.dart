@@ -28,20 +28,6 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathExpression(MathExpressionContext ctx);
 
-  /// Enter a parse tree produced by [CFloor2Parser.readRealExpression].
-  /// [ctx] the parse tree
-  void enterReadRealExpression(ReadRealExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.readRealExpression].
-  /// [ctx] the parse tree
-  void exitReadRealExpression(ReadRealExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor2Parser.readIntExpression].
-  /// [ctx] the parse tree
-  void enterReadIntExpression(ReadIntExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.readIntExpression].
-  /// [ctx] the parse tree
-  void exitReadIntExpression(ReadIntExpressionContext ctx);
-
   /// Enter a parse tree produced by [CFloor2Parser.mathFunctionExpression].
   /// [ctx] the parse tree
   void enterMathFunctionExpression(MathFunctionExpressionContext ctx);
@@ -49,12 +35,12 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
 
-  /// Enter a parse tree produced by [CFloor2Parser.readExpression].
+  /// Enter a parse tree produced by [CFloor2Parser.readFunctionCall].
   /// [ctx] the parse tree
-  void enterReadExpression(ReadExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.readExpression].
+  void enterReadFunctionCall(ReadFunctionCallContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.readFunctionCall].
   /// [ctx] the parse tree
-  void exitReadExpression(ReadExpressionContext ctx);
+  void exitReadFunctionCall(ReadFunctionCallContext ctx);
 
   /// Enter a parse tree produced by [CFloor2Parser.assignment].
   /// [ctx] the parse tree
@@ -69,13 +55,6 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor2Parser.assignStatement].
   /// [ctx] the parse tree
   void exitAssignStatement(AssignStatementContext ctx);
-
-  /// Enter a parse tree produced by [CFloor2Parser.type].
-  /// [ctx] the parse tree
-  void enterType(TypeContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.type].
-  /// [ctx] the parse tree
-  void exitType(TypeContext ctx);
 
   /// Enter a parse tree produced by [CFloor2Parser.declAssignStatement].
   /// [ctx] the parse tree

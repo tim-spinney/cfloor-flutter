@@ -37,9 +37,9 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
   void exitAssignment(AssignmentContext ctx) {
     final variableName = ctx.Identifier()!.text!;
     DataSource? dataSource;
-    if(ctx.readRealExpression() != null) {
+    if(ctx.readFunctionCall() != null) {
       final destination = _allocateRegister();
-      final textRange = _getTextRange(ctx.readRealExpression()!);
+      final textRange = _getTextRange(ctx.readFunctionCall()!);
       virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
@@ -49,7 +49,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       virtualMachine.instructions.add(
           AssignmentExpression(
             _getTextRange(ctx),
-            VariableDataDestination(DataType.real, virtualMachine.memory, variableName),
+            VariableDataDestination(DataType.float, virtualMachine.memory, variableName),
             dataSource,
           )
       );
@@ -65,7 +65,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
-          VariableMemorySource(DataType.real, virtualMachine.memory, variableName),
+          VariableMemorySource(DataType.float, virtualMachine.memory, variableName),
         )
       );
     } else if(ctx.Number() != null) {
@@ -74,7 +74,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
-          ConstantDataSource(DataType.real, value),
+          ConstantDataSource(DataType.float, value),
         )
       );
     } else {
@@ -114,9 +114,9 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
       _checkDeclareBeforeUse(ctx.Identifier()!.text!, ctx);
-      return VariableMemorySource(DataType.real, virtualMachine.memory, ctx.Identifier()!.text!);
+      return VariableMemorySource(DataType.float, virtualMachine.memory, ctx.Identifier()!.text!);
     } else if(ctx.Number() != null) {
-      return ConstantDataSource(DataType.real, double.parse(ctx.Number()!.text!));
+      return ConstantDataSource(DataType.float, double.parse(ctx.Number()!.text!));
     } else {
       throw Exception('Unknown math operand type');
     }
@@ -131,5 +131,5 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     }
   }
 
-  RegisterDataDestination _allocateRegister() => RegisterDataDestination(DataType.real, virtualMachine.memory, _nextRegister++);
+  RegisterDataDestination _allocateRegister() => RegisterDataDestination(DataType.float, virtualMachine.memory, _nextRegister++);
 }

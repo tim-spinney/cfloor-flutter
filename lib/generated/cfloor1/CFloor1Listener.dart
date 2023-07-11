@@ -1,4 +1,4 @@
-// Generated from src/main/antlr/com.times6.cfloor1/CFloor1.g4 by ANTLR 4.13.0
+// Generated from CFloor1.g4 by ANTLR 4.13.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -28,12 +28,12 @@ abstract class CFloor1Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathExpression(MathExpressionContext ctx);
 
-  /// Enter a parse tree produced by [CFloor1Parser.readRealExpression].
+  /// Enter a parse tree produced by [CFloor1Parser.readFunctionCall].
   /// [ctx] the parse tree
-  void enterReadRealExpression(ReadRealExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor1Parser.readRealExpression].
+  void enterReadFunctionCall(ReadFunctionCallContext ctx);
+  /// Exit a parse tree produced by [CFloor1Parser.readFunctionCall].
   /// [ctx] the parse tree
-  void exitReadRealExpression(ReadRealExpressionContext ctx);
+  void exitReadFunctionCall(ReadFunctionCallContext ctx);
 
   /// Enter a parse tree produced by [CFloor1Parser.assignment].
   /// [ctx] the parse tree
@@ -48,13 +48,6 @@ abstract class CFloor1Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor1Parser.assignStatement].
   /// [ctx] the parse tree
   void exitAssignStatement(AssignStatementContext ctx);
-
-  /// Enter a parse tree produced by [CFloor1Parser.type].
-  /// [ctx] the parse tree
-  void enterType(TypeContext ctx);
-  /// Exit a parse tree produced by [CFloor1Parser.type].
-  /// [ctx] the parse tree
-  void exitType(TypeContext ctx);
 
   /// Enter a parse tree produced by [CFloor1Parser.declAssignStatement].
   /// [ctx] the parse tree

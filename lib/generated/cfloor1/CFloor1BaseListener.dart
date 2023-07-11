@@ -1,4 +1,4 @@
-// Generated from src/main/antlr/com.times6.cfloor1/CFloor1.g4 by ANTLR 4.13.0
+// Generated from CFloor1.g4 by ANTLR 4.13.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -36,11 +36,11 @@ class CFloor1BaseListener implements CFloor1Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterReadRealExpression(ReadRealExpressionContext ctx) {}
+  void enterReadFunctionCall(ReadFunctionCallContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitReadRealExpression(ReadRealExpressionContext ctx) {}
+  void exitReadFunctionCall(ReadFunctionCallContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -57,14 +57,6 @@ class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
   void exitAssignStatement(AssignStatementContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterType(TypeContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
   @override

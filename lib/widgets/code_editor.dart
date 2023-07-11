@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
-import 'package:cfloor_flutter/virtual_machines/error_collector.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
 import 'package:cfloor_flutter/virtual_machines/expression.dart';
 import 'package:cfloor_flutter/virtual_machines/compiler.dart';
@@ -19,7 +18,7 @@ class CodeEditor extends StatefulWidget {
 }
 
 const _sampleProgram = '''
-real x = 1.0;
+float x = 1.0;
 x = x + 2;
 write(x);
 ''';
@@ -60,7 +59,6 @@ class _CodeEditorState extends State<CodeEditor> {
       });
     } else {
       _consoleState.reset();
-      final errorCollector = ErrorCollector();
       final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text, _consoleState);
       setState(() {
         _compileErrors = compileResult.errors;

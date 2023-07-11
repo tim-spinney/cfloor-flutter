@@ -25,7 +25,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    final variableType = DataType.values.firstWhere((type) => type.name == ctx.type()!.text);
+    final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
     _variableDeclarations[variableName] = variableType;
   }
 
@@ -43,8 +43,8 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   void exitAssignment(AssignmentContext ctx) {
     // Get data source by processing rhs expression
     DataSource? dataSource;
-    if(ctx.readExpression() != null) {
-      dataSource = _handleReadExpression(ctx.readExpression()!);
+    if(ctx.readFunctionCall() != null) {
+      dataSource = _handleReadExpression(ctx.readFunctionCall()!);
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
     } // else there was a syntax error
@@ -89,8 +89,8 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     } // else there was a syntax error
   }
 
-  DataSource _handleReadExpression(ReadExpressionContext ctx) {
-    final readType = ctx.readIntExpression() == null ? DataType.real : DataType.int;
+  DataSource _handleReadExpression(ReadFunctionCallContext ctx) {
+    final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = _allocateRegister(readType);
     virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination));
     return destination.toSource();
@@ -159,7 +159,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   ConstantDataSource _sourceFromConstant(String numberText) {
     bool isInt = int.tryParse(numberText) != null;
     final value = double.parse(numberText);
-    return ConstantDataSource(isInt ? DataType.int : DataType.real, value);
+    return ConstantDataSource(isInt ? DataType.int : DataType.float, value);
   }
 
   TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
@@ -172,8 +172,8 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   }
 
   _combineDataTypes(DataType left, DataType right) {
-    if(left == DataType.real || right == DataType.real) {
-      return DataType.real;
+    if(left == DataType.float || right == DataType.float) {
+      return DataType.float;
     } else {
       return DataType.int;
     }

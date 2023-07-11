@@ -36,22 +36,6 @@ class CFloor2BaseListener implements CFloor2Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterReadRealExpression(ReadRealExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitReadRealExpression(ReadRealExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterReadIntExpression(ReadIntExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitReadIntExpression(ReadIntExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterMathFunctionExpression(MathFunctionExpressionContext ctx) {}
 
   /// The default implementation does nothing.
@@ -60,11 +44,11 @@ class CFloor2BaseListener implements CFloor2Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterReadExpression(ReadExpressionContext ctx) {}
+  void enterReadFunctionCall(ReadFunctionCallContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitReadExpression(ReadExpressionContext ctx) {}
+  void exitReadFunctionCall(ReadFunctionCallContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -81,14 +65,6 @@ class CFloor2BaseListener implements CFloor2Listener {
   /// The default implementation does nothing.
   @override
   void exitAssignStatement(AssignStatementContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterType(TypeContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
   @override

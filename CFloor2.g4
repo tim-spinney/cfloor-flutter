@@ -2,9 +2,7 @@ grammar CFloor2 ;
 
 MathOperator: '+' | '-' | '*' | '/' ;
 
-RealType: 'real' ;
-
-IntType: 'int' ;
+Type: 'int' | 'float' ;
 
 Identifier: [a-z][a-z_]* ;
 
@@ -20,21 +18,15 @@ mathOperand: Number | Identifier | ( '(' mathExpression ')') | mathFunctionExpre
 
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 
-readRealExpression: 'readReal()' ;
-
-readIntExpression: 'readInt()' ;
-
 mathFunctionExpression: ('floor' | 'ceil' | 'round') '(' mathExpression ')' ;
 
-readExpression: readRealExpression | readIntExpression ;
+readFunctionCall: 'readInt()' | 'readFloat()' ;
 
-assignment: Identifier '=' (mathExpression | readExpression) ;
+assignment: Identifier '=' (mathExpression | readFunctionCall) ;
 
 assignStatement: assignment ';' ;
 
-type: RealType | IntType ;
-
-declAssignStatement: type assignment ';' ;
+declAssignStatement: Type assignment ';' ;
 
 writeStatement: 'write' '(' (Identifier | Number | StringLiteral) ')' ';' ;
 

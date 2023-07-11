@@ -1,4 +1,5 @@
 import 'package:antlr4/antlr4.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cfloor_flutter/console_state.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Lexer.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
@@ -16,6 +17,12 @@ InstructionGeneratingTreeWalker compileCFloor1(String sourceText, ErrorCollector
   );
   parser.addErrorListener(errorCollector);
   final instructionGenerator = CFloor1TreeWalker(consoleState);
-  ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
+  try {
+    ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
+  } catch(e) {
+    if(kDebugMode) {
+      print('Unhandled error while walking parse tree: $e');
+    }
+  }
   return instructionGenerator;
 }

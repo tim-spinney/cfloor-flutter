@@ -2,8 +2,6 @@ grammar CFloor1 ;
 
 MathOperator: '+' | '-' | '*' | '/' ;
 
-RealType: 'real' ;
-
 Identifier: [a-z][a-z_]* ;
 
 StringLiteral: '"' .*? '"' ;
@@ -18,15 +16,13 @@ mathOperand: Number | Identifier | ( '(' mathExpression ')') ;
 
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 
-readRealExpression: 'readReal()' ;
+readFunctionCall: 'readFloat()' ;
 
-assignment: Identifier '=' (mathExpression | readRealExpression) ;
+assignment: Identifier '=' (mathExpression | readFunctionCall) ;
 
 assignStatement: assignment ';' ;
 
-type: RealType ;
-
-declAssignStatement: type assignment ';' ;
+declAssignStatement: 'float' assignment ';' ;
 
 writeStatement: 'write' '(' (Identifier | Number | StringLiteral) ')' ';' ;
 

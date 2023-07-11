@@ -7,7 +7,7 @@ class ConsoleState extends ChangeNotifier {
   bool get isWaitingForInput => _inputType != null;
   DataType? get inputType => _inputType;
   set isWaitingForInput(bool isWaitingForInput) {
-    _inputType = DataType.real;
+    _inputType = DataType.float;
     notifyListeners();
   }
 
