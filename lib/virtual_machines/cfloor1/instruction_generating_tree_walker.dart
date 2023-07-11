@@ -1,19 +1,25 @@
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/cfloor1_virtual_machine/virtual_machine.dart';
-import 'expressions.dart';
-import 'memory.dart';
-import '../generated/cfloor1/CFloor1Parser.dart';
-import '../generated/cfloor1/CFloor1BaseListener.dart';
-import '../console_state.dart';
+import '../instruction_generating_tree_walker.dart';
+import 'package:cfloor_flutter/virtual_machines/data_type.dart';
+import '../expression.dart';
+import '../virtual_machine.dart';
+import '../expressions.dart';
+import '../virtual_memory.dart';
+import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
+import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
+import 'package:cfloor_flutter/console_state.dart';
 
-class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
+class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
   final ConsoleState _consoleState;
   int _nextRegister = 0;
-  final VirtualMachine virtualMachine = VirtualMachine();
   final Set<String> _variableNames = {};
+
+  @override
+  final VirtualMachine virtualMachine = VirtualMachine();
+  @override
   final List<String> semanticErrors = [];
 
-  InstructionGeneratingTreeWalker(this._consoleState);
+  CFloor1TreeWalker(this._consoleState);
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
@@ -34,7 +40,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     if(ctx.readRealExpression() != null) {
       final destination = _allocateRegister();
       final textRange = _getTextRange(ctx.readRealExpression()!);
-      virtualMachine.instructions.add(ReadRealExpression(textRange, _consoleState, destination));
+      virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
@@ -43,7 +49,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       virtualMachine.instructions.add(
           AssignmentExpression(
             _getTextRange(ctx),
-            VariableDataDestination(virtualMachine.memory, variableName),
+            VariableDataDestination(DataType.real, virtualMachine.memory, variableName),
             dataSource,
           )
       );
@@ -59,7 +65,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
-          VariableMemorySource(virtualMachine.memory, variableName),
+          VariableMemorySource(DataType.real, virtualMachine.memory, variableName),
         )
       );
     } else if(ctx.Number() != null) {
@@ -68,7 +74,7 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
         NumericWriteExpression(
           _getTextRange(ctx),
           _consoleState,
-          ConstantDataSource(value),
+          ConstantDataSource(DataType.real, value),
         )
       );
     } else {
@@ -108,9 +114,9 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
       _checkDeclareBeforeUse(ctx.Identifier()!.text!, ctx);
-      return VariableMemorySource(virtualMachine.memory, ctx.Identifier()!.text!);
+      return VariableMemorySource(DataType.real, virtualMachine.memory, ctx.Identifier()!.text!);
     } else if(ctx.Number() != null) {
-      return ConstantDataSource(double.parse(ctx.Number()!.text!));
+      return ConstantDataSource(DataType.real, double.parse(ctx.Number()!.text!));
     } else {
       throw Exception('Unknown math operand type');
     }
@@ -125,5 +131,5 @@ class InstructionGeneratingTreeWalker extends CFloor1BaseListener {
     }
   }
 
-  RegisterDataDestination _allocateRegister() => RegisterDataDestination(virtualMachine.memory, _nextRegister++);
+  RegisterDataDestination _allocateRegister() => RegisterDataDestination(DataType.real, virtualMachine.memory, _nextRegister++);
 }

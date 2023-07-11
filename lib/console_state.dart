@@ -1,12 +1,18 @@
-
 import 'package:flutter/foundation.dart';
+import 'virtual_machines/data_type.dart';
 
 class ConsoleState extends ChangeNotifier {
   final List<String> consoleOutput = [];
-  bool _isWaitingForInput = false;
-  bool get isWaitingForInput => _isWaitingForInput;
+  DataType? _inputType;
+  bool get isWaitingForInput => _inputType != null;
+  DataType? get inputType => _inputType;
   set isWaitingForInput(bool isWaitingForInput) {
-    _isWaitingForInput = isWaitingForInput;
+    _inputType = DataType.real;
+    notifyListeners();
+  }
+
+  void waitForInput(DataType inputType) {
+    _inputType = inputType;
     notifyListeners();
   }
 
@@ -17,7 +23,7 @@ class ConsoleState extends ChangeNotifier {
 
   void reset() {
     consoleOutput.clear();
-    _isWaitingForInput = false;
+    _inputType = null;
     notifyListeners();
   }
 }

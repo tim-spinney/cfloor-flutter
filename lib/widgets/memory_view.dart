@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../cfloor1_virtual_machine/memory.dart';
+import '../virtual_machines/virtual_memory.dart';
 
 class MemoryView extends StatefulWidget {
-  final CFloor1Memory memory;
+  final VirtualMemory memory;
 
   const MemoryView({super.key, required this.memory});
 

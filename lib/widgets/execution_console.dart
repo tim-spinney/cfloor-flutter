@@ -1,10 +1,11 @@
+import 'package:cfloor_flutter/virtual_machines/data_type.dart';
 import 'package:cfloor_flutter/console_state.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ExecutionConsole extends StatefulWidget {
   final ConsoleState consoleState;
-  final void Function(double input) submitInput;
+  final void Function(dynamic input) submitInput;
 
   const ExecutionConsole({
     super.key,
@@ -28,7 +29,9 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
 
   _onInputSubmitted() {
     if(_inputFormKey.currentState!.validate()) {
-      final value = double.parse(_inputController.text);
+      final value = widget.consoleState.inputType == DataType.int
+          ? int.parse(_inputController.text)
+          : double.parse(_inputController.text);
       widget.submitInput(value);
       _inputController.clear();
     }
@@ -49,38 +52,38 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
     return AnimatedBuilder(
       animation:  widget.consoleState,
       builder: (context, value) => Column(
-        children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: widget.consoleState.consoleOutput.length,
-            itemBuilder: (context, index) => Text(
-              widget.consoleState.consoleOutput[index],
-              style: GoogleFonts.robotoMono(),
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: widget.consoleState.consoleOutput.length,
+              itemBuilder: (context, index) => Text(
+                widget.consoleState.consoleOutput[index],
+                style: GoogleFonts.robotoMono(),
+              ),
             ),
-          ),
-          if(widget.consoleState.isWaitingForInput) Form(
-            key: _inputFormKey,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 256,
-                  child: TextFormField(
-                    expands: false,
-                    controller: _inputController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter a number here',
+            if(widget.consoleState.isWaitingForInput) Form(
+              key: _inputFormKey,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 256,
+                    child: TextFormField(
+                      expands: false,
+                      controller: _inputController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter a number here',
+                      ),
+                      validator: _validateInput,
                     ),
-                    validator: _validateInput,
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: _onInputSubmitted,
-                  child: const Text('Submit'),
-                ),
-              ],
+                  ElevatedButton(
+                    onPressed: _onInputSubmitted,
+                    child: const Text('Submit'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]
+          ]
       ),
     );
   }

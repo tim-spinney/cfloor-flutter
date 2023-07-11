@@ -1,8 +1,8 @@
-import 'expressions.dart';
-import 'memory.dart';
+import 'expression.dart';
+import 'virtual_memory.dart';
 
 class VirtualMachine {
-  final CFloor1Memory memory = CFloor1Memory();
+  final VirtualMemory memory = VirtualMemory();
   final List<Expression> instructions = [];
 
   VirtualMachine();

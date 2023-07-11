@@ -1,6 +1,6 @@
-import 'package:cfloor_flutter/console_state.dart';
-
-import './memory.dart';
+import '../console_state.dart';
+import 'expression.dart';
+import 'virtual_memory.dart';
 
 enum MathOperator {
   plus,
@@ -14,17 +14,6 @@ enum MathOperator {
     '*': MathOperator.times,
     '/': MathOperator.divide,
   };
-}
-
-class TextRange {
-  final int start, end;
-  TextRange(this.start, this.end);
-}
-
-abstract class Expression {
-  final TextRange textRange;
-  Expression(this.textRange);
-  void evaluate();
 }
 
 class MathExpression extends Expression {
@@ -85,19 +74,27 @@ class StringLiteralWriteExpression extends Expression {
   }
 }
 
-class ReadRealExpression extends Expression {
-  final ConsoleState _consoleState;
+enum MathFunction {
+  ceil,
+  floor,
+  round
+}
+
+class MathFunctionExpression extends Expression {
+  final MathFunction function;
+  final DataSource source;
   final DataDestination destination;
 
-  ReadRealExpression(super.textRange, this._consoleState, this.destination);
+  MathFunctionExpression(super.textRange, this.function, this.source, this.destination);
 
   @override
   void evaluate() {
-    _consoleState.isWaitingForInput = true;
-  }
-
-  void complete(double value) {
-    destination.set(value);
-    _consoleState.isWaitingForInput = false;
+    final sourceValue = source.get();
+    final result = switch(function) {
+      MathFunction.ceil => sourceValue.ceil(),
+      MathFunction.floor => sourceValue.floor(),
+      MathFunction.round => sourceValue.round(),
+    };
+    destination.set(result);
   }
 }
