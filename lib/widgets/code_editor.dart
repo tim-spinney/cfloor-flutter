@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
@@ -6,6 +5,7 @@ import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
 import 'package:cfloor_flutter/virtual_machines/expression.dart';
+import 'package:cfloor_flutter/virtual_machines/expressions.dart';
 import 'package:cfloor_flutter/virtual_machines/compiler.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import '../console_state.dart';
@@ -55,7 +55,7 @@ class _CodeEditorState extends State<CodeEditor> {
     if(_isRunning) {
       setState(() {
         _isRunning = false;
-        _consoleState.isWaitingForInput = false;
+        _consoleState.stopWaitingForInput();
       });
     } else {
       _consoleState.reset();

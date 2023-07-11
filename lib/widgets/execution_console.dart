@@ -39,10 +39,13 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
 
   String? _validateInput(String? value) {
     if(value == null || value.isEmpty) {
-      return 'Please enter a number';
+      return 'Please enter a number.';
     }
     if(double.tryParse(value) == null) {
-      return 'Please enter a valid number';
+      return 'Please enter a valid number.';
+    }
+    if(widget.consoleState.inputType == DataType.int && int.tryParse(value) == null) {
+      return 'Input to readInt() can only be a whole number.';
     }
     return null;
   }

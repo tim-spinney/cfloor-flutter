@@ -40,7 +40,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     if(ctx.readFunctionCall() != null) {
       final destination = _allocateRegister();
       final textRange = _getTextRange(ctx.readFunctionCall()!);
-      virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination));
+      virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination, DataType.float));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);

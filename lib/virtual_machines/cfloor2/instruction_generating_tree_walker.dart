@@ -31,10 +31,8 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    /* Verify that lhs was previously declared. This needs to be done
-       independent of exitAssignment()'s checks because the assignment
-       alone doesn't have the lhs and may be used for declAssign.
-     */
+    // Verify that lhs was previously declared. Only necessary for assign
+    // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
     _checkDeclareBeforeUse(variableName, ctx.assignment()!);
   }
@@ -52,11 +50,15 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     if(dataSource != null) {
       // validate rhs type matches lhs type
       final variableName = ctx.Identifier()!.text!;
-      final variableType = _variableDeclarations[variableName];
-      // If it is null, then this is either a declare before use problem or
-      // part of a declAssign. The declAssign will validate type matching for us in the latter case.
+
+      // get lhs type - either it was declared previously, this is part of a
+      // declAssign, or we'll end up with a declare before use error anyway
+      DataType? variableType = _variableDeclarations[variableName];
+      if(variableType == null && ctx.parent is DeclAssignStatementContext) {
+        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
+      }
       if(variableType != null && dataSource.dataType != variableType) {
-        semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: assigning ${dataSource.dataType.name} to ${variableType.name} variable $variableName');
+        semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${dataSource.dataType.name} to a(n) ${variableType.name}.');
       }
 
       virtualMachine.instructions.add(
@@ -92,7 +94,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   DataSource _handleReadExpression(ReadFunctionCallContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination));
+    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination, readType));
     return destination.toSource();
   }
 

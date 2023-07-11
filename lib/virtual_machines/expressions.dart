@@ -1,4 +1,5 @@
 import '../console_state.dart';
+import 'data_type.dart';
 import 'expression.dart';
 import 'virtual_memory.dart';
 
@@ -96,5 +97,23 @@ class MathFunctionExpression extends Expression {
       MathFunction.round => sourceValue.round(),
     };
     destination.set(result);
+  }
+}
+
+class ReadExpression extends Expression {
+  final ConsoleState _consoleState;
+  final DataDestination destination;
+  final DataType dataType;
+
+  ReadExpression(super.textRange, this._consoleState, this.destination, this.dataType);
+
+  @override
+  void evaluate() {
+    _consoleState.waitForInput(dataType);
+  }
+
+  void complete(dynamic value) {
+    destination.set(value);
+    _consoleState.stopWaitingForInput();
   }
 }
