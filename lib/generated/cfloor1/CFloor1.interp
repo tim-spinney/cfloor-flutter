@@ -2,10 +2,10 @@ token literal names:
 null
 '('
 ')'
-'readFloat()'
+'readInt()'
 '='
 ';'
-'float'
+'int'
 'write'
 null
 null

@@ -12,8 +12,8 @@ WS=11
 Number=12
 '('=1
 ')'=2
-'readFloat()'=3
+'readInt()'=3
 '='=4
 ';'=5
-'float'=6
+'int'=6
 'write'=7

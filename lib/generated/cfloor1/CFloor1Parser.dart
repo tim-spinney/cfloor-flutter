@@ -26,7 +26,7 @@ class CFloor1Parser extends Parser {
   ];
 
   static final List<String?> _LITERAL_NAMES = [
-      null, "'('", "')'", "'readFloat()'", "'='", "';'", "'float'", "'write'"
+      null, "'('", "')'", "'readInt()'", "'='", "';'", "'int'", "'write'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [
       null, null, null, null, null, null, null, null, "MathOperator", "Identifier", 

@@ -8,7 +8,7 @@ StringLiteral: '"' .*? '"' ;
 
 WS: [ \t\r\n]+ -> skip ;
 
-Number: [-]? [0-9]+ ('.' [0-9]+)? ;
+Number: [-]?[0-9]+ ;
 
 program: statement+ EOF;
 
@@ -16,13 +16,13 @@ mathOperand: Number | Identifier | ( '(' mathExpression ')') ;
 
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 
-readFunctionCall: 'readFloat()' ;
+readFunctionCall: 'readInt()' ;
 
 assignment: Identifier '=' (mathExpression | readFunctionCall) ;
 
 assignStatement: assignment ';' ;
 
-declAssignStatement: 'float' assignment ';' ;
+declAssignStatement: 'int' assignment ';' ;
 
 writeStatement: 'write' '(' (Identifier | Number | StringLiteral) ')' ';' ;
 
