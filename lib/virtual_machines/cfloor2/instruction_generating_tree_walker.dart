@@ -57,8 +57,8 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
-      if(variableType != null && dataSource.dataType != variableType) {
-        semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${dataSource.dataType.name} to a(n) ${variableType.name}.');
+      if(variableType != null) {
+        _checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
       virtualMachine.instructions.add(
@@ -91,6 +91,15 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     } // else there was a syntax error
   }
 
+  _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
+    if(source == destination) {
+      return;
+    } else if(source == DataType.int && destination == DataType.float) {
+      return;
+    }
+    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${source.name} to a(n) ${destination.name}.');
+  }
+
   DataSource _handleReadExpression(ReadFunctionCallContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = _allocateRegister(readType);
@@ -112,6 +121,14 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
       _allocateRegister(_combineDataTypes(leftDataSource.dataType, rightDataSource.dataType))
     ;
+
+    if(mathOperator == MathOperator.modulo) {
+      // modulo is a special case because it only works on integers
+      if(leftDataSource.dataType != DataType.int || rightDataSource.dataType != DataType.int) {
+        semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: modulo operator only works on integers.');
+      }
+    }
+
     virtualMachine.instructions.add(
       MathExpression(
         _getTextRange(ctx),

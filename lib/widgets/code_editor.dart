@@ -18,7 +18,7 @@ class CodeEditor extends StatefulWidget {
 }
 
 const _sampleProgram = '''
-float x = 1.0;
+int x = 1;
 x = x + 2;
 write(x);
 ''';
@@ -35,7 +35,7 @@ class _CodeEditorState extends State<CodeEditor> {
   bool _isRunning = false;
   int _instructionIndex = 0;
   List<String> _compileErrors = [];
-  LanguageLevel _languageLevel = LanguageLevel.cfloor2;
+  LanguageLevel _languageLevel = LanguageLevel.cfloor1;
 
   @override
   void dispose() {

@@ -36,7 +36,7 @@ class VariableMemorySource extends MemorySource {
   VariableMemorySource(super.dataType, super._memory, this._variableName);
 
   @override
-  double get() => _memory.variableValues[_variableName]!;
+  dynamic get() => _memory.variableValues[_variableName]!;
 }
 
 class ConstantDataSource extends DataSource {

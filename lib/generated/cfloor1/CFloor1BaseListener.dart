@@ -1,4 +1,4 @@
-// Generated from CFloor1.g4 by ANTLR 4.13.0
+// Generated from grammars/CFloor1.g4 by ANTLR 4.13.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -12,27 +12,11 @@ import 'CFloor1Listener.dart';
 class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
-  void enterProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.
   @override
   void exitMathOperand(MathOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterMathExpression(MathExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathExpression(MathExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -44,19 +28,11 @@ class CFloor1BaseListener implements CFloor1Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterAssignment(AssignmentContext ctx) {}
+  void enterProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitAssignment(AssignmentContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterAssignStatement(AssignStatementContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitAssignStatement(AssignStatementContext ctx) {}
+  void exitProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -68,11 +44,35 @@ class CFloor1BaseListener implements CFloor1Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterAssignStatement(AssignStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitAssignStatement(AssignStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterWriteStatement(WriteStatementContext ctx) {}
 
   /// The default implementation does nothing.
   @override
   void exitWriteStatement(WriteStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterMathExpression(MathExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathExpression(MathExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterAssignment(AssignmentContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitAssignment(AssignmentContext ctx) {}
 
   /// The default implementation does nothing.
   @override

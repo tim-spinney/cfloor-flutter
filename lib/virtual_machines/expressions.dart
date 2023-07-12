@@ -7,13 +7,15 @@ enum MathOperator {
   plus,
   minus,
   times,
-  divide
+  divide,
+  modulo
   ;
   static const bySymbol = {
     '+': MathOperator.plus,
     '-': MathOperator.minus,
     '*': MathOperator.times,
     '/': MathOperator.divide,
+    '%': MathOperator.modulo,
   };
 }
 
@@ -34,6 +36,7 @@ class MathExpression extends Expression {
         MathOperator.minus => leftValue - rightValue,
         MathOperator.times => leftValue * rightValue,
         MathOperator.divide => leftValue / rightValue,
+        MathOperator.modulo => leftValue % rightValue,
       };
       destination.set(result);
     }
