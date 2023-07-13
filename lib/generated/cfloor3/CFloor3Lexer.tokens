@@ -19,10 +19,10 @@ WS=18
 'length('=1
 ')'=2
 '='=3
-'readInt()'=4
-'readFloat()'=5
-'readString()'=6
-'('=7
+'('=4
+'readInt()'=5
+'readFloat()'=6
+'readString()'=7
 'floor'=8
 'ceil'=9
 'round'=10

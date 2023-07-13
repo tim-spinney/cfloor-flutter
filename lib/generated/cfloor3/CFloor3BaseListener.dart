@@ -12,11 +12,11 @@ import 'CFloor3Listener.dart';
 class CFloor3BaseListener implements CFloor3Listener {
   /// The default implementation does nothing.
   @override
-  void enterStringFunctionExpression(StringFunctionExpressionContext ctx) {}
+  void enterStringLengthExpression(StringLengthExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitStringFunctionExpression(StringFunctionExpressionContext ctx) {}
+  void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -28,19 +28,19 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.
   @override
   void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override

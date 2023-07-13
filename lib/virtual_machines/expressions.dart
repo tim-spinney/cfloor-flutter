@@ -121,3 +121,15 @@ class StringConcatenationExpression extends Expression {
     destination.set(left.get().toString() + right.get().toString());
   }
 }
+
+class StringLengthExpression extends Expression {
+  final DataSource source;
+  final DataDestination destination;
+
+  StringLengthExpression(super.textRange, this.source, this.destination);
+
+  @override
+  void evaluate() {
+    destination.set(source.get().length);
+  }
+}

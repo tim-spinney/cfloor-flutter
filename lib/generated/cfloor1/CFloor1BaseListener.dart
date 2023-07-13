@@ -44,6 +44,14 @@ class CFloor1BaseListener implements CFloor1Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterMathExpression(MathExpressionContext ctx) {}
 
   /// The default implementation does nothing.
@@ -65,14 +73,6 @@ class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
   void exitStatement(StatementContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterMathOperand(MathOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.
   @override

@@ -35,6 +35,13 @@ abstract class CFloor1Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
 
+  /// Enter a parse tree produced by [CFloor1Parser.mathOperand].
+  /// [ctx] the parse tree
+  void enterMathOperand(MathOperandContext ctx);
+  /// Exit a parse tree produced by [CFloor1Parser.mathOperand].
+  /// [ctx] the parse tree
+  void exitMathOperand(MathOperandContext ctx);
+
   /// Enter a parse tree produced by [CFloor1Parser.mathExpression].
   /// [ctx] the parse tree
   void enterMathExpression(MathExpressionContext ctx);
@@ -55,13 +62,6 @@ abstract class CFloor1Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor1Parser.statement].
   /// [ctx] the parse tree
   void exitStatement(StatementContext ctx);
-
-  /// Enter a parse tree produced by [CFloor1Parser.mathOperand].
-  /// [ctx] the parse tree
-  void enterMathOperand(MathOperandContext ctx);
-  /// Exit a parse tree produced by [CFloor1Parser.mathOperand].
-  /// [ctx] the parse tree
-  void exitMathOperand(MathOperandContext ctx);
 
   /// Enter a parse tree produced by [CFloor1Parser.readFunctionExpression].
   /// [ctx] the parse tree

@@ -7,12 +7,12 @@ import 'CFloor3Parser.dart';
 /// This abstract class defines a complete listener for a parse tree produced by
 /// [CFloor3Parser].
 abstract class CFloor3Listener extends ParseTreeListener {
-  /// Enter a parse tree produced by [CFloor3Parser.stringFunctionExpression].
+  /// Enter a parse tree produced by [CFloor3Parser.stringLengthExpression].
   /// [ctx] the parse tree
-  void enterStringFunctionExpression(StringFunctionExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor3Parser.stringFunctionExpression].
+  void enterStringLengthExpression(StringLengthExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor3Parser.stringLengthExpression].
   /// [ctx] the parse tree
-  void exitStringFunctionExpression(StringFunctionExpressionContext ctx);
+  void exitStringLengthExpression(StringLengthExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor3Parser.assignment].
   /// [ctx] the parse tree
@@ -21,19 +21,19 @@ abstract class CFloor3Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitAssignment(AssignmentContext ctx);
 
-  /// Enter a parse tree produced by [CFloor3Parser.readFunctionExpression].
-  /// [ctx] the parse tree
-  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor3Parser.readFunctionExpression].
-  /// [ctx] the parse tree
-  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx);
-
   /// Enter a parse tree produced by [CFloor3Parser.mathOperand].
   /// [ctx] the parse tree
   void enterMathOperand(MathOperandContext ctx);
   /// Exit a parse tree produced by [CFloor3Parser.mathOperand].
   /// [ctx] the parse tree
   void exitMathOperand(MathOperandContext ctx);
+
+  /// Enter a parse tree produced by [CFloor3Parser.readFunctionExpression].
+  /// [ctx] the parse tree
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor3Parser.readFunctionExpression].
+  /// [ctx] the parse tree
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor3Parser.mathFunctionExpression].
   /// [ctx] the parse tree

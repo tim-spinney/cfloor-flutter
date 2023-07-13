@@ -20,13 +20,13 @@ assignStatement: assignment ';' ;
 
 writeStatement: 'write' '(' (Identifier | Number | StringLiteral) ')' ';' ;
 
+mathOperand: Number | Identifier | ( '(' mathExpression ')') ;
+
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 
 assignment: Identifier '=' (mathExpression | readFunctionExpression) ;
 
 statement: writeStatement | assignStatement | declAssignStatement ;
-
-mathOperand: Number | Identifier | ( '(' mathExpression ')') ;
 
 readFunctionExpression: 'readInt()' ;
 

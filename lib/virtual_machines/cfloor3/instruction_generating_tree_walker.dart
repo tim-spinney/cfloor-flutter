@@ -50,7 +50,6 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     } else if(ctx.StringLiteral() != null) {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     } // else there was a syntax error
-
     if(dataSource != null) {
       // validate rhs type matches lhs type
       final variableName = ctx.Identifier()!.text!;
@@ -155,6 +154,8 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       return _sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
       return _handleMathFunctionExpression(ctx.mathFunctionExpression()!);
+    } else if(ctx.stringLengthExpression() != null) {
+      return _handleStringLengthExpression(ctx.stringLengthExpression()!);
     } else {
       throw Exception('Unknown math operand type');
     }
@@ -231,6 +232,21 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
         )
     );
     return targetRegister.toSource();
+  }
+
+  DataSource _handleStringLengthExpression(StringLengthExpressionContext ctx) {
+    final identifier = ctx.Identifier()!;
+    final variableName = identifier.text!;
+    _checkDeclareBeforeUse(variableName, identifier.symbol);
+    final lengthRegister = _allocateRegister(DataType.int);
+    virtualMachine.instructions.add(
+        StringLengthExpression(
+            _getTextRange(ctx),
+            _sourceFromMemory(variableName, identifier.symbol),
+            lengthRegister
+        )
+    );
+    return lengthRegister.toSource();
   }
 
   VariableMemorySource _sourceFromMemory(String variableName, Token startToken) {
