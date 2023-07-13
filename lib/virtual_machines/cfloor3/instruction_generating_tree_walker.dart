@@ -100,7 +100,13 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
   }
 
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
-    final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
+    final type = RegExp(r"^read([A-Z][a-z]*)").firstMatch(ctx.text)?.group(1)?.toLowerCase();
+    final readType = switch(type) {
+      'int' => DataType.int,
+      'float' => DataType.float,
+      'string' => DataType.string,
+      _ => throw Exception('Unknown read type: $ctx.text'),
+    };
     final destination = _allocateRegister(readType);
     virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination, readType));
     return destination.toSource();
