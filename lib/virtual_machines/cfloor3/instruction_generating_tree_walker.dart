@@ -123,7 +123,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     final targetRegister =
     leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
     rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-    _allocateRegister(_combineDataTypes(leftDataSource.dataType, rightDataSource.dataType))
+    _allocateRegister(_combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.start!))
     ;
 
     if(mathOperator == MathOperator.modulo) {
@@ -269,13 +269,19 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     }
   }
 
-  _combineDataTypes(DataType left, DataType right) {
+  _combineNumericDataTypes(DataType left, DataType right, Token startToken) {
+    if(!_typeIsNumeric(left) || !_typeIsNumeric(right)) {
+      semanticErrors.add('Type mismatch at ${startToken.line}:${startToken.charPositionInLine}: math operators only work on numbers.');
+      throw Exception('Cannot combine non-numeric types');
+    }
     if(left == DataType.float || right == DataType.float) {
       return DataType.float;
     } else {
       return DataType.int;
     }
   }
+
+  bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
 
   RegisterDataDestination _allocateRegister(DataType dataType) => RegisterDataDestination(dataType, virtualMachine.memory, _nextRegister++);
 }
