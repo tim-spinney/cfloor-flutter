@@ -1,11 +1,13 @@
 
 enum DataType {
   int,
-  float
+  float,
+  string
   ;
 }
 
 const cfloorTypesToDartTypes = {
   DataType.int: int,
   DataType.float: double,
+  DataType.string: String
 };

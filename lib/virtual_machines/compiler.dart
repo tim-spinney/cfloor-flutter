@@ -1,3 +1,4 @@
+import 'package:cfloor_flutter/virtual_machines/cfloor3/parser.dart';
 import 'package:cfloor_flutter/virtual_machines/error_collector.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
 import '../console_state.dart';
@@ -14,7 +15,8 @@ class Compiler {
     final ErrorCollector errorCollector = ErrorCollector();
     final instructionGenerator = switch(languageLevel) {
       LanguageLevel.cfloor1 => compileCFloor1(sourceText, errorCollector, consoleState),
-      LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, consoleState)
+      LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, consoleState),
+      LanguageLevel.cfloor3 => compileCFloor3(sourceText, errorCollector, consoleState)
     };
     return CompileResult(errorCollector.errors + instructionGenerator.semanticErrors, instructionGenerator.virtualMachine);
   }

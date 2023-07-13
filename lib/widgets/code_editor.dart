@@ -26,6 +26,7 @@ write(x);
 const _levelDescriptions = {
   LanguageLevel.cfloor1: 'Level 1: reading, writing, and arithmetic',
   LanguageLevel.cfloor2: 'Level 2: floats vs. ints',
+  LanguageLevel.cfloor3: 'Level 3: strings'
 };
 
 class _CodeEditorState extends State<CodeEditor> {

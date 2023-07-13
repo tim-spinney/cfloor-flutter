@@ -37,9 +37,9 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
   void exitAssignment(AssignmentContext ctx) {
     final variableName = ctx.Identifier()!.text!;
     DataSource? dataSource;
-    if(ctx.readFunctionCall() != null) {
+    if(ctx.readFunctionExpression() != null) {
       final destination = _allocateRegister();
-      final textRange = _getTextRange(ctx.readFunctionCall()!);
+      final textRange = _getTextRange(ctx.readFunctionExpression()!);
       virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination, DataType.int));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
@@ -62,7 +62,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     if(ctx.Identifier() != null) {
       final variableName = ctx.Identifier()!.text!;
       virtualMachine.instructions.add(
-        NumericWriteExpression(
+        WriteExpression(
           _getTextRange(ctx),
           _consoleState,
           VariableMemorySource(DataType.int, virtualMachine.memory, variableName),
@@ -71,7 +71,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     } else if(ctx.Number() != null) {
       final value = int.parse(ctx.Number()!.text!);
       virtualMachine.instructions.add(
-        NumericWriteExpression(
+        WriteExpression(
           _getTextRange(ctx),
           _consoleState,
           ConstantDataSource(DataType.int, value),
@@ -79,7 +79,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      virtualMachine.instructions.add(StringLiteralWriteExpression(_getTextRange(ctx), _consoleState, value));
+      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), _consoleState, ConstantDataSource(DataType.string, value)));
     }
   }
 

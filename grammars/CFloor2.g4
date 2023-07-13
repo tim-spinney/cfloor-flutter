@@ -1,6 +1,6 @@
 grammar CFloor2 ;
 
-import common ;
+import CFloor1 ;
 
 Number: [-]?[0-9]+('.' [0-9]+)? ;
 
@@ -10,4 +10,4 @@ mathOperand: Number | Identifier | ( '(' mathExpression ')') | mathFunctionExpre
 
 mathFunctionExpression: ('floor' | 'ceil' | 'round') '(' mathExpression ')' ;
 
-readFunctionCall: 'readInt()' | 'readFloat()' ;
+readFunctionExpression: 'readInt()' | 'readFloat()' ;

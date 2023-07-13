@@ -4,7 +4,7 @@ import 'package:antlr4/antlr4.dart';
 
 import 'CFloor2Listener.dart';
 import 'CFloor2BaseListener.dart';
-const int RULE_mathOperand = 0, RULE_mathFunctionExpression = 1, RULE_readFunctionCall = 2, 
+const int RULE_mathOperand = 0, RULE_mathFunctionExpression = 1, RULE_readFunctionExpression = 2, 
           RULE_program = 3, RULE_declAssignStatement = 4, RULE_assignStatement = 5, 
           RULE_writeStatement = 6, RULE_mathExpression = 7, RULE_assignment = 8, 
           RULE_statement = 9;
@@ -23,7 +23,7 @@ class CFloor2Parser extends Parser {
 
   @override
   final List<String> ruleNames = [
-    'mathOperand', 'mathFunctionExpression', 'readFunctionCall', 'program', 
+    'mathOperand', 'mathFunctionExpression', 'readFunctionExpression', 'program', 
     'declAssignStatement', 'assignStatement', 'writeStatement', 'mathExpression', 
     'assignment', 'statement'
   ];
@@ -135,9 +135,9 @@ class CFloor2Parser extends Parser {
     return _localctx;
   }
 
-  ReadFunctionCallContext readFunctionCall() {
-    dynamic _localctx = ReadFunctionCallContext(context, state);
-    enterRule(_localctx, 4, RULE_readFunctionCall);
+  ReadFunctionExpressionContext readFunctionExpression() {
+    dynamic _localctx = ReadFunctionExpressionContext(context, state);
+    enterRule(_localctx, 4, RULE_readFunctionExpression);
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
@@ -313,7 +313,7 @@ class CFloor2Parser extends Parser {
       case TOKEN_T__5:
       case TOKEN_T__6:
         state = 64;
-        readFunctionCall();
+        readFunctionExpression();
         break;
       default:
         throw NoViableAltException(this);
@@ -423,17 +423,17 @@ class MathFunctionExpressionContext extends ParserRuleContext {
   }
 }
 
-class ReadFunctionCallContext extends ParserRuleContext {
-  ReadFunctionCallContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
+class ReadFunctionExpressionContext extends ParserRuleContext {
+  ReadFunctionExpressionContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
-  int get ruleIndex => RULE_readFunctionCall;
+  int get ruleIndex => RULE_readFunctionExpression;
   @override
   void enterRule(ParseTreeListener listener) {
-    if (listener is CFloor2Listener) listener.enterReadFunctionCall(this);
+    if (listener is CFloor2Listener) listener.enterReadFunctionExpression(this);
   }
   @override
   void exitRule(ParseTreeListener listener) {
-    if (listener is CFloor2Listener) listener.exitReadFunctionCall(this);
+    if (listener is CFloor2Listener) listener.exitReadFunctionExpression(this);
   }
 }
 
@@ -522,7 +522,7 @@ class MathExpressionContext extends ParserRuleContext {
 class AssignmentContext extends ParserRuleContext {
   TerminalNode? Identifier() => getToken(CFloor2Parser.TOKEN_Identifier, 0);
   MathExpressionContext? mathExpression() => getRuleContext<MathExpressionContext>(0);
-  ReadFunctionCallContext? readFunctionCall() => getRuleContext<ReadFunctionCallContext>(0);
+  ReadFunctionExpressionContext? readFunctionExpression() => getRuleContext<ReadFunctionExpressionContext>(0);
   AssignmentContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_assignment;

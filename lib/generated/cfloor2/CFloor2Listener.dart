@@ -21,12 +21,12 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
 
-  /// Enter a parse tree produced by [CFloor2Parser.readFunctionCall].
+  /// Enter a parse tree produced by [CFloor2Parser.readFunctionExpression].
   /// [ctx] the parse tree
-  void enterReadFunctionCall(ReadFunctionCallContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.readFunctionCall].
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.readFunctionExpression].
   /// [ctx] the parse tree
-  void exitReadFunctionCall(ReadFunctionCallContext ctx);
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor2Parser.program].
   /// [ctx] the parse tree

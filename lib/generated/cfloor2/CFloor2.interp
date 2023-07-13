@@ -39,7 +39,7 @@ WS
 rule names:
 mathOperand
 mathFunctionExpression
-readFunctionCall
+readFunctionExpression
 program
 declAssignStatement
 assignStatement

@@ -54,27 +54,15 @@ class AssignmentExpression extends Expression {
   }
 }
 
-class NumericWriteExpression extends Expression {
+class WriteExpression extends Expression {
   final ConsoleState _consoleState;
   final DataSource source;
 
-  NumericWriteExpression(super.textRange, this._consoleState, this.source);
+  WriteExpression(super.textRange, this._consoleState, this.source);
 
   @override
   void evaluate() {
     _consoleState.addConsoleOutput(source.get().toString());
-  }
-}
-
-class StringLiteralWriteExpression extends Expression {
-  final ConsoleState _state;
-  final String value;
-
-  StringLiteralWriteExpression(super.textRange, this._state, this.value);
-
-  @override
-  void evaluate() {
-    _state.addConsoleOutput(value);
   }
 }
 
@@ -118,5 +106,18 @@ class ReadExpression extends Expression {
   void complete(dynamic value) {
     destination.set(value);
     _consoleState.stopWaitingForInput();
+  }
+}
+
+class StringConcatenationExpression extends Expression {
+  final DataSource left;
+  final DataSource right;
+  final DataDestination destination;
+
+  StringConcatenationExpression(super.textRange, this.left, this.right, this.destination);
+
+  @override
+  void evaluate() {
+    destination.set(left.get().toString() + right.get().toString());
   }
 }

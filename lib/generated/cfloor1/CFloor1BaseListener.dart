@@ -12,22 +12,6 @@ import 'CFloor1Listener.dart';
 class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
-  void enterMathOperand(MathOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathOperand(MathOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterReadFunctionCall(ReadFunctionCallContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitReadFunctionCall(ReadFunctionCallContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
@@ -81,6 +65,22 @@ class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
   void exitStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
