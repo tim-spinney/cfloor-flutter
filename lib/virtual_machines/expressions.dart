@@ -19,6 +19,34 @@ enum MathOperator {
   };
 }
 
+enum BooleanOperator {
+  and,
+  or
+  ;
+  static const bySymbol = {
+    'and': BooleanOperator.and,
+    'or': BooleanOperator.or,
+  };
+}
+
+enum ComparisonOperator {
+  equal,
+  notEqual,
+  lessThan,
+  lessThanOrEqual,
+  greaterThan,
+  greaterThanOrEqual
+  ;
+  static const bySymbol = {
+    '==': ComparisonOperator.equal,
+    '!=': ComparisonOperator.notEqual,
+    '<': ComparisonOperator.lessThan,
+    '<=': ComparisonOperator.lessThanOrEqual,
+    '>': ComparisonOperator.greaterThan,
+    '>=': ComparisonOperator.greaterThanOrEqual,
+  };
+}
+
 class MathExpression extends Expression {
     final MathOperator operator;
     final DataSource left;
@@ -131,5 +159,61 @@ class StringLengthExpression extends Expression {
   @override
   void evaluate() {
     destination.set(source.get().length);
+  }
+}
+
+class BooleanNegationExpression extends Expression {
+  final DataSource source;
+  final DataDestination destination;
+
+  BooleanNegationExpression(super.textRange, this.source, this.destination);
+
+  @override
+  void evaluate() {
+    destination.set(!source.get());
+  }
+}
+
+class BinaryBooleanExpression extends Expression {
+  final BooleanOperator operator;
+  final DataSource left;
+  final DataSource right;
+  final DataDestination destination;
+
+  BinaryBooleanExpression(super.textRange, this.operator, this.left, this.right, this.destination);
+
+  @override
+  void evaluate() {
+    final leftValue = left.get();
+    final rightValue = right.get();
+    final result = switch(operator) {
+      BooleanOperator.and => leftValue && rightValue,
+      BooleanOperator.or => leftValue || rightValue,
+    };
+    destination.set(result);
+  }
+}
+
+class ComparisonExpression extends Expression {
+  final ComparisonOperator operator;
+  final DataSource left;
+  final DataSource right;
+  final DataDestination destination;
+
+  ComparisonExpression(super.textRange, this.operator, this.left, this.right, this.destination);
+
+  @override
+  void evaluate() {
+    final leftValue = left.get();
+    final rightValue = right.get();
+    final result = switch(operator) {
+      ComparisonOperator.equal => leftValue == rightValue,
+      ComparisonOperator.notEqual => leftValue != rightValue,
+      ComparisonOperator.lessThan => leftValue < rightValue,
+      ComparisonOperator.lessThanOrEqual => leftValue <= rightValue,
+      ComparisonOperator.greaterThan => leftValue > rightValue,
+      ComparisonOperator.greaterThanOrEqual => leftValue >= rightValue,
+    };
+    destination.set(result);
   }
 }
