@@ -2,6 +2,8 @@ grammar CFloor1 ;
 
 MathOperator: '+' | '-' | '*' | '/' | '%' ;
 
+Type: 'int' ;
+
 Identifier: [a-z][a-z_]* ;
 
 StringLiteral: '"' .*? '"' ;
@@ -9,8 +11,6 @@ StringLiteral: '"' .*? '"' ;
 WS: [ \t\r\n]+ -> skip ;
 
 Number: [-]?[0-9]+ ;
-
-Type: 'int' ;
 
 program: statement+ EOF;
 

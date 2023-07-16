@@ -1,8 +1,23 @@
 import 'data_type.dart';
 
 class VirtualMemory {
-  final Map<String, dynamic> variableValues = {};
+  final List<Map<String, dynamic>> variableValues = [{}];
   final Map<int, dynamic> registers = {};
+
+  getVariableValue(String name) {
+    for(int i = variableValues.length - 1; i >= 0; i--) {
+      if(variableValues[i].containsKey(name)) {
+        return variableValues[i][name];
+      }
+    }
+    throw Exception('Variable $name not found');
+  }
+
+  setVariableValue(String name, dynamic value) => variableValues.last[name] = value;
+
+  pushScope() => variableValues.add({});
+
+  popScope() => variableValues.removeLast();
 }
 
 abstract class DataSource {
@@ -36,7 +51,7 @@ class VariableMemorySource extends MemorySource {
   VariableMemorySource(super.dataType, super._memory, this._variableName);
 
   @override
-  dynamic get() => _memory.variableValues[_variableName]!;
+  dynamic get() => _memory.getVariableValue(_variableName);
 }
 
 class ConstantDataSource extends DataSource {
@@ -74,5 +89,5 @@ class VariableDataDestination extends DataDestination {
   VariableDataDestination(super.dataType, super._memory, this._variableName);
 
   @override
-  void set(dynamic value) => _memory.variableValues[_variableName] = value;
+  void set(dynamic value) => _memory.setVariableValue(_variableName, value);
 }

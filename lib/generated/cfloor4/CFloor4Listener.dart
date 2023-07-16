@@ -28,6 +28,41 @@ abstract class CFloor4Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitAssignment(AssignmentContext ctx);
 
+  /// Enter a parse tree produced by [CFloor4Parser.block].
+  /// [ctx] the parse tree
+  void enterBlock(BlockContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.block].
+  /// [ctx] the parse tree
+  void exitBlock(BlockContext ctx);
+
+  /// Enter a parse tree produced by [CFloor4Parser.ifstatement].
+  /// [ctx] the parse tree
+  void enterIfstatement(IfstatementContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.ifstatement].
+  /// [ctx] the parse tree
+  void exitIfstatement(IfstatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor4Parser.ifblock].
+  /// [ctx] the parse tree
+  void enterIfblock(IfblockContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.ifblock].
+  /// [ctx] the parse tree
+  void exitIfblock(IfblockContext ctx);
+
+  /// Enter a parse tree produced by [CFloor4Parser.statement].
+  /// [ctx] the parse tree
+  void enterStatement(StatementContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.statement].
+  /// [ctx] the parse tree
+  void exitStatement(StatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor4Parser.program].
+  /// [ctx] the parse tree
+  void enterProgram(ProgramContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.program].
+  /// [ctx] the parse tree
+  void exitProgram(ProgramContext ctx);
+
   /// Enter a parse tree produced by [CFloor4Parser.stringLengthExpression].
   /// [ctx] the parse tree
   void enterStringLengthExpression(StringLengthExpressionContext ctx);
@@ -56,13 +91,6 @@ abstract class CFloor4Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
 
-  /// Enter a parse tree produced by [CFloor4Parser.program].
-  /// [ctx] the parse tree
-  void enterProgram(ProgramContext ctx);
-  /// Exit a parse tree produced by [CFloor4Parser.program].
-  /// [ctx] the parse tree
-  void exitProgram(ProgramContext ctx);
-
   /// Enter a parse tree produced by [CFloor4Parser.declAssignStatement].
   /// [ctx] the parse tree
   void enterDeclAssignStatement(DeclAssignStatementContext ctx);
@@ -90,11 +118,4 @@ abstract class CFloor4Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor4Parser.mathExpression].
   /// [ctx] the parse tree
   void exitMathExpression(MathExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor4Parser.statement].
-  /// [ctx] the parse tree
-  void enterStatement(StatementContext ctx);
-  /// Exit a parse tree produced by [CFloor4Parser.statement].
-  /// [ctx] the parse tree
-  void exitStatement(StatementContext ctx);
 }
