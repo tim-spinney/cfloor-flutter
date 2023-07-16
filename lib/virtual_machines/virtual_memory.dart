@@ -18,6 +18,12 @@ class VirtualMemory {
   pushScope() => variableValues.add({});
 
   popScope() => variableValues.removeLast();
+
+  void clear() {
+    variableValues.clear();
+    variableValues.add({});
+    registers.clear();
+  }
 }
 
 abstract class DataSource {

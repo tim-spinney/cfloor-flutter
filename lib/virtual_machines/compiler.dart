@@ -12,13 +12,13 @@ class Compiler {
 
   Compiler(this.languageLevel);
 
-  CompileResult compile(String sourceText, ConsoleState consoleState) {
+  CompileResult compile(String sourceText, VirtualMachine virtualMachine) {
     final ErrorCollector errorCollector = ErrorCollector();
     final instructionGenerator = switch(languageLevel) {
-      LanguageLevel.cfloor1 => compileCFloor1(sourceText, errorCollector, consoleState),
-      LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, consoleState),
-      LanguageLevel.cfloor3 => compileCFloor3(sourceText, errorCollector, consoleState),
-      LanguageLevel.cfloor4 => compileCFloor4(sourceText, errorCollector, consoleState),
+      LanguageLevel.cfloor1 => compileCFloor1(sourceText, errorCollector, virtualMachine),
+      LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, virtualMachine),
+      LanguageLevel.cfloor3 => compileCFloor3(sourceText, errorCollector, virtualMachine),
+      LanguageLevel.cfloor4 => compileCFloor4(sourceText, errorCollector, virtualMachine),
     };
     return CompileResult(errorCollector.errors + instructionGenerator.semanticErrors, instructionGenerator.virtualMachine);
   }

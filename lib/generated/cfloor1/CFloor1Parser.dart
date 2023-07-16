@@ -16,8 +16,8 @@ class CFloor1Parser extends Parser {
   static final PredictionContextCache _sharedContextCache = PredictionContextCache();
   static const int TOKEN_T__0 = 1, TOKEN_T__1 = 2, TOKEN_T__2 = 3, TOKEN_T__3 = 4, 
                    TOKEN_T__4 = 5, TOKEN_T__5 = 6, TOKEN_MathOperator = 7, 
-                   TOKEN_Identifier = 8, TOKEN_StringLiteral = 9, TOKEN_WS = 10, 
-                   TOKEN_Number = 11, TOKEN_Type = 12;
+                   TOKEN_Type = 8, TOKEN_StringLiteral = 9, TOKEN_WS = 10, 
+                   TOKEN_Number = 11, TOKEN_Identifier = 12;
 
   @override
   final List<String> ruleNames = [
@@ -27,11 +27,11 @@ class CFloor1Parser extends Parser {
 
   static final List<String?> _LITERAL_NAMES = [
       null, "';'", "'write'", "'('", "')'", "'='", "'readInt()'", null, 
-      null, null, null, null, "'int'"
+      "'int'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [
-      null, null, null, null, null, null, null, "MathOperator", "Identifier", 
-      "StringLiteral", "WS", "Number", "Type"
+      null, null, null, null, null, null, null, "MathOperator", "Type", 
+      "StringLiteral", "WS", "Number", "Identifier"
   ];
   static final Vocabulary VOCABULARY = VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -135,7 +135,7 @@ class CFloor1Parser extends Parser {
       match(TOKEN_T__2);
       state = 34;
       _la = tokenStream.LA(1)!;
-      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 2816) != 0))) {
+      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 6656) != 0))) {
       errorHandler.recoverInline(this);
       } else {
         if ( tokenStream.LA(1)! == IntStream.EOF ) matchedEOF = true;
@@ -236,8 +236,8 @@ class CFloor1Parser extends Parser {
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_T__2:
-      case TOKEN_Identifier:
       case TOKEN_Number:
+      case TOKEN_Identifier:
         state = 53;
         mathExpression();
         break;
@@ -315,17 +315,17 @@ class CFloor1Parser extends Parser {
       2,7,7,7,2,8,7,8,1,0,4,0,20,8,0,11,0,12,0,21,1,0,1,0,1,1,1,1,1,1,1,
       1,1,2,1,2,1,2,1,3,1,3,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,1,4,1,4,3,4,
       45,8,4,1,5,1,5,1,5,3,5,50,8,5,1,6,1,6,1,6,1,6,3,6,56,8,6,1,7,1,7,1,
-      7,3,7,61,8,7,1,8,1,8,1,8,0,0,9,0,2,4,6,8,10,12,14,16,0,1,2,0,8,9,11,
-      11,62,0,19,1,0,0,0,2,25,1,0,0,0,4,29,1,0,0,0,6,32,1,0,0,0,8,44,1,0,
+      7,3,7,61,8,7,1,8,1,8,1,8,0,0,9,0,2,4,6,8,10,12,14,16,0,1,2,0,9,9,11,
+      12,62,0,19,1,0,0,0,2,25,1,0,0,0,4,29,1,0,0,0,6,32,1,0,0,0,8,44,1,0,
       0,0,10,46,1,0,0,0,12,51,1,0,0,0,14,60,1,0,0,0,16,62,1,0,0,0,18,20,
       3,14,7,0,19,18,1,0,0,0,20,21,1,0,0,0,21,19,1,0,0,0,21,22,1,0,0,0,22,
-      23,1,0,0,0,23,24,5,0,0,1,24,1,1,0,0,0,25,26,5,12,0,0,26,27,3,12,6,
-      0,27,28,5,1,0,0,28,3,1,0,0,0,29,30,3,12,6,0,30,31,5,1,0,0,31,5,1,0,
-      0,0,32,33,5,2,0,0,33,34,5,3,0,0,34,35,7,0,0,0,35,36,5,4,0,0,36,37,
-      5,1,0,0,37,7,1,0,0,0,38,45,5,11,0,0,39,45,5,8,0,0,40,41,5,3,0,0,41,
+      23,1,0,0,0,23,24,5,0,0,1,24,1,1,0,0,0,25,26,5,8,0,0,26,27,3,12,6,0,
+      27,28,5,1,0,0,28,3,1,0,0,0,29,30,3,12,6,0,30,31,5,1,0,0,31,5,1,0,0,
+      0,32,33,5,2,0,0,33,34,5,3,0,0,34,35,7,0,0,0,35,36,5,4,0,0,36,37,5,
+      1,0,0,37,7,1,0,0,0,38,45,5,11,0,0,39,45,5,12,0,0,40,41,5,3,0,0,41,
       42,3,10,5,0,42,43,5,4,0,0,43,45,1,0,0,0,44,38,1,0,0,0,44,39,1,0,0,
       0,44,40,1,0,0,0,45,9,1,0,0,0,46,49,3,8,4,0,47,48,5,7,0,0,48,50,3,8,
-      4,0,49,47,1,0,0,0,49,50,1,0,0,0,50,11,1,0,0,0,51,52,5,8,0,0,52,55,
+      4,0,49,47,1,0,0,0,49,50,1,0,0,0,50,11,1,0,0,0,51,52,5,12,0,0,52,55,
       5,5,0,0,53,56,3,10,5,0,54,56,3,16,8,0,55,53,1,0,0,0,55,54,1,0,0,0,
       56,13,1,0,0,0,57,61,3,6,3,0,58,61,3,4,2,0,59,61,3,2,1,0,60,57,1,0,
       0,0,60,58,1,0,0,0,60,59,1,0,0,0,61,15,1,0,0,0,62,63,5,6,0,0,63,17,

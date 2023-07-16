@@ -12,16 +12,15 @@ import 'package:cfloor_flutter/console_state.dart';
 class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGeneratingTreeWalker {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
-  final ConsoleState _consoleState;
   int _nextRegister = 0;
   final Map<String, DataType> _variableDeclarations = {};
 
   @override
-  final VirtualMachine virtualMachine = VirtualMachine();
+  final VirtualMachine virtualMachine;
   @override
   final List<String> semanticErrors = [];
 
-  CFloor3TreeWalker(this._consoleState);
+  CFloor3TreeWalker(this.virtualMachine);
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
@@ -86,7 +85,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
-    virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), _consoleState, dataSource));
+    virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -107,7 +106,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination, readType));
+    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 

@@ -13,9 +13,9 @@ T__11=12
 Type=13
 Number=14
 MathOperator=15
-Identifier=16
-StringLiteral=17
-WS=18
+StringLiteral=16
+WS=17
+Identifier=18
 'length('=1
 ')'=2
 '='=3

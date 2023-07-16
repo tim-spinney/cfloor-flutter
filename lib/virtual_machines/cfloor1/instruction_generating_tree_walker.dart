@@ -7,19 +7,17 @@ import '../expressions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
-import 'package:cfloor_flutter/console_state.dart';
 
 class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
-  final ConsoleState _consoleState;
   int _nextRegister = 0;
   final Set<String> _variableNames = {};
 
   @override
-  final VirtualMachine virtualMachine = VirtualMachine();
+  final VirtualMachine virtualMachine;
   @override
   final List<String> semanticErrors = [];
 
-  CFloor1TreeWalker(this._consoleState);
+  CFloor1TreeWalker(this.virtualMachine);
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
@@ -40,7 +38,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     if(ctx.readFunctionExpression() != null) {
       final destination = _allocateRegister();
       final textRange = _getTextRange(ctx.readFunctionExpression()!);
-      virtualMachine.instructions.add(ReadExpression(textRange, _consoleState, destination, DataType.int));
+      virtualMachine.instructions.add(ReadExpression(textRange, virtualMachine.consoleState, destination, DataType.int));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
@@ -64,7 +62,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       virtualMachine.instructions.add(
         WriteExpression(
           _getTextRange(ctx),
-          _consoleState,
+          virtualMachine.consoleState,
           VariableMemorySource(DataType.int, virtualMachine.memory, variableName),
         )
       );
@@ -73,13 +71,13 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       virtualMachine.instructions.add(
         WriteExpression(
           _getTextRange(ctx),
-          _consoleState,
+          virtualMachine.consoleState,
           ConstantDataSource(DataType.int, value),
         )
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), _consoleState, ConstantDataSource(DataType.string, value)));
+      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
     }
   }
 

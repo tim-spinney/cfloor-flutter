@@ -4,13 +4,13 @@ MathOperator: '+' | '-' | '*' | '/' | '%' ;
 
 Type: 'int' ;
 
-Identifier: [a-z][a-z_]* ;
-
 StringLiteral: '"' .*? '"' ;
 
 WS: [ \t\r\n]+ -> skip ;
 
 Number: [-]?[0-9]+ ;
+
+Identifier: [a-z][a-z_]* ;
 
 program: statement+ EOF;
 

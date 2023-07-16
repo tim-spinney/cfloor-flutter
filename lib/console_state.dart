@@ -24,7 +24,7 @@ class ConsoleState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void reset() {
+  void clear() {
     consoleOutput.clear();
     _inputType = null;
     notifyListeners();

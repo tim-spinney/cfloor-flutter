@@ -5,7 +5,6 @@ import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
 import 'package:cfloor_flutter/virtual_machines/expression.dart';
-import 'package:cfloor_flutter/virtual_machines/expressions.dart';
 import 'package:cfloor_flutter/virtual_machines/compiler.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import '../console_state.dart';
@@ -31,11 +30,8 @@ const _levelDescriptions = {
 };
 
 class _CodeEditorState extends State<CodeEditor> {
-  final ConsoleState _consoleState = ConsoleState();
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
-  VirtualMachine? _virtualMachine;
-  bool _isRunning = false;
-  int _instructionIndex = 0;
+  final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
   LanguageLevel _languageLevel = LanguageLevel.cfloor1;
 
@@ -54,53 +50,33 @@ class _CodeEditorState extends State<CodeEditor> {
   }
 
   _toggleRunning() {
-    if(_isRunning) {
-      setState(() {
-        _isRunning = false;
-        _consoleState.stopWaitingForInput();
-      });
+    if(_virtualMachine.isRunning) {
+      _virtualMachine.stop();
     } else {
-      _consoleState.reset();
-      final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text, _consoleState);
+      _virtualMachine.clear();
+      final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text, _virtualMachine);
       setState(() {
         _compileErrors = compileResult.errors;
-        _instructionIndex = 0;
         if(_compileErrors.isEmpty) {
-          _virtualMachine = compileResult.virtualMachine;
-          _isRunning = true;
-        } else {
-          _virtualMachine = null;
+          _virtualMachine.start();
         }
       });
     }
   }
 
   _advanceStep() {
-    setState(() {
-      final instruction = _virtualMachine!.getInstruction(_instructionIndex);
-      instruction.evaluate();
-      if(!_consoleState.isWaitingForInput) {
-        _instructionIndex++;
-        if(_instructionIndex == _virtualMachine!.instructions.length) {
-          _isRunning = false;
-        }
-      }
-    });
+    _virtualMachine.advanceStep();
   }
 
   void _submitInput(dynamic value) {
-    (_virtualMachine!.instructions[_instructionIndex] as ReadExpression).complete(value);
-    setState(() {
-      _instructionIndex++;
-    });
+    _virtualMachine.submitInput(value);
   }
 
   Widget _buildCodeView() {
-    if(_isRunning) {
+    if(_virtualMachine.isRunning) {
       return ExecutionCodeView(
         codeText: _sourceCodeController.text,
-        currentExpressionRange: _virtualMachine!.getInstruction(
-            _instructionIndex).textRange,
+        currentExpressionRange: _virtualMachine.currentInstruction.textRange,
       );
     }
     return TextFormField(
@@ -119,61 +95,63 @@ class _CodeEditorState extends State<CodeEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: [
-              DropdownButton<LanguageLevel>(
-                items: LanguageLevel.values.map((level) => DropdownMenuItem(value: level, child: Text(_levelDescriptions[level] ?? '???'))).toList(),
-                onChanged: _isRunning ? null : _changeLanguageLevel,
-                value: _languageLevel,
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  width: double.infinity,
-                  child: _buildCodeView(),
+    return AnimatedBuilder(animation: _virtualMachine, builder: (context, _) =>
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                DropdownButton<LanguageLevel>(
+                  items: LanguageLevel.values.map((level) => DropdownMenuItem(value: level, child: Text(_levelDescriptions[level] ?? '???'))).toList(),
+                  onChanged: _virtualMachine.isRunning ? null : _changeLanguageLevel,
+                  value: _languageLevel,
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    width: double.infinity,
+                    child: _buildCodeView(),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const VerticalDivider(),
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: [
-              ExecutionControls(
-                isRunning: _isRunning,
-                interpreterState: _consoleState,
-                toggleRunning: _toggleRunning,
-                advanceStep: _advanceStep,
-              ),
-              if(_virtualMachine != null) MemoryView(memory: _virtualMachine!.memory),
-              const Divider(),
-              _compileErrors.isEmpty
-                ? ExecutionConsole(
-                  consoleState: _consoleState,
-                  submitInput: _submitInput,
-                )
-                : Expanded(
-                  child: ListView.builder(
-                    itemCount: _compileErrors.length,
-                    itemBuilder: (context, index) => Text(
-                      _compileErrors[index],
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+          const VerticalDivider(),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                ExecutionControls(
+                  isRunning: _virtualMachine.isRunning,
+                  interpreterState: _virtualMachine.consoleState,
+                  toggleRunning: _toggleRunning,
+                  advanceStep: _advanceStep,
+                ),
+                MemoryView(memory: _virtualMachine.memory),
+                const Divider(),
+                _compileErrors.isEmpty
+                  ? ExecutionConsole(
+                    consoleState: _virtualMachine.consoleState,
+                    submitInput: _submitInput,
+                  )
+                  : Expanded(
+                    child: ListView.builder(
+                      itemCount: _compileErrors.length,
+                      itemBuilder: (context, index) => Text(
+                        _compileErrors[index],
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      )
     );
   }
 }

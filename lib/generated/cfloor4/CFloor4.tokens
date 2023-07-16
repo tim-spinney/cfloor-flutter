@@ -21,9 +21,9 @@ Comparator=20
 Type=21
 Number=22
 MathOperator=23
-Identifier=24
-StringLiteral=25
-WS=26
+StringLiteral=24
+WS=25
+Identifier=26
 '('=1
 ')'=2
 '='=3

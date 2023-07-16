@@ -10,16 +10,15 @@ import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
 import 'package:cfloor_flutter/console_state.dart';
 
 class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGeneratingTreeWalker {
-  final ConsoleState _consoleState;
   int _nextRegister = 0;
   final Map<String, DataType> _variableDeclarations = {};
 
   @override
-  final VirtualMachine virtualMachine = VirtualMachine();
+  final VirtualMachine virtualMachine;
   @override
   final List<String> semanticErrors = [];
 
-  CFloor2TreeWalker(this._consoleState);
+  CFloor2TreeWalker(this.virtualMachine);
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
@@ -82,12 +81,12 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       virtualMachine.instructions.add(
         WriteExpression(
           _getTextRange(ctx),
-          _consoleState,
+          virtualMachine.consoleState,
           dataSource
         )
       );
     } else if(ctx.StringLiteral() != null) {
-      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), _consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
+      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
     } // else there was a syntax error
   }
 
@@ -103,7 +102,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), _consoleState, destination, readType));
+    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
