@@ -60,13 +60,16 @@ class MathInstruction extends Instruction {
     void evaluate() {
       final leftValue = left.get();
       final rightValue = right.get();
-      final result = switch(operator) {
+      dynamic result = switch(operator) {
         MathOperator.plus => leftValue + rightValue,
         MathOperator.minus => leftValue - rightValue,
         MathOperator.times => leftValue * rightValue,
         MathOperator.divide => leftValue / rightValue,
         MathOperator.modulo => leftValue % rightValue,
       };
+      if(destination.dataType == DataType.int) {
+        result = result.toInt();
+      }
       destination.set(result);
     }
 }
@@ -258,4 +261,26 @@ class NoOpInstruction extends Instruction {
 
   @override
   void evaluate() {}
+}
+
+class PushScopeInstruction extends Instruction {
+  final VirtualMemory _virtualMemory;
+
+  PushScopeInstruction(super.textRange, this._virtualMemory);
+
+  @override
+  void evaluate() {
+    _virtualMemory.pushScope();
+  }
+}
+
+class PopScopeInstruction extends Instruction {
+  final VirtualMemory _virtualMemory;
+
+  PopScopeInstruction(super.textRange, this._virtualMemory);
+
+  @override
+  void evaluate() {
+    _virtualMemory.popScope();
+  }
 }

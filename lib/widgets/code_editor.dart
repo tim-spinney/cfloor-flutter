@@ -1,3 +1,4 @@
+import 'package:cfloor_flutter/virtual_machines/instructions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
@@ -66,7 +67,12 @@ class _CodeEditorState extends State<CodeEditor> {
 
   _advanceStep() {
     _virtualMachine.advanceStep();
+    if(_virtualMachine.isRunning && _isSkippableInstruction(_virtualMachine.currentInstruction)) {
+      _advanceStep();
+    }
   }
+
+  _isSkippableInstruction(Instruction i) => i is NoOpInstruction || i is JumpInstruction || i is JumpIfFalseInstruction;
 
   void _submitInput(dynamic value) {
     _virtualMachine.submitInput(value);

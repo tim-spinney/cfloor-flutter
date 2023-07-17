@@ -35,10 +35,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
   
   @override
   void exitProgram(ProgramContext ctx) {
-    /* TODO: consider trimming no-ops. They do let users pause at end of
-       blocks, but aren't necessary and may be confusing since they don't
-       do anything.
-     */
+    // TODO: trim no-ops
     _instructions.forEach(virtualMachine.addInstruction);
   }
 
@@ -113,15 +110,15 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
 int x = 1;
 x = x + 2;
 if(x > 2) {
-  x = x % 6;
-  if(x < 5) {
-    write(x);
-  } else if(x < 4) {
-    x = x - 1;
-    write(x);
+  int y = x % 6;
+  if(y < 5) {
+    write(y);
+  } else if(y < 4) {
+    y = y - 1;
+    write(y);
   } else {
-    x = x / 2;
-    write(x);
+    y = x / 2;
+    write(y);
   }
 } else {
   if(x < 0) {
@@ -130,6 +127,7 @@ if(x > 2) {
     write("x is 0 or 1");
   }
 }
+write(x);
  */
   @override
   void enterIfBlock(IfBlockContext ctx) {
@@ -171,6 +169,16 @@ if(x > 2) {
   @override
   void enterElseBlock(ElseBlockContext ctx) {
     _ifBlocks.last.branches.add(_IfBranch());
+  }
+
+  @override
+  void enterBlock(BlockContext ctx) {
+    _addInstruction(PushScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
+  }
+
+  @override
+  void exitBlock(BlockContext ctx) {
+    _addInstruction(PopScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -395,7 +403,7 @@ if(x > 2) {
 
   ConstantDataSource _sourceFromConstant(String numberText) {
     bool isInt = int.tryParse(numberText) != null;
-    final value = double.parse(numberText);
+    final value = isInt ? int.parse(numberText) : double.parse(numberText);
     return ConstantDataSource(isInt ? DataType.int : DataType.float, value);
   }
 
