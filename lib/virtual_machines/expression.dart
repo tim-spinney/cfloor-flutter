@@ -7,9 +7,9 @@ class TextRange {
   TextRange(this.start, this.end);
 }
 
-abstract class Expression {
+abstract class Instruction {
   final TextRange textRange;
-  Expression(this.textRange);
+  Instruction(this.textRange);
   void evaluate();
   bool get shouldIncrementProgramCounter => true;
 }

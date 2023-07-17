@@ -17,14 +17,14 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
   @override
   final VirtualMachine virtualMachine;
 
-  final List<Expression> _instructions = [];
+  final List<Instruction> _instructions = [];
   final List<_IfBlock> _ifBlocks = [];
 
-  List<Expression> get _currentInstructionTarget => _ifBlocks.isEmpty
+  List<Instruction> get _currentInstructionTarget => _ifBlocks.isEmpty
     ? _instructions
     : _ifBlocks.last.branches.last.body;
 
-  _addInstruction(Expression instruction) {
+  _addInstruction(Instruction instruction) {
     _currentInstructionTarget.add(instruction);
   }
 
@@ -86,7 +86,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       }
 
       _addInstruction(
-          AssignmentExpression(
+          AssignmentInstruction(
             _getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
             dataSource,
@@ -107,7 +107,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
-    _addInstruction(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
+    _addInstruction(WriteInstruction(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
   }
 /*
 int x = 1;
@@ -145,21 +145,21 @@ if(x > 2) {
       final branchConditional = ctx.ifStatement(i)!.booleanExpression()!;
       final branchRegister = _handleBooleanExpression(branchConditional);
       final jumpOffset = branchBody.body.length + 2; // +2 to go 1 past the no-op
-      _addInstruction(JumpIfFalseExpression(_getTextRange(branchConditional), branchRegister, jumpOffset, virtualMachine));
+      _addInstruction(JumpIfFalseInstruction(_getTextRange(branchConditional), branchRegister, jumpOffset, virtualMachine));
       branchBody.body.forEach(_addInstruction);
-      _addInstruction(NoOpExpression(_getTextRange(ctx)));
+      _addInstruction(NoOpInstruction(_getTextRange(ctx)));
       endOfBlockJumpPlaceholderIndices.add(_currentInstructionTarget.length - 1);
     }
     if(ctx.elseBlock() != null) {
       final elseBody = ifBlock.branches.last;
       elseBody.body.forEach(_addInstruction);
     }
-    _addInstruction(NoOpExpression(_getTextRange(ctx)));
+    _addInstruction(NoOpInstruction(_getTextRange(ctx)));
     final instructionList = _currentInstructionTarget;
     final jumpDestination = instructionList.length - 1;
     // do not include instruction we just added or else it will end up in a loop
     for(final index in endOfBlockJumpPlaceholderIndices) {
-      instructionList[index] = JumpExpression(_getTextRange(ctx), jumpDestination - index, virtualMachine);
+      instructionList[index] = JumpInstruction(_getTextRange(ctx), jumpDestination - index, virtualMachine);
     }
   }
 
@@ -191,7 +191,7 @@ if(x > 2) {
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
     final destination = _allocateRegister(readType);
-    _addInstruction(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    _addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -214,7 +214,7 @@ if(x > 2) {
     }
 
     _addInstruction(
-        MathExpression(
+        MathInstruction(
           _getTextRange(ctx),
           mathOperator,
           leftDataSource,
@@ -246,7 +246,7 @@ if(x > 2) {
       final operandSource = _handleBooleanOperand(ctx.booleanOperand(0)!);
       final destination = _allocateRegister(DataType.bool);
       _addInstruction(
-        BooleanNegationExpression(_getTextRange(ctx), operandSource, destination)
+        BooleanNegationInstruction(_getTextRange(ctx), operandSource, destination)
       );
       return destination.toSource();
     } else if(ctx.booleanOperands().isNotEmpty) {
@@ -259,7 +259,7 @@ if(x > 2) {
       final targetRegister = _recycleOrAllocateRegister(leftDataSource, rightDataSource, DataType.bool);
       final booleanOperator = BooleanOperator.bySymbol[ctx.BinaryBooleanOperator()!.text!]!;
       _addInstruction(
-          BinaryBooleanExpression(
+          BinaryBooleanInstruction(
             _getTextRange(ctx),
             booleanOperator,
             leftDataSource,
@@ -275,7 +275,7 @@ if(x > 2) {
       final targetRegister = _allocateRegister(DataType.bool);
       final comparisonOperator = ComparisonOperator.bySymbol[ctx.Comparator()!.text!]!;
       _addInstruction(
-          ComparisonExpression(
+          ComparisonInstruction(
             _getTextRange(ctx),
             comparisonOperator,
             leftDataSource,
@@ -315,7 +315,7 @@ if(x > 2) {
       final textRange = TextRange(stringToken.startIndex + match.start + 1, stringToken.startIndex + match.end );
       if(endOfPrevious == 0) {
         _addInstruction(
-            StringConcatenationExpression(
+            StringConcatenationInstruction(
                 textRange,
                 literalFromPrevious,
                 variableSource,
@@ -324,7 +324,7 @@ if(x > 2) {
         );
       } else {
         _addInstruction(
-            StringConcatenationExpression(
+            StringConcatenationInstruction(
                 textRange,
                 outputRegister.toSource(),
                 literalFromPrevious,
@@ -332,7 +332,7 @@ if(x > 2) {
             )
         );
         _addInstruction(
-            StringConcatenationExpression(
+            StringConcatenationInstruction(
                 textRange,
                 outputRegister.toSource(),
                 variableSource,
@@ -347,7 +347,7 @@ if(x > 2) {
           DataType.string, withoutQuotes.substring(endOfPrevious));
       final textRange = TextRange(stringToken.startIndex + endOfPrevious + 1, stringToken.stopIndex);
       _addInstruction(
-          StringConcatenationExpression(
+          StringConcatenationInstruction(
               textRange,
               outputRegister.toSource(),
               literalToEnd,
@@ -363,7 +363,7 @@ if(x > 2) {
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
     final targetRegister = _allocateRegister(dataSource.dataType);
     _addInstruction(
-        MathFunctionExpression(
+        MathFunctionInstruction(
           _getTextRange(ctx),
           function,
           dataSource,
@@ -379,7 +379,7 @@ if(x > 2) {
     _checkDeclareBeforeUse(variableName, identifier.symbol);
     final lengthRegister = _allocateRegister(DataType.int);
     _addInstruction(
-        StringLengthExpression(
+        StringLengthInstruction(
             _getTextRange(ctx),
             _sourceFromMemory(variableName, identifier.symbol),
             lengthRegister
@@ -436,7 +436,7 @@ if(x > 2) {
 }
 
 class _IfBranch {
-  final List<Expression> body = [];
+  final List<Instruction> body = [];
 }
 
 class _IfBlock {

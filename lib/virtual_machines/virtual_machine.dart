@@ -7,7 +7,7 @@ import 'virtual_memory.dart';
 
 class VirtualMachine extends ChangeNotifier {
   final VirtualMemory memory = VirtualMemory();
-  final List<Expression> _instructions = [];
+  final List<Instruction> _instructions = [];
   final ConsoleState consoleState;
   int _instructionIndex = 0;
   bool _isRunning = false;
@@ -16,11 +16,11 @@ class VirtualMachine extends ChangeNotifier {
 
   bool get isRunning => _isRunning;
 
-  Expression get currentInstruction => _instructions[_instructionIndex];
+  Instruction get currentInstruction => _instructions[_instructionIndex];
 
   int get instructionCount => _instructions.length;
 
-  void addInstruction(Expression instruction) {
+  void addInstruction(Instruction instruction) {
     _instructions.add(instruction);
   }
 
@@ -61,7 +61,7 @@ class VirtualMachine extends ChangeNotifier {
   }
 
   void submitInput(dynamic value) {
-    (currentInstruction as ReadExpression).complete(value);
+    (currentInstruction as ReadInstruction).complete(value);
     _instructionIndex++;
     notifyListeners();
   }

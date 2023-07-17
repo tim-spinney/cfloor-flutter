@@ -38,14 +38,14 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     if(ctx.readFunctionExpression() != null) {
       final destination = _allocateRegister();
       final textRange = _getTextRange(ctx.readFunctionExpression()!);
-      virtualMachine.addInstruction(ReadExpression(textRange, virtualMachine.consoleState, destination, DataType.int));
+      virtualMachine.addInstruction(ReadInstruction(textRange, virtualMachine.consoleState, destination, DataType.int));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
       dataSource = _handleMathExpression(ctx.mathExpression()!);
     }
     if(dataSource != null) {
       virtualMachine.addInstruction(
-          AssignmentExpression(
+          AssignmentInstruction(
             _getTextRange(ctx),
             VariableDataDestination(DataType.int, virtualMachine.memory, variableName),
             dataSource,
@@ -60,7 +60,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     if(ctx.Identifier() != null) {
       final variableName = ctx.Identifier()!.text!;
       virtualMachine.addInstruction(
-        WriteExpression(
+        WriteInstruction(
           _getTextRange(ctx),
           virtualMachine.consoleState,
           VariableMemorySource(DataType.int, virtualMachine.memory, variableName),
@@ -69,7 +69,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     } else if(ctx.Number() != null) {
       final value = int.parse(ctx.Number()!.text!);
       virtualMachine.addInstruction(
-        WriteExpression(
+        WriteInstruction(
           _getTextRange(ctx),
           virtualMachine.consoleState,
           ConstantDataSource(DataType.int, value),
@@ -77,7 +77,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      virtualMachine.addInstruction(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
+      virtualMachine.addInstruction(WriteInstruction(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
     }
   }
 
@@ -96,7 +96,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
       _allocateRegister()
     ;
     virtualMachine.addInstruction(
-      MathExpression(
+      MathInstruction(
         _getTextRange(ctx),
         mathOperator,
         leftDataSource,

@@ -48,13 +48,13 @@ enum ComparisonOperator {
   };
 }
 
-class MathExpression extends Expression {
+class MathInstruction extends Instruction {
     final MathOperator operator;
     final DataSource left;
     final DataSource right;
     final DataDestination destination;
 
-    MathExpression(super.textRange, this.operator, this.left, this.right, this.destination);
+    MathInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
     @override
     void evaluate() {
@@ -71,11 +71,11 @@ class MathExpression extends Expression {
     }
 }
 
-class AssignmentExpression extends Expression {
+class AssignmentInstruction extends Instruction {
   final DataDestination destination;
   final DataSource source;
 
-  AssignmentExpression(super.textRange, this.destination, this.source);
+  AssignmentInstruction(super.textRange, this.destination, this.source);
 
   @override
   void evaluate() {
@@ -83,11 +83,11 @@ class AssignmentExpression extends Expression {
   }
 }
 
-class WriteExpression extends Expression {
+class WriteInstruction extends Instruction {
   final ConsoleState _consoleState;
   final DataSource source;
 
-  WriteExpression(super.textRange, this._consoleState, this.source);
+  WriteInstruction(super.textRange, this._consoleState, this.source);
 
   @override
   void evaluate() {
@@ -101,12 +101,12 @@ enum MathFunction {
   round
 }
 
-class MathFunctionExpression extends Expression {
+class MathFunctionInstruction extends Instruction {
   final MathFunction function;
   final DataSource source;
   final DataDestination destination;
 
-  MathFunctionExpression(super.textRange, this.function, this.source, this.destination);
+  MathFunctionInstruction(super.textRange, this.function, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -120,12 +120,12 @@ class MathFunctionExpression extends Expression {
   }
 }
 
-class ReadExpression extends Expression {
+class ReadInstruction extends Instruction {
   final ConsoleState _consoleState;
   final DataDestination destination;
   final DataType dataType;
 
-  ReadExpression(super.textRange, this._consoleState, this.destination, this.dataType);
+  ReadInstruction(super.textRange, this._consoleState, this.destination, this.dataType);
 
   @override
   void evaluate() {
@@ -138,12 +138,12 @@ class ReadExpression extends Expression {
   }
 }
 
-class StringConcatenationExpression extends Expression {
+class StringConcatenationInstruction extends Instruction {
   final DataSource left;
   final DataSource right;
   final DataDestination destination;
 
-  StringConcatenationExpression(super.textRange, this.left, this.right, this.destination);
+  StringConcatenationInstruction(super.textRange, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -151,11 +151,11 @@ class StringConcatenationExpression extends Expression {
   }
 }
 
-class StringLengthExpression extends Expression {
+class StringLengthInstruction extends Instruction {
   final DataSource source;
   final DataDestination destination;
 
-  StringLengthExpression(super.textRange, this.source, this.destination);
+  StringLengthInstruction(super.textRange, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -163,11 +163,11 @@ class StringLengthExpression extends Expression {
   }
 }
 
-class BooleanNegationExpression extends Expression {
+class BooleanNegationInstruction extends Instruction {
   final DataSource source;
   final DataDestination destination;
 
-  BooleanNegationExpression(super.textRange, this.source, this.destination);
+  BooleanNegationInstruction(super.textRange, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -175,13 +175,13 @@ class BooleanNegationExpression extends Expression {
   }
 }
 
-class BinaryBooleanExpression extends Expression {
+class BinaryBooleanInstruction extends Instruction {
   final BooleanOperator operator;
   final DataSource left;
   final DataSource right;
   final DataDestination destination;
 
-  BinaryBooleanExpression(super.textRange, this.operator, this.left, this.right, this.destination);
+  BinaryBooleanInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -195,13 +195,13 @@ class BinaryBooleanExpression extends Expression {
   }
 }
 
-class ComparisonExpression extends Expression {
+class ComparisonInstruction extends Instruction {
   final ComparisonOperator operator;
   final DataSource left;
   final DataSource right;
   final DataDestination destination;
 
-  ComparisonExpression(super.textRange, this.operator, this.left, this.right, this.destination);
+  ComparisonInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -219,11 +219,11 @@ class ComparisonExpression extends Expression {
   }
 }
 
-class JumpExpression extends Expression {
+class JumpInstruction extends Instruction {
   final int offset;
   final VirtualMachine _virtualMachine;
 
-  JumpExpression(super.textRange, this.offset, this._virtualMachine);
+  JumpInstruction(super.textRange, this.offset, this._virtualMachine);
 
   @override
   void evaluate() {
@@ -234,14 +234,14 @@ class JumpExpression extends Expression {
   bool get shouldIncrementProgramCounter => false;
 }
 
-class JumpIfFalseExpression extends Expression {
+class JumpIfFalseInstruction extends Instruction {
   final DataSource condition;
   final int offset;
   final VirtualMachine _virtualMachine;
   @override
   late final bool shouldIncrementProgramCounter;
 
-  JumpIfFalseExpression(super.textRange, this.condition, this.offset, this._virtualMachine);
+  JumpIfFalseInstruction(super.textRange, this.condition, this.offset, this._virtualMachine);
 
   @override
   void evaluate() {
@@ -253,8 +253,8 @@ class JumpIfFalseExpression extends Expression {
   }
 }
 
-class NoOpExpression extends Expression {
-  NoOpExpression(super.textRange);
+class NoOpInstruction extends Instruction {
+  NoOpInstruction(super.textRange);
 
   @override
   void evaluate() {}
