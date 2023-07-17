@@ -12,7 +12,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
   int _nextRegister = 0;
-  final Map<String, DataType> _variableDeclarations = {};
+  final List<Map<String, DataType>> _variableDeclarations = [{}];
 
   @override
   final VirtualMachine virtualMachine;
@@ -44,7 +44,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
     final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
-    _variableDeclarations[variableName] = variableType;
+    _variableDeclarations.last[variableName] = variableType;
   }
 
   @override
@@ -74,7 +74,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
 
       // get lhs type - either it was declared previously, this is part of a
       // declAssign, or we'll end up with a declare before use error anyway
-      DataType? variableType = _variableDeclarations[variableName];
+      DataType? variableType = _getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
@@ -174,11 +174,13 @@ write(x);
   @override
   void enterBlock(BlockContext ctx) {
     _addInstruction(PushScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
+    _variableDeclarations.add({});
   }
 
   @override
   void exitBlock(BlockContext ctx) {
     _addInstruction(PopScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
+    _variableDeclarations.removeLast();
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -398,7 +400,7 @@ write(x);
 
   VariableMemorySource _sourceFromMemory(String variableName, Token startToken) {
     _checkDeclareBeforeUse(variableName, startToken);
-    return VariableMemorySource(_variableDeclarations[variableName]!, virtualMachine.memory, variableName);
+    return VariableMemorySource(_getDeclaredType(variableName)!, virtualMachine.memory, variableName);
   }
 
   ConstantDataSource _sourceFromConstant(String numberText) {
@@ -410,9 +412,9 @@ write(x);
   TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 
   _checkDeclareBeforeUse(String variableName, Token startToken) {
-    if(!_variableDeclarations.containsKey(variableName)) {
+    if(_getDeclaredType(variableName) == null) {
       semanticErrors.add(
-          'Semantic error at line ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared before use.');
+          'Semantic error at line ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
     }
   }
 
@@ -440,6 +442,15 @@ write(x);
     } else {
       return _allocateRegister(dataType);
     }
+  }
+
+  DataType? _getDeclaredType(String variableName) {
+    for(final scope in _variableDeclarations.reversed) {
+      if(scope.containsKey(variableName)) {
+        return scope[variableName];
+      }
+    }
+    return null;
   }
 }
 
