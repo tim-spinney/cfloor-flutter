@@ -63,7 +63,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
         _checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
-      virtualMachine.instructions.add(
+      virtualMachine.addInstruction(
           AssignmentExpression(
             _getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
@@ -85,7 +85,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
-    virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
+    virtualMachine.addInstruction(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -106,7 +106,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    virtualMachine.addInstruction(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -132,7 +132,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       }
     }
 
-    virtualMachine.instructions.add(
+    virtualMachine.addInstruction(
         MathExpression(
           _getTextRange(ctx),
           mathOperator,
@@ -174,7 +174,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       final variableSource = _sourceFromMemory(variableName, stringToken);
       final textRange = TextRange(stringToken.startIndex + match.start + 1, stringToken.startIndex + match.end );
       if(endOfPrevious == 0) {
-        virtualMachine.instructions.add(
+        virtualMachine.addInstruction(
             StringConcatenationExpression(
                 textRange,
                 literalFromPrevious,
@@ -183,7 +183,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
             )
         );
       } else {
-        virtualMachine.instructions.add(
+        virtualMachine.addInstruction(
             StringConcatenationExpression(
                 textRange,
                 outputRegister.toSource(),
@@ -191,7 +191,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
                 outputRegister
             )
         );
-        virtualMachine.instructions.add(
+        virtualMachine.addInstruction(
             StringConcatenationExpression(
                 textRange,
                 outputRegister.toSource(),
@@ -206,7 +206,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       final literalToEnd = ConstantDataSource(
           DataType.string, withoutQuotes.substring(endOfPrevious));
       final textRange = TextRange(stringToken.startIndex + endOfPrevious + 1, stringToken.stopIndex);
-      virtualMachine.instructions.add(
+      virtualMachine.addInstruction(
           StringConcatenationExpression(
               textRange,
               outputRegister.toSource(),
@@ -222,7 +222,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
     final targetRegister = _allocateRegister(dataSource.dataType);
-    virtualMachine.instructions.add(
+    virtualMachine.addInstruction(
         MathFunctionExpression(
           _getTextRange(ctx),
           function,
@@ -238,7 +238,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     final variableName = identifier.text!;
     _checkDeclareBeforeUse(variableName, identifier.symbol);
     final lengthRegister = _allocateRegister(DataType.int);
-    virtualMachine.instructions.add(
+    virtualMachine.addInstruction(
         StringLengthExpression(
             _getTextRange(ctx),
             _sourceFromMemory(variableName, identifier.symbol),

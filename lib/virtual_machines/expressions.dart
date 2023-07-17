@@ -1,6 +1,7 @@
 import '../console_state.dart';
 import 'data_type.dart';
 import 'expression.dart';
+import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 
 enum MathOperator {
@@ -216,4 +217,45 @@ class ComparisonExpression extends Expression {
     };
     destination.set(result);
   }
+}
+
+class JumpExpression extends Expression {
+  final int offset;
+  final VirtualMachine _virtualMachine;
+
+  JumpExpression(super.textRange, this.offset, this._virtualMachine);
+
+  @override
+  void evaluate() {
+    _virtualMachine.jumpBy(offset);
+  }
+
+  @override
+  bool get shouldIncrementProgramCounter => false;
+}
+
+class JumpIfFalseExpression extends Expression {
+  final DataSource condition;
+  final int offset;
+  final VirtualMachine _virtualMachine;
+  @override
+  late final bool shouldIncrementProgramCounter;
+
+  JumpIfFalseExpression(super.textRange, this.condition, this.offset, this._virtualMachine);
+
+  @override
+  void evaluate() {
+    bool conditionIsTrue = condition.get();
+    if (!conditionIsTrue) {
+      _virtualMachine.jumpBy(offset);
+    }
+    shouldIncrementProgramCounter = conditionIsTrue;
+  }
+}
+
+class NoOpExpression extends Expression {
+  NoOpExpression(super.textRange);
+
+  @override
+  void evaluate() {}
 }

@@ -22,9 +22,10 @@ booleanExpression:
 assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLiteral | booleanExpression) ;
 
 block: '{' statement+ '}' ;
-ifstatement: 'if' '(' booleanExpression ')' block ;
-ifblock: ifstatement ('else' ifstatement)* ('else' block)? ;
+ifStatement: 'if' '(' booleanExpression ')' block ;
+elseBlock: 'else' block ;
+ifBlock: ifStatement ('else' ifStatement)* elseBlock? ;
 
-statement: writeStatement | assignStatement | declAssignStatement | ifblock ;
+statement: writeStatement | assignStatement | declAssignStatement | ifBlock ;
 
 program: statement+ EOF;

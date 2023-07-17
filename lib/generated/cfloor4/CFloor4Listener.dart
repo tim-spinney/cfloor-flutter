@@ -35,19 +35,26 @@ abstract class CFloor4Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitBlock(BlockContext ctx);
 
-  /// Enter a parse tree produced by [CFloor4Parser.ifstatement].
+  /// Enter a parse tree produced by [CFloor4Parser.ifStatement].
   /// [ctx] the parse tree
-  void enterIfstatement(IfstatementContext ctx);
-  /// Exit a parse tree produced by [CFloor4Parser.ifstatement].
+  void enterIfStatement(IfStatementContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.ifStatement].
   /// [ctx] the parse tree
-  void exitIfstatement(IfstatementContext ctx);
+  void exitIfStatement(IfStatementContext ctx);
 
-  /// Enter a parse tree produced by [CFloor4Parser.ifblock].
+  /// Enter a parse tree produced by [CFloor4Parser.elseBlock].
   /// [ctx] the parse tree
-  void enterIfblock(IfblockContext ctx);
-  /// Exit a parse tree produced by [CFloor4Parser.ifblock].
+  void enterElseBlock(ElseBlockContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.elseBlock].
   /// [ctx] the parse tree
-  void exitIfblock(IfblockContext ctx);
+  void exitElseBlock(ElseBlockContext ctx);
+
+  /// Enter a parse tree produced by [CFloor4Parser.ifBlock].
+  /// [ctx] the parse tree
+  void enterIfBlock(IfBlockContext ctx);
+  /// Exit a parse tree produced by [CFloor4Parser.ifBlock].
+  /// [ctx] the parse tree
+  void exitIfBlock(IfBlockContext ctx);
 
   /// Enter a parse tree produced by [CFloor4Parser.statement].
   /// [ctx] the parse tree

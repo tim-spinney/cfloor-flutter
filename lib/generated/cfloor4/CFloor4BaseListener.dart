@@ -44,19 +44,27 @@ class CFloor4BaseListener implements CFloor4Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterIfstatement(IfstatementContext ctx) {}
+  void enterIfStatement(IfStatementContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitIfstatement(IfstatementContext ctx) {}
+  void exitIfStatement(IfStatementContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void enterIfblock(IfblockContext ctx) {}
+  void enterElseBlock(ElseBlockContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitIfblock(IfblockContext ctx) {}
+  void exitElseBlock(ElseBlockContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterIfBlock(IfBlockContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitIfBlock(IfBlockContext ctx) {}
 
   /// The default implementation does nothing.
   @override

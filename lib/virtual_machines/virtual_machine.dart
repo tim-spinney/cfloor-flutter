@@ -7,7 +7,7 @@ import 'virtual_memory.dart';
 
 class VirtualMachine extends ChangeNotifier {
   final VirtualMemory memory = VirtualMemory();
-  final List<Expression> instructions = [];
+  final List<Expression> _instructions = [];
   final ConsoleState consoleState;
   int _instructionIndex = 0;
   bool _isRunning = false;
@@ -16,18 +16,35 @@ class VirtualMachine extends ChangeNotifier {
 
   bool get isRunning => _isRunning;
 
-  Expression getInstruction(int index) => instructions[index];
-  Expression get currentInstruction => instructions[_instructionIndex];
+  Expression get currentInstruction => _instructions[_instructionIndex];
+
+  int get instructionCount => _instructions.length;
+
+  void addInstruction(Expression instruction) {
+    _instructions.add(instruction);
+  }
 
   void advanceStep() {
-    final instruction = getInstruction(_instructionIndex);
+    final instruction = currentInstruction;
     instruction.evaluate();
     if(!consoleState.isWaitingForInput) {
-      _instructionIndex++;
-      if(_instructionIndex == instructions.length) {
+      if(instruction.shouldIncrementProgramCounter) {
+        _instructionIndex++;
+      }
+      if(_instructionIndex == _instructions.length) {
         _isRunning = false;
       }
     }
+    notifyListeners();
+  }
+
+  void jumpTo(int index) {
+    _instructionIndex = index;
+    notifyListeners();
+  }
+
+  void jumpBy(int offset) {
+    _instructionIndex += offset;
     notifyListeners();
   }
 
@@ -44,14 +61,14 @@ class VirtualMachine extends ChangeNotifier {
   }
 
   void submitInput(dynamic value) {
-    (instructions[_instructionIndex] as ReadExpression).complete(value);
+    (currentInstruction as ReadExpression).complete(value);
     _instructionIndex++;
     notifyListeners();
   }
 
   void clear() {
     memory.clear();
-    instructions.clear();
+    _instructions.clear();
     consoleState.clear();
     _instructionIndex = 0;
     _isRunning = false;

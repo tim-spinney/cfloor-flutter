@@ -1,7 +1,6 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4BaseListener.dart';
-import 'package:cfloor_flutter/console_state.dart';
 import '../expressions.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
@@ -17,10 +16,31 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
 
   @override
   final VirtualMachine virtualMachine;
+
+  final List<Expression> _instructions = [];
+  final List<_IfBlock> _ifBlocks = [];
+
+  List<Expression> get _currentInstructionTarget => _ifBlocks.isEmpty
+    ? _instructions
+    : _ifBlocks.last.branches.last.body;
+
+  _addInstruction(Expression instruction) {
+    _currentInstructionTarget.add(instruction);
+  }
+
   @override
   final List<String> semanticErrors = [];
 
   CFloor4TreeWalker(this.virtualMachine);
+  
+  @override
+  void exitProgram(ProgramContext ctx) {
+    /* TODO: consider trimming no-ops. They do let users pause at end of
+       blocks, but aren't necessary and may be confusing since they don't
+       do anything.
+     */
+    _instructions.forEach(virtualMachine.addInstruction);
+  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
@@ -65,7 +85,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
         _checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
-      virtualMachine.instructions.add(
+      _addInstruction(
           AssignmentExpression(
             _getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
@@ -87,7 +107,70 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
-    virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
+    _addInstruction(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
+  }
+/*
+int x = 1;
+x = x + 2;
+if(x > 2) {
+  x = x % 6;
+  if(x < 5) {
+    write(x);
+  } else if(x < 4) {
+    x = x - 1;
+    write(x);
+  } else {
+    x = x / 2;
+    write(x);
+  }
+} else {
+  if(x < 0) {
+    write(x);
+  } else {
+    write("x is 0 or 1");
+  }
+}
+ */
+  @override
+  void enterIfBlock(IfBlockContext ctx) {
+    _ifBlocks.add(_IfBlock());
+  }
+
+  @override
+  void exitIfBlock(IfBlockContext ctx) {
+    final ifBlock = _ifBlocks.removeLast();
+    final endOfBlockJumpPlaceholderIndices = <int>[];
+    for(int i = 0; i < ctx.ifStatements().length; i++) {
+      final branchBody = ifBlock.branches[i];
+      final branchConditional = ctx.ifStatement(i)!.booleanExpression()!;
+      final branchRegister = _handleBooleanExpression(branchConditional);
+      final jumpOffset = branchBody.body.length + 2; // +2 to go 1 past the no-op
+      _addInstruction(JumpIfFalseExpression(_getTextRange(branchConditional), branchRegister, jumpOffset, virtualMachine));
+      branchBody.body.forEach(_addInstruction);
+      _addInstruction(NoOpExpression(_getTextRange(ctx)));
+      endOfBlockJumpPlaceholderIndices.add(_currentInstructionTarget.length - 1);
+    }
+    if(ctx.elseBlock() != null) {
+      final elseBody = ifBlock.branches.last;
+      elseBody.body.forEach(_addInstruction);
+    }
+    _addInstruction(NoOpExpression(_getTextRange(ctx)));
+    final instructionList = _currentInstructionTarget;
+    final jumpDestination = instructionList.length - 1;
+    // do not include instruction we just added or else it will end up in a loop
+    for(final index in endOfBlockJumpPlaceholderIndices) {
+      instructionList[index] = JumpExpression(_getTextRange(ctx), jumpDestination - index, virtualMachine);
+    }
+  }
+
+  @override
+  void enterIfStatement(IfStatementContext ctx) {
+    _ifBlocks.last.branches.add(_IfBranch());
+  }
+
+  @override
+  void enterElseBlock(ElseBlockContext ctx) {
+    _ifBlocks.last.branches.add(_IfBranch());
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -108,7 +191,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    _addInstruction(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -130,7 +213,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       }
     }
 
-    virtualMachine.instructions.add(
+    _addInstruction(
         MathExpression(
           _getTextRange(ctx),
           mathOperator,
@@ -162,7 +245,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     if(ctx.UnaryBooleanOperator() != null) {
       final operandSource = _handleBooleanOperand(ctx.booleanOperand(0)!);
       final destination = _allocateRegister(DataType.bool);
-      virtualMachine.instructions.add(
+      _addInstruction(
         BooleanNegationExpression(_getTextRange(ctx), operandSource, destination)
       );
       return destination.toSource();
@@ -175,7 +258,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       final rightDataSource = _handleBooleanOperand(ctx.booleanOperand(1)!);
       final targetRegister = _recycleOrAllocateRegister(leftDataSource, rightDataSource, DataType.bool);
       final booleanOperator = BooleanOperator.bySymbol[ctx.BinaryBooleanOperator()!.text!]!;
-      virtualMachine.instructions.add(
+      _addInstruction(
           BinaryBooleanExpression(
             _getTextRange(ctx),
             booleanOperator,
@@ -191,7 +274,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       // TODO: recycle register, but have to convert register's data type on recycling somehow
       final targetRegister = _allocateRegister(DataType.bool);
       final comparisonOperator = ComparisonOperator.bySymbol[ctx.Comparator()!.text!]!;
-      virtualMachine.instructions.add(
+      _addInstruction(
           ComparisonExpression(
             _getTextRange(ctx),
             comparisonOperator,
@@ -231,7 +314,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       final variableSource = _sourceFromMemory(variableName, stringToken);
       final textRange = TextRange(stringToken.startIndex + match.start + 1, stringToken.startIndex + match.end );
       if(endOfPrevious == 0) {
-        virtualMachine.instructions.add(
+        _addInstruction(
             StringConcatenationExpression(
                 textRange,
                 literalFromPrevious,
@@ -240,7 +323,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
             )
         );
       } else {
-        virtualMachine.instructions.add(
+        _addInstruction(
             StringConcatenationExpression(
                 textRange,
                 outputRegister.toSource(),
@@ -248,7 +331,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
                 outputRegister
             )
         );
-        virtualMachine.instructions.add(
+        _addInstruction(
             StringConcatenationExpression(
                 textRange,
                 outputRegister.toSource(),
@@ -263,7 +346,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       final literalToEnd = ConstantDataSource(
           DataType.string, withoutQuotes.substring(endOfPrevious));
       final textRange = TextRange(stringToken.startIndex + endOfPrevious + 1, stringToken.stopIndex);
-      virtualMachine.instructions.add(
+      _addInstruction(
           StringConcatenationExpression(
               textRange,
               outputRegister.toSource(),
@@ -279,7 +362,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
     final targetRegister = _allocateRegister(dataSource.dataType);
-    virtualMachine.instructions.add(
+    _addInstruction(
         MathFunctionExpression(
           _getTextRange(ctx),
           function,
@@ -295,7 +378,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     final variableName = identifier.text!;
     _checkDeclareBeforeUse(variableName, identifier.symbol);
     final lengthRegister = _allocateRegister(DataType.int);
-    virtualMachine.instructions.add(
+    _addInstruction(
         StringLengthExpression(
             _getTextRange(ctx),
             _sourceFromMemory(variableName, identifier.symbol),
@@ -350,4 +433,12 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       return _allocateRegister(dataType);
     }
   }
+}
+
+class _IfBranch {
+  final List<Expression> body = [];
+}
+
+class _IfBlock {
+  final List<_IfBranch> branches = [];
 }

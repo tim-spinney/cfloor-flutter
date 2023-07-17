@@ -11,4 +11,5 @@ abstract class Expression {
   final TextRange textRange;
   Expression(this.textRange);
   void evaluate();
+  bool get shouldIncrementProgramCounter => true;
 }

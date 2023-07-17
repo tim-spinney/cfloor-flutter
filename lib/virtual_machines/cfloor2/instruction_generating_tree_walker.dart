@@ -60,7 +60,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
         _checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
-      virtualMachine.instructions.add(
+      virtualMachine.addInstruction(
           AssignmentExpression(
             _getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
@@ -78,7 +78,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       final dataSource = ctx.Identifier() != null
           ? _sourceFromMemory(ctx.Identifier()!.text!, ctx)
           : _sourceFromConstant(ctx.Number()!.text!);
-      virtualMachine.instructions.add(
+      virtualMachine.addInstruction(
         WriteExpression(
           _getTextRange(ctx),
           virtualMachine.consoleState,
@@ -86,7 +86,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
         )
       );
     } else if(ctx.StringLiteral() != null) {
-      virtualMachine.instructions.add(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
+      virtualMachine.addInstruction(WriteExpression(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
     } // else there was a syntax error
   }
 
@@ -102,7 +102,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = _allocateRegister(readType);
-    virtualMachine.instructions.add(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    virtualMachine.addInstruction(ReadExpression(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -128,7 +128,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       }
     }
 
-    virtualMachine.instructions.add(
+    virtualMachine.addInstruction(
       MathExpression(
         _getTextRange(ctx),
         mathOperator,
@@ -158,7 +158,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
     final targetRegister = _allocateRegister(dataSource.dataType);
-    virtualMachine.instructions.add(
+    virtualMachine.addInstruction(
       MathFunctionExpression(
         _getTextRange(ctx),
         function,
