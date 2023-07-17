@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../console_state.dart';
-import 'expression.dart';
-import 'expressions.dart';
+import 'instruction.dart';
+import 'instructions.dart';
 import 'virtual_memory.dart';
 
 class VirtualMachine extends ChangeNotifier {

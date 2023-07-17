@@ -1,6 +1,6 @@
 import '../console_state.dart';
 import 'data_type.dart';
-import 'expression.dart';
+import 'instruction.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 

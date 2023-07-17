@@ -4,7 +4,7 @@ import 'execution_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
-import 'package:cfloor_flutter/virtual_machines/expression.dart';
+import 'package:cfloor_flutter/virtual_machines/instruction.dart';
 import 'package:cfloor_flutter/virtual_machines/compiler.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import '../console_state.dart';

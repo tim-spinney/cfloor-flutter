@@ -1,9 +1,9 @@
 import 'package:antlr4/antlr4.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
-import '../expression.dart';
+import '../instruction.dart';
 import '../virtual_machine.dart';
-import '../expressions.dart';
+import '../instructions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3BaseListener.dart';

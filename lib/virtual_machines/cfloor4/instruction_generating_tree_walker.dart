@@ -1,10 +1,10 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4BaseListener.dart';
-import '../expressions.dart';
+import '../instructions.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
-import '../expression.dart';
+import '../instruction.dart';
 import '../virtual_machine.dart';
 import '../virtual_memory.dart';
 
