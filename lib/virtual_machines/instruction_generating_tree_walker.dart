@@ -41,3 +41,43 @@ mixin InstructionGeneratorUtils on InstructionGeneratingTreeWalker {
 
   TextRange getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 }
+
+mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
+  final List<Map<String, DataType>> _variableDeclarations = [{}];
+
+  void addDeclaration(String variableName, DataType dataType, Token startToken) {
+    if(getDeclaredType(variableName) != null) {
+      semanticErrors.add('Semantic error at ${startToken.line}:${startToken.charPositionInLine}: variable "$variableName" already declared in current scope.');
+    }
+    _variableDeclarations.last[variableName] = dataType;
+  }
+
+  DataType? getDeclaredType(String variableName) {
+    for(final scope in _variableDeclarations.reversed) {
+      if(scope.containsKey(variableName)) {
+        return scope[variableName];
+      }
+    }
+    return null;
+  }
+
+  checkDeclareBeforeUse(String variableName, Token startToken) {
+    if(getDeclaredType(variableName) == null) {
+      semanticErrors.add(
+          'Semantic error at ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
+    }
+  }
+
+  void pushVariableScope() {
+    _variableDeclarations.add({});
+  }
+
+  void popVariableScope() {
+    _variableDeclarations.removeLast();
+  }
+
+  VariableMemorySource sourceFromMemory(String variableName, Token startToken) {
+    checkDeclareBeforeUse(variableName, startToken);
+    return VariableMemorySource(getDeclaredType(variableName)!, virtualMachine.memory, variableName);
+  }
+}

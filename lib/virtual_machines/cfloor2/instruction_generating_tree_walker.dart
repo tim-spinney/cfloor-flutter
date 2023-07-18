@@ -12,9 +12,7 @@ import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
 abstract class _CFloor2TreeWalkerBase extends CFloor2BaseListener implements InstructionGeneratingTreeWalker {
 }
 
-class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
-  final Map<String, DataType> _variableDeclarations = {};
-
+class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, InstructionGeneratorUtils, VariableDeclarationManager {
   @override
   final VirtualMachine virtualMachine;
   @override
@@ -27,7 +25,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
     final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
-    _variableDeclarations[variableName] = variableType;
+    addDeclaration(variableName, variableType, ctx.start!);
   }
 
   @override
@@ -35,7 +33,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    _checkDeclareBeforeUse(variableName, ctx.assignment()!);
+    checkDeclareBeforeUse(variableName, ctx.assignment()!.Identifier()!.symbol);
   }
 
   @override
@@ -54,7 +52,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
 
       // get lhs type - either it was declared previously, this is part of a
       // declAssign, or we'll end up with a declare before use error anyway
-      DataType? variableType = _variableDeclarations[variableName];
+      DataType? variableType = getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
@@ -78,7 +76,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
   void exitWriteStatement(WriteStatementContext ctx) {
     if(ctx.Identifier() != null || ctx.Number() != null) {
       final dataSource = ctx.Identifier() != null
-          ? _sourceFromMemory(ctx.Identifier()!.text!, ctx)
+          ? sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol)
           : sourceFromConstant(ctx.Number()!.text!);
       virtualMachine.addInstruction(
         WriteInstruction(
@@ -146,7 +144,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
-      return _sourceFromMemory(ctx.Identifier()!.text!, ctx);
+      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
       return sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
@@ -169,17 +167,5 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
       )
     );
     return targetRegister.toSource();
-  }
-
-  VariableMemorySource _sourceFromMemory(String variableName, ParserRuleContext ctx) {
-    _checkDeclareBeforeUse(variableName, ctx);
-    return VariableMemorySource(_variableDeclarations[variableName]!, virtualMachine.memory, variableName);
-  }
-
-  _checkDeclareBeforeUse(String variableName, ParserRuleContext ctx) {
-    if(!_variableDeclarations.containsKey(variableName)) {
-      semanticErrors.add(
-          'Semantic error at line ${ctx.start!.line}:${ctx.start!.charPositionInLine}: variable name $variableName needs to be declared before use.');
-    }
   }
 }

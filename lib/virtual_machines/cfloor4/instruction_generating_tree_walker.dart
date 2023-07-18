@@ -13,10 +13,8 @@ import '../virtual_memory.dart';
 abstract class _CFloor4TreeWalkerBase extends CFloor4BaseListener implements InstructionGeneratingTreeWalker {
 }
 
-class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
+class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, InstructionGeneratorUtils, VariableDeclarationManager {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
-
-  final List<Map<String, DataType>> _variableDeclarations = [{}];
 
   @override
   final VirtualMachine virtualMachine;
@@ -48,7 +46,7 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
     final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
-    _variableDeclarations.last[variableName] = variableType;
+    addDeclaration(variableName, variableType, ctx.start!);
   }
 
   @override
@@ -56,7 +54,7 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    _checkDeclareBeforeUse(variableName, ctx.assignment()!.start!);
+    checkDeclareBeforeUse(variableName, ctx.assignment()!.start!);
   }
 
   @override
@@ -78,7 +76,7 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
 
       // get lhs type - either it was declared previously, this is part of a
       // declAssign, or we'll end up with a declare before use error anyway
-      DataType? variableType = _getDeclaredType(variableName);
+      DataType? variableType = getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
@@ -102,7 +100,7 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
   void exitWriteStatement(WriteStatementContext ctx) {
     late final DataSource dataSource;
     if(ctx.Identifier() != null) {
-      dataSource = _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+      dataSource = sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
       dataSource = sourceFromConstant(ctx.Number()!.text!);
     } else {
@@ -178,13 +176,13 @@ write(x);
   @override
   void enterBlock(BlockContext ctx) {
     _addInstruction(PushScopeInstruction(getTextRange(ctx), virtualMachine.memory));
-    _variableDeclarations.add({});
+    pushVariableScope();
   }
 
   @override
   void exitBlock(BlockContext ctx) {
     _addInstruction(PopScopeInstruction(getTextRange(ctx), virtualMachine.memory));
-    _variableDeclarations.removeLast();
+    popVariableScope();
   }
 
   _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
@@ -243,7 +241,7 @@ write(x);
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
-      return _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
       return sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
@@ -306,7 +304,7 @@ write(x);
     if(ctx.BooleanLiteral() != null) {
       return ConstantDataSource(DataType.bool, bool.parse(ctx.text));
     } else if(ctx.Identifier() != null) {
-      return _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.booleanExpression() != null) {
       return _handleBooleanExpression(ctx.booleanExpression()!);
     } else {
@@ -325,7 +323,7 @@ write(x);
     for(final match in matches) {
       final literalFromPrevious = ConstantDataSource(DataType.string, withoutQuotes.substring(endOfPrevious, match.start).replaceAll(r"$$", r"$"));
       final variableName = match.group(0)!.substring(1);
-      final variableSource = _sourceFromMemory(variableName, stringToken);
+      final variableSource = sourceFromMemory(variableName, stringToken);
       final textRange = TextRange(stringToken.startIndex + match.start + 1, stringToken.startIndex + match.end );
       if(endOfPrevious == 0) {
         _addInstruction(
@@ -390,28 +388,16 @@ write(x);
   DataSource _handleStringLengthExpression(StringLengthExpressionContext ctx) {
     final identifier = ctx.Identifier()!;
     final variableName = identifier.text!;
-    _checkDeclareBeforeUse(variableName, identifier.symbol);
+    checkDeclareBeforeUse(variableName, identifier.symbol);
     final lengthRegister = allocateRegister(DataType.int);
     _addInstruction(
         StringLengthInstruction(
             getTextRange(ctx),
-            _sourceFromMemory(variableName, identifier.symbol),
+            sourceFromMemory(variableName, identifier.symbol),
             lengthRegister
         )
     );
     return lengthRegister.toSource();
-  }
-
-  VariableMemorySource _sourceFromMemory(String variableName, Token startToken) {
-    _checkDeclareBeforeUse(variableName, startToken);
-    return VariableMemorySource(_getDeclaredType(variableName)!, virtualMachine.memory, variableName);
-  }
-
-  _checkDeclareBeforeUse(String variableName, Token startToken) {
-    if(_getDeclaredType(variableName) == null) {
-      semanticErrors.add(
-          'Semantic error at line ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
-    }
   }
 
   RegisterDataDestination _recycleOrAllocateRegister(DataSource left, DataSource right, DataType dataType) {
@@ -422,15 +408,6 @@ write(x);
     } else {
       return allocateRegister(dataType);
     }
-  }
-
-  DataType? _getDeclaredType(String variableName) {
-    for(final scope in _variableDeclarations.reversed) {
-      if(scope.containsKey(variableName)) {
-        return scope[variableName];
-      }
-    }
-    return null;
   }
 }
 

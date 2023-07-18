@@ -13,10 +13,8 @@ import 'package:cfloor_flutter/generated/cfloor3/CFloor3BaseListener.dart';
 abstract class _CFloor3TreeWalkerBase extends CFloor3BaseListener implements InstructionGeneratingTreeWalker {
 }
 
-class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
+class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, InstructionGeneratorUtils, VariableDeclarationManager {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
-
-  final Map<String, DataType> _variableDeclarations = {};
 
   @override
   final VirtualMachine virtualMachine;
@@ -30,7 +28,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
     final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
-    _variableDeclarations[variableName] = variableType;
+    addDeclaration(variableName, variableType, ctx.assignment()!.Identifier()!.symbol);
   }
 
   @override
@@ -38,7 +36,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    _checkDeclareBeforeUse(variableName, ctx.assignment()!.start!);
+    checkDeclareBeforeUse(variableName, ctx.assignment()!.start!);
   }
 
   @override
@@ -58,7 +56,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
 
       // get lhs type - either it was declared previously, this is part of a
       // declAssign, or we'll end up with a declare before use error anyway
-      DataType? variableType = _variableDeclarations[variableName];
+      DataType? variableType = getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
@@ -82,7 +80,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
   void exitWriteStatement(WriteStatementContext ctx) {
     late final DataSource dataSource;
     if(ctx.Identifier() != null) {
-      dataSource = _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+      dataSource = sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
       dataSource = sourceFromConstant(ctx.Number()!.text!);
     } else {
@@ -151,7 +149,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
     } else if(ctx.Identifier() != null) {
-      return _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
       return sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
@@ -174,7 +172,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
     for(final match in matches) {
       final literalFromPrevious = ConstantDataSource(DataType.string, withoutQuotes.substring(endOfPrevious, match.start).replaceAll(r"$$", r"$"));
       final variableName = match.group(0)!.substring(1);
-      final variableSource = _sourceFromMemory(variableName, stringToken);
+      final variableSource = sourceFromMemory(variableName, stringToken);
       final textRange = TextRange(stringToken.startIndex + match.start + 1, stringToken.startIndex + match.end );
       if(endOfPrevious == 0) {
         virtualMachine.addInstruction(
@@ -239,27 +237,15 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase with RegisterManager, Ins
   DataSource _handleStringLengthExpression(StringLengthExpressionContext ctx) {
     final identifier = ctx.Identifier()!;
     final variableName = identifier.text!;
-    _checkDeclareBeforeUse(variableName, identifier.symbol);
+    checkDeclareBeforeUse(variableName, identifier.symbol);
     final lengthRegister = allocateRegister(DataType.int);
     virtualMachine.addInstruction(
         StringLengthInstruction(
             getTextRange(ctx),
-            _sourceFromMemory(variableName, identifier.symbol),
+            sourceFromMemory(variableName, identifier.symbol),
             lengthRegister
         )
     );
     return lengthRegister.toSource();
-  }
-
-  VariableMemorySource _sourceFromMemory(String variableName, Token startToken) {
-    _checkDeclareBeforeUse(variableName, startToken);
-    return VariableMemorySource(_variableDeclarations[variableName]!, virtualMachine.memory, variableName);
-  }
-
-  _checkDeclareBeforeUse(String variableName, Token startToken) {
-    if(!_variableDeclarations.containsKey(variableName)) {
-      semanticErrors.add(
-          'Semantic error at line ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared before use.');
-    }
   }
 }
