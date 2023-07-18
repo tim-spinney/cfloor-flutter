@@ -1,10 +1,10 @@
 import '../console_state.dart';
 import 'error_collector.dart';
 import 'virtual_machine.dart';
-import 'cfloor1/parser.dart';
-import 'cfloor2/parser.dart';
-import 'cfloor3/parser.dart';
-import 'cfloor4/parser.dart';
+import 'cfloor1/compiler.dart';
+import 'cfloor2/compiler.dart';
+import 'cfloor3/compiler.dart';
+import 'cfloor4/compiler.dart';
 import 'language_level.dart';
 
 class Compiler {
