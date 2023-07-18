@@ -7,10 +7,8 @@ import '../instructions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
-import 'package:cfloor_flutter/console_state.dart';
 
-class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGeneratingTreeWalker {
-  int _nextRegister = 0;
+class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
   final Map<String, DataType> _variableDeclarations = {};
 
   @override
@@ -69,7 +67,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       );
     }
     // recycle any registers used by expressions
-    _nextRegister = 0;
+    nextRegister = 0;
   }
 
   @override
@@ -101,7 +99,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
 
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
-    final destination = _allocateRegister(readType);
+    final destination = allocateRegister(readType);
     virtualMachine.addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
@@ -118,7 +116,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     final targetRegister =
       leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-      _allocateRegister(_combineDataTypes(leftDataSource.dataType, rightDataSource.dataType))
+      allocateRegister(_combineDataTypes(leftDataSource.dataType, rightDataSource.dataType))
     ;
 
     if(mathOperator == MathOperator.modulo) {
@@ -157,7 +155,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   _handleMathFunctionExpression(MathFunctionExpressionContext ctx) {
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
-    final targetRegister = _allocateRegister(dataSource.dataType);
+    final targetRegister = allocateRegister(dataSource.dataType);
     virtualMachine.addInstruction(
       MathFunctionInstruction(
         _getTextRange(ctx),
@@ -196,6 +194,4 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
       return DataType.int;
     }
   }
-
-  RegisterDataDestination _allocateRegister(DataType dataType) => RegisterDataDestination(dataType, virtualMachine.memory, _nextRegister++);
 }

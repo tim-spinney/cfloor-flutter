@@ -8,10 +8,9 @@ import '../instruction.dart';
 import '../virtual_machine.dart';
 import '../virtual_memory.dart';
 
-class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGeneratingTreeWalker {
+class CFloor4TreeWalker extends CFloor4BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
-  int _nextRegister = 0;
   final List<Map<String, DataType>> _variableDeclarations = [{}];
 
   @override
@@ -91,7 +90,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
       );
     }
     // recycle any registers used by expressions
-    _nextRegister = 0;
+    nextRegister = 0;
   }
 
   @override
@@ -200,7 +199,7 @@ write(x);
       'string' => DataType.string,
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
-    final destination = _allocateRegister(readType);
+    final destination = allocateRegister(readType);
     _addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
@@ -254,7 +253,7 @@ write(x);
   DataSource _handleBooleanExpression(BooleanExpressionContext ctx) {
     if(ctx.UnaryBooleanOperator() != null) {
       final operandSource = _handleBooleanOperand(ctx.booleanOperand(0)!);
-      final destination = _allocateRegister(DataType.bool);
+      final destination = allocateRegister(DataType.bool);
       _addInstruction(
         BooleanNegationInstruction(_getTextRange(ctx), operandSource, destination)
       );
@@ -282,7 +281,7 @@ write(x);
       final leftDataSource = _handleMathOperand(ctx.mathOperand(0)!);
       final rightDataSource = _handleMathOperand(ctx.mathOperand(1)!);
       // TODO: recycle register, but have to convert register's data type on recycling somehow
-      final targetRegister = _allocateRegister(DataType.bool);
+      final targetRegister = allocateRegister(DataType.bool);
       final comparisonOperator = ComparisonOperator.bySymbol[ctx.Comparator()!.text!]!;
       _addInstruction(
           ComparisonInstruction(
@@ -317,7 +316,7 @@ write(x);
       return ConstantDataSource(DataType.string, withoutQuotes);
     }
     int endOfPrevious = 0;
-    final outputRegister = _allocateRegister(DataType.string);
+    final outputRegister = allocateRegister(DataType.string);
     for(final match in matches) {
       final literalFromPrevious = ConstantDataSource(DataType.string, withoutQuotes.substring(endOfPrevious, match.start).replaceAll(r"$$", r"$"));
       final variableName = match.group(0)!.substring(1);
@@ -371,7 +370,7 @@ write(x);
   _handleMathFunctionExpression(MathFunctionExpressionContext ctx) {
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
-    final targetRegister = _allocateRegister(dataSource.dataType);
+    final targetRegister = allocateRegister(dataSource.dataType);
     _addInstruction(
         MathFunctionInstruction(
           _getTextRange(ctx),
@@ -387,7 +386,7 @@ write(x);
     final identifier = ctx.Identifier()!;
     final variableName = identifier.text!;
     _checkDeclareBeforeUse(variableName, identifier.symbol);
-    final lengthRegister = _allocateRegister(DataType.int);
+    final lengthRegister = allocateRegister(DataType.int);
     _addInstruction(
         StringLengthInstruction(
             _getTextRange(ctx),
@@ -432,15 +431,13 @@ write(x);
 
   bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
 
-  RegisterDataDestination _allocateRegister(DataType dataType) => RegisterDataDestination(dataType, virtualMachine.memory, _nextRegister++);
-
   RegisterDataDestination _recycleOrAllocateRegister(DataSource left, DataSource right, DataType dataType) {
     if(left is RegisterMemorySource) {
       return left.toDestination();
     } else if(right is RegisterMemorySource) {
       return right.toDestination();
     } else {
-      return _allocateRegister(dataType);
+      return allocateRegister(dataType);
     }
   }
 

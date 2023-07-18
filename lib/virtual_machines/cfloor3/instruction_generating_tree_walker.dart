@@ -7,12 +7,10 @@ import '../instructions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3BaseListener.dart';
-import 'package:cfloor_flutter/console_state.dart';
 
-class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGeneratingTreeWalker {
+class CFloor3TreeWalker extends CFloor3BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
-  int _nextRegister = 0;
   final Map<String, DataType> _variableDeclarations = {};
 
   @override
@@ -72,7 +70,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       );
     }
     // recycle any registers used by expressions
-    _nextRegister = 0;
+    nextRegister = 0;
   }
 
   @override
@@ -105,7 +103,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       'string' => DataType.string,
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
-    final destination = _allocateRegister(readType);
+    final destination = allocateRegister(readType);
     virtualMachine.addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
@@ -122,7 +120,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     final targetRegister =
     leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
     rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-    _allocateRegister(_combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.start!))
+    allocateRegister(_combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.start!))
     ;
 
     if(mathOperator == MathOperator.modulo) {
@@ -167,7 +165,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
       return ConstantDataSource(DataType.string, withoutQuotes);
     }
     int endOfPrevious = 0;
-    final outputRegister = _allocateRegister(DataType.string);
+    final outputRegister = allocateRegister(DataType.string);
     for(final match in matches) {
       final literalFromPrevious = ConstantDataSource(DataType.string, withoutQuotes.substring(endOfPrevious, match.start).replaceAll(r"$$", r"$"));
       final variableName = match.group(0)!.substring(1);
@@ -221,7 +219,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
   _handleMathFunctionExpression(MathFunctionExpressionContext ctx) {
     final function = MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]);
     final dataSource = _handleMathExpression(ctx.mathExpression()!);
-    final targetRegister = _allocateRegister(dataSource.dataType);
+    final targetRegister = allocateRegister(dataSource.dataType);
     virtualMachine.addInstruction(
         MathFunctionInstruction(
           _getTextRange(ctx),
@@ -237,7 +235,7 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
     final identifier = ctx.Identifier()!;
     final variableName = identifier.text!;
     _checkDeclareBeforeUse(variableName, identifier.symbol);
-    final lengthRegister = _allocateRegister(DataType.int);
+    final lengthRegister = allocateRegister(DataType.int);
     virtualMachine.addInstruction(
         StringLengthInstruction(
             _getTextRange(ctx),
@@ -281,6 +279,4 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
   }
 
   bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
-
-  RegisterDataDestination _allocateRegister(DataType dataType) => RegisterDataDestination(dataType, virtualMachine.memory, _nextRegister++);
 }

@@ -8,8 +8,7 @@ import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
 
-class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
-  int _nextRegister = 0;
+class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
   final Set<String> _variableNames = {};
 
   @override
@@ -36,7 +35,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     final variableName = ctx.Identifier()!.text!;
     DataSource? dataSource;
     if(ctx.readFunctionExpression() != null) {
-      final destination = _allocateRegister();
+      final destination = allocateRegister(DataType.int);
       final textRange = _getTextRange(ctx.readFunctionExpression()!);
       virtualMachine.addInstruction(ReadInstruction(textRange, virtualMachine.consoleState, destination, DataType.int));
       dataSource = destination.toSource();
@@ -52,7 +51,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
           )
       );
     }
-    _nextRegister = 0;
+    nextRegister = 0;
   }
 
   @override
@@ -93,7 +92,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
     final targetRegister =
       leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-      _allocateRegister()
+      allocateRegister(DataType.int)
     ;
     virtualMachine.addInstruction(
       MathInstruction(
@@ -128,6 +127,4 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
           'Semantic error at line ${ctx.start!.line}:${ctx.start!.charPositionInLine}: variable name $variableName needs to be declared before use.');
     }
   }
-
-  RegisterDataDestination _allocateRegister() => RegisterDataDestination(DataType.int, virtualMachine.memory, _nextRegister++);
 }
