@@ -1,14 +1,18 @@
 import 'package:antlr4/antlr4.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'package:cfloor_flutter/virtual_machines/data_type.dart';
-import '../instruction.dart';
 import '../virtual_machine.dart';
 import '../instructions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
 
-class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
+// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
+// to satisfy InstructionGeneratorUtils' "on" type narrowing
+abstract class _CFloor1TreeWalkerBase extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
+}
+
+class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
   final Set<String> _variableNames = {};
 
   @override
@@ -36,7 +40,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
     DataSource? dataSource;
     if(ctx.readFunctionExpression() != null) {
       final destination = allocateRegister(DataType.int);
-      final textRange = _getTextRange(ctx.readFunctionExpression()!);
+      final textRange = getTextRange(ctx.readFunctionExpression()!);
       virtualMachine.addInstruction(ReadInstruction(textRange, virtualMachine.consoleState, destination, DataType.int));
       dataSource = destination.toSource();
     } else if(ctx.mathExpression() != null) {
@@ -45,7 +49,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
     if(dataSource != null) {
       virtualMachine.addInstruction(
           AssignmentInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             VariableDataDestination(DataType.int, virtualMachine.memory, variableName),
             dataSource,
           )
@@ -60,7 +64,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
       final variableName = ctx.Identifier()!.text!;
       virtualMachine.addInstruction(
         WriteInstruction(
-          _getTextRange(ctx),
+          getTextRange(ctx),
           virtualMachine.consoleState,
           VariableMemorySource(DataType.int, virtualMachine.memory, variableName),
         )
@@ -69,14 +73,14 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
       final value = int.parse(ctx.Number()!.text!);
       virtualMachine.addInstruction(
         WriteInstruction(
-          _getTextRange(ctx),
+          getTextRange(ctx),
           virtualMachine.consoleState,
           ConstantDataSource(DataType.int, value),
         )
       );
     } else {
       final value = ctx.StringLiteral()!.text!;
-      virtualMachine.addInstruction(WriteInstruction(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
+      virtualMachine.addInstruction(WriteInstruction(getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
     }
   }
 
@@ -96,7 +100,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
     ;
     virtualMachine.addInstruction(
       MathInstruction(
-        _getTextRange(ctx),
+        getTextRange(ctx),
         mathOperator,
         leftDataSource,
         rightDataSource,
@@ -118,8 +122,6 @@ class CFloor1TreeWalker extends CFloor1BaseListener with RegisterManager impleme
       throw Exception('Unknown math operand type');
     }
   }
-
-  TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 
   _checkDeclareBeforeUse(String variableName, ParserRuleContext ctx) {
     if(!_variableNames.contains(variableName)) {

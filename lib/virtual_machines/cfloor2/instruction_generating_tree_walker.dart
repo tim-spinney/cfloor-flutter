@@ -1,14 +1,18 @@
 import 'package:antlr4/antlr4.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
-import '../instruction.dart';
 import '../virtual_machine.dart';
 import '../instructions.dart';
 import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
 
-class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
+// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
+// to satisfy InstructionGeneratorUtils' "on" type narrowing
+abstract class _CFloor2TreeWalkerBase extends CFloor2BaseListener implements InstructionGeneratingTreeWalker {
+}
+
+class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
   final Map<String, DataType> _variableDeclarations = {};
 
   @override
@@ -60,7 +64,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
 
       virtualMachine.addInstruction(
           AssignmentInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
             dataSource,
           )
@@ -75,16 +79,16 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
     if(ctx.Identifier() != null || ctx.Number() != null) {
       final dataSource = ctx.Identifier() != null
           ? _sourceFromMemory(ctx.Identifier()!.text!, ctx)
-          : _sourceFromConstant(ctx.Number()!.text!);
+          : sourceFromConstant(ctx.Number()!.text!);
       virtualMachine.addInstruction(
         WriteInstruction(
-          _getTextRange(ctx),
+          getTextRange(ctx),
           virtualMachine.consoleState,
           dataSource
         )
       );
     } else if(ctx.StringLiteral() != null) {
-      virtualMachine.addInstruction(WriteInstruction(_getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
+      virtualMachine.addInstruction(WriteInstruction(getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
     } // else there was a syntax error
   }
 
@@ -100,7 +104,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
     final readType = ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
     final destination = allocateRegister(readType);
-    virtualMachine.addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    virtualMachine.addInstruction(ReadInstruction(getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -116,7 +120,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
     final targetRegister =
       leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
       rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-      allocateRegister(_combineDataTypes(leftDataSource.dataType, rightDataSource.dataType))
+      allocateRegister(combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.MathOperator()!.symbol))
     ;
 
     if(mathOperator == MathOperator.modulo) {
@@ -128,7 +132,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
 
     virtualMachine.addInstruction(
       MathInstruction(
-        _getTextRange(ctx),
+        getTextRange(ctx),
         mathOperator,
         leftDataSource,
         rightDataSource,
@@ -144,7 +148,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
     } else if(ctx.Identifier() != null) {
       return _sourceFromMemory(ctx.Identifier()!.text!, ctx);
     } else if(ctx.Number() != null) {
-      return _sourceFromConstant(ctx.Number()!.text!);
+      return sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
       return _handleMathFunctionExpression(ctx.mathFunctionExpression()!);
     } else {
@@ -158,7 +162,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
     final targetRegister = allocateRegister(dataSource.dataType);
     virtualMachine.addInstruction(
       MathFunctionInstruction(
-        _getTextRange(ctx),
+        getTextRange(ctx),
         function,
         dataSource,
         targetRegister,
@@ -172,26 +176,10 @@ class CFloor2TreeWalker extends CFloor2BaseListener with RegisterManager impleme
     return VariableMemorySource(_variableDeclarations[variableName]!, virtualMachine.memory, variableName);
   }
 
-  ConstantDataSource _sourceFromConstant(String numberText) {
-    bool isInt = int.tryParse(numberText) != null;
-    final value = double.parse(numberText);
-    return ConstantDataSource(isInt ? DataType.int : DataType.float, value);
-  }
-
-  TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
-
   _checkDeclareBeforeUse(String variableName, ParserRuleContext ctx) {
     if(!_variableDeclarations.containsKey(variableName)) {
       semanticErrors.add(
           'Semantic error at line ${ctx.start!.line}:${ctx.start!.charPositionInLine}: variable name $variableName needs to be declared before use.');
-    }
-  }
-
-  _combineDataTypes(DataType left, DataType right) {
-    if(left == DataType.float || right == DataType.float) {
-      return DataType.float;
-    } else {
-      return DataType.int;
     }
   }
 }

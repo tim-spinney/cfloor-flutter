@@ -8,7 +8,12 @@ import '../instruction.dart';
 import '../virtual_machine.dart';
 import '../virtual_memory.dart';
 
-class CFloor4TreeWalker extends CFloor4BaseListener with RegisterManager implements InstructionGeneratingTreeWalker {
+// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
+// to satisfy InstructionGeneratorUtils' "on" type narrowing
+abstract class _CFloor4TreeWalkerBase extends CFloor4BaseListener implements InstructionGeneratingTreeWalker {
+}
+
+class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
   final List<Map<String, DataType>> _variableDeclarations = [{}];
@@ -83,7 +88,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener with RegisterManager impleme
 
       _addInstruction(
           AssignmentInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
             dataSource,
           )
@@ -99,11 +104,11 @@ class CFloor4TreeWalker extends CFloor4BaseListener with RegisterManager impleme
     if(ctx.Identifier() != null) {
       dataSource = _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
-      dataSource = _sourceFromConstant(ctx.Number()!.text!);
+      dataSource = sourceFromConstant(ctx.Number()!.text!);
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
-    _addInstruction(WriteInstruction(_getTextRange(ctx), virtualMachine.consoleState, dataSource));
+    _addInstruction(WriteInstruction(getTextRange(ctx), virtualMachine.consoleState, dataSource));
   }
 /*
 int x = 1;
@@ -142,21 +147,21 @@ write(x);
       final branchConditional = ctx.ifStatement(i)!.booleanExpression()!;
       final branchRegister = _handleBooleanExpression(branchConditional);
       final jumpOffset = branchBody.body.length + 2; // +2 to go 1 past the no-op
-      _addInstruction(JumpIfFalseInstruction(_getTextRange(branchConditional), branchRegister, jumpOffset, virtualMachine));
+      _addInstruction(JumpIfFalseInstruction(getTextRange(branchConditional), branchRegister, jumpOffset, virtualMachine));
       branchBody.body.forEach(_addInstruction);
-      _addInstruction(NoOpInstruction(_getTextRange(ctx)));
+      _addInstruction(NoOpInstruction(getTextRange(ctx)));
       endOfBlockJumpPlaceholderIndices.add(_currentInstructionTarget.length - 1);
     }
     if(ctx.elseBlock() != null) {
       final elseBody = ifBlock.branches.last;
       elseBody.body.forEach(_addInstruction);
     }
-    _addInstruction(NoOpInstruction(_getTextRange(ctx)));
+    _addInstruction(NoOpInstruction(getTextRange(ctx)));
     final instructionList = _currentInstructionTarget;
     final jumpDestination = instructionList.length - 1;
     // do not include instruction we just added or else it will end up in a loop
     for(final index in endOfBlockJumpPlaceholderIndices) {
-      instructionList[index] = JumpInstruction(_getTextRange(ctx), jumpDestination - index, virtualMachine);
+      instructionList[index] = JumpInstruction(getTextRange(ctx), jumpDestination - index, virtualMachine);
     }
   }
 
@@ -172,13 +177,13 @@ write(x);
 
   @override
   void enterBlock(BlockContext ctx) {
-    _addInstruction(PushScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
+    _addInstruction(PushScopeInstruction(getTextRange(ctx), virtualMachine.memory));
     _variableDeclarations.add({});
   }
 
   @override
   void exitBlock(BlockContext ctx) {
-    _addInstruction(PopScopeInstruction(_getTextRange(ctx), virtualMachine.memory));
+    _addInstruction(PopScopeInstruction(getTextRange(ctx), virtualMachine.memory));
     _variableDeclarations.removeLast();
   }
 
@@ -200,7 +205,7 @@ write(x);
       _ => throw Exception('Unknown read type: $ctx.text'),
     };
     final destination = allocateRegister(readType);
-    _addInstruction(ReadInstruction(_getTextRange(ctx), virtualMachine.consoleState, destination, readType));
+    _addInstruction(ReadInstruction(getTextRange(ctx), virtualMachine.consoleState, destination, readType));
     return destination.toSource();
   }
 
@@ -213,7 +218,7 @@ write(x);
     final rightOperand = ctx.mathOperand(1)!;
     final leftDataSource = _handleMathOperand(leftOperand);
     final rightDataSource = _handleMathOperand(rightOperand);
-    final targetRegister = _recycleOrAllocateRegister(leftDataSource, rightDataSource, _combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.start!));
+    final targetRegister = _recycleOrAllocateRegister(leftDataSource, rightDataSource, combineNumericDataTypes(leftDataSource.dataType, rightDataSource.dataType, ctx.start!));
 
     if(mathOperator == MathOperator.modulo) {
       // modulo is a special case because it only works on integers
@@ -224,7 +229,7 @@ write(x);
 
     _addInstruction(
         MathInstruction(
-          _getTextRange(ctx),
+          getTextRange(ctx),
           mathOperator,
           leftDataSource,
           rightDataSource,
@@ -240,7 +245,7 @@ write(x);
     } else if(ctx.Identifier() != null) {
       return _sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
-      return _sourceFromConstant(ctx.Number()!.text!);
+      return sourceFromConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
       return _handleMathFunctionExpression(ctx.mathFunctionExpression()!);
     } else if(ctx.stringLengthExpression() != null) {
@@ -255,7 +260,7 @@ write(x);
       final operandSource = _handleBooleanOperand(ctx.booleanOperand(0)!);
       final destination = allocateRegister(DataType.bool);
       _addInstruction(
-        BooleanNegationInstruction(_getTextRange(ctx), operandSource, destination)
+        BooleanNegationInstruction(getTextRange(ctx), operandSource, destination)
       );
       return destination.toSource();
     } else if(ctx.booleanOperands().isNotEmpty) {
@@ -269,7 +274,7 @@ write(x);
       final booleanOperator = BooleanOperator.bySymbol[ctx.BinaryBooleanOperator()!.text!]!;
       _addInstruction(
           BinaryBooleanInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             booleanOperator,
             leftDataSource,
             rightDataSource,
@@ -285,7 +290,7 @@ write(x);
       final comparisonOperator = ComparisonOperator.bySymbol[ctx.Comparator()!.text!]!;
       _addInstruction(
           ComparisonInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             comparisonOperator,
             leftDataSource,
             rightDataSource,
@@ -373,7 +378,7 @@ write(x);
     final targetRegister = allocateRegister(dataSource.dataType);
     _addInstruction(
         MathFunctionInstruction(
-          _getTextRange(ctx),
+          getTextRange(ctx),
           function,
           dataSource,
           targetRegister,
@@ -389,7 +394,7 @@ write(x);
     final lengthRegister = allocateRegister(DataType.int);
     _addInstruction(
         StringLengthInstruction(
-            _getTextRange(ctx),
+            getTextRange(ctx),
             _sourceFromMemory(variableName, identifier.symbol),
             lengthRegister
         )
@@ -402,34 +407,12 @@ write(x);
     return VariableMemorySource(_getDeclaredType(variableName)!, virtualMachine.memory, variableName);
   }
 
-  ConstantDataSource _sourceFromConstant(String numberText) {
-    bool isInt = int.tryParse(numberText) != null;
-    final value = isInt ? int.parse(numberText) : double.parse(numberText);
-    return ConstantDataSource(isInt ? DataType.int : DataType.float, value);
-  }
-
-  TextRange _getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
-
   _checkDeclareBeforeUse(String variableName, Token startToken) {
     if(_getDeclaredType(variableName) == null) {
       semanticErrors.add(
           'Semantic error at line ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
     }
   }
-
-  _combineNumericDataTypes(DataType left, DataType right, Token startToken) {
-    if(!_typeIsNumeric(left) || !_typeIsNumeric(right)) {
-      semanticErrors.add('Type mismatch at ${startToken.line}:${startToken.charPositionInLine}: math operators only work on numbers.');
-      throw Exception('Cannot combine non-numeric types');
-    }
-    if(left == DataType.float || right == DataType.float) {
-      return DataType.float;
-    } else {
-      return DataType.int;
-    }
-  }
-
-  bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
 
   RegisterDataDestination _recycleOrAllocateRegister(DataSource left, DataSource right, DataType dataType) {
     if(left is RegisterMemorySource) {
