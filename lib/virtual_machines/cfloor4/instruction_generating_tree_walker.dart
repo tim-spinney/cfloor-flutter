@@ -26,10 +26,6 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
     ? _instructions
     : _ifBlocks.last.branches.last.body;
 
-  _addInstruction(Instruction instruction) {
-    _currentInstructionTarget.add(instruction);
-  }
-
   @override
   final List<String> semanticErrors = [];
 
@@ -399,6 +395,10 @@ write(x);
     } else {
       return allocateRegister(dataType);
     }
+  }
+
+  _addInstruction(Instruction instruction) {
+    _currentInstructionTarget.add(instruction);
   }
 }
 
