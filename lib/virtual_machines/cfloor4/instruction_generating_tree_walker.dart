@@ -81,7 +81,7 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
       if(variableType != null) {
-        _checkTypeConversion(dataSource.dataType, variableType, ctx);
+        checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
       _addInstruction(
@@ -183,15 +183,6 @@ write(x);
   void exitBlock(BlockContext ctx) {
     _addInstruction(PopScopeInstruction(getTextRange(ctx), virtualMachine.memory));
     popVariableScope();
-  }
-
-  _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
-    if(source == destination) {
-      return;
-    } else if(source == DataType.int && destination == DataType.float) {
-      return;
-    }
-    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${source.name} to a(n) ${destination.name}.');
   }
 
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {

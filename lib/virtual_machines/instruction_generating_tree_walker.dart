@@ -39,6 +39,16 @@ mixin InstructionGeneratorUtils on InstructionGeneratingTreeWalker {
 
   bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
 
+  checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
+    if(source == destination) {
+      return;
+    } else if(source == DataType.int && destination == DataType.float) {
+      return;
+    }
+    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${source.name} to a(n) ${destination.name}.');
+  }
+
+
   TextRange getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
 }
 

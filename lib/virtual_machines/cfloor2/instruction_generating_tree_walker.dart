@@ -57,7 +57,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
         variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
       }
       if(variableType != null) {
-        _checkTypeConversion(dataSource.dataType, variableType, ctx);
+        checkTypeConversion(dataSource.dataType, variableType, ctx);
       }
 
       virtualMachine.addInstruction(
@@ -88,15 +88,6 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     } else if(ctx.StringLiteral() != null) {
       virtualMachine.addInstruction(WriteInstruction(getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, ctx.StringLiteral()!.text!)));
     } // else there was a syntax error
-  }
-
-  _checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
-    if(source == destination) {
-      return;
-    } else if(source == DataType.int && destination == DataType.float) {
-      return;
-    }
-    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${source.name} to a(n) ${destination.name}.');
   }
 
   DataSource _handleReadExpression(ReadFunctionExpressionContext ctx) {
