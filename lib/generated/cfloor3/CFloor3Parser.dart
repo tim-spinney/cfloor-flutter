@@ -18,8 +18,10 @@ class CFloor3Parser extends Parser {
   static const int TOKEN_T__0 = 1, TOKEN_T__1 = 2, TOKEN_T__2 = 3, TOKEN_T__3 = 4, 
                    TOKEN_T__4 = 5, TOKEN_T__5 = 6, TOKEN_T__6 = 7, TOKEN_T__7 = 8, 
                    TOKEN_T__8 = 9, TOKEN_T__9 = 10, TOKEN_T__10 = 11, TOKEN_T__11 = 12, 
-                   TOKEN_Type = 13, TOKEN_Number = 14, TOKEN_MathOperator = 15, 
-                   TOKEN_StringLiteral = 16, TOKEN_WS = 17, TOKEN_Identifier = 18;
+                   TOKEN_T__12 = 13, TOKEN_T__13 = 14, TOKEN_T__14 = 15, 
+                   TOKEN_T__15 = 16, TOKEN_Type = 17, TOKEN_Number = 18, 
+                   TOKEN_MathOperator = 19, TOKEN_StringLiteral = 20, TOKEN_WS = 21, 
+                   TOKEN_Identifier = 22;
 
   @override
   final List<String> ruleNames = [
@@ -30,12 +32,13 @@ class CFloor3Parser extends Parser {
 
   static final List<String?> _LITERAL_NAMES = [
       null, "'length('", "')'", "'='", "'('", "'readInt()'", "'readFloat()'", 
-      "'readString()'", "'floor'", "'ceil'", "'round'", "';'", "'write'"
+      "'readString()'", "'floor'", "'ceil'", "'round'", "'sqrt'", "'sin'", 
+      "'cos'", "'tan'", "';'", "'write'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [
       null, null, null, null, null, null, null, null, null, null, null, 
-      null, null, "Type", "Number", "MathOperator", "StringLiteral", "WS", 
-      "Identifier"
+      null, null, null, null, null, null, "Type", "Number", "MathOperator", 
+      "StringLiteral", "WS", "Identifier"
   ];
   static final Vocabulary VOCABULARY = VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -97,6 +100,10 @@ class CFloor3Parser extends Parser {
       case TOKEN_T__7:
       case TOKEN_T__8:
       case TOKEN_T__9:
+      case TOKEN_T__10:
+      case TOKEN_T__11:
+      case TOKEN_T__12:
+      case TOKEN_T__13:
       case TOKEN_Number:
       case TOKEN_Identifier:
         state = 28;
@@ -154,6 +161,10 @@ class CFloor3Parser extends Parser {
       case TOKEN_T__7:
       case TOKEN_T__8:
       case TOKEN_T__9:
+      case TOKEN_T__10:
+      case TOKEN_T__11:
+      case TOKEN_T__12:
+      case TOKEN_T__13:
         enterOuterAlt(_localctx, 4);
         state = 39;
         mathFunctionExpression();
@@ -209,7 +220,7 @@ class CFloor3Parser extends Parser {
       enterOuterAlt(_localctx, 1);
       state = 45;
       _la = tokenStream.LA(1)!;
-      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 1792) != 0))) {
+      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 32512) != 0))) {
       errorHandler.recoverInline(this);
       } else {
         if ( tokenStream.LA(1)! == IntStream.EOF ) matchedEOF = true;
@@ -247,7 +258,7 @@ class CFloor3Parser extends Parser {
         state = 53; 
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
-      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 274432) != 0));
+      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 4390912) != 0));
       state = 55;
       match(TOKEN_EOF);
     } on RecognitionException catch (re) {
@@ -270,7 +281,7 @@ class CFloor3Parser extends Parser {
       state = 58;
       assignment();
       state = 59;
-      match(TOKEN_T__10);
+      match(TOKEN_T__14);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
@@ -289,7 +300,7 @@ class CFloor3Parser extends Parser {
       state = 61;
       assignment();
       state = 62;
-      match(TOKEN_T__10);
+      match(TOKEN_T__14);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
@@ -307,12 +318,12 @@ class CFloor3Parser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       state = 64;
-      match(TOKEN_T__11);
+      match(TOKEN_T__15);
       state = 65;
       match(TOKEN_T__3);
       state = 66;
       _la = tokenStream.LA(1)!;
-      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 344064) != 0))) {
+      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 5505024) != 0))) {
       errorHandler.recoverInline(this);
       } else {
         if ( tokenStream.LA(1)! == IntStream.EOF ) matchedEOF = true;
@@ -322,7 +333,7 @@ class CFloor3Parser extends Parser {
       state = 67;
       match(TOKEN_T__1);
       state = 68;
-      match(TOKEN_T__10);
+      match(TOKEN_T__14);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
@@ -368,7 +379,7 @@ class CFloor3Parser extends Parser {
       state = 78;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
-      case TOKEN_T__11:
+      case TOKEN_T__15:
         enterOuterAlt(_localctx, 1);
         state = 75;
         writeStatement();
@@ -397,27 +408,27 @@ class CFloor3Parser extends Parser {
   }
 
   static const List<int> _serializedATN = [
-      4,1,18,81,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
+      4,1,22,81,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
       2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,
       1,1,3,1,32,8,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,42,8,2,1,3,1,3,
       1,4,1,4,1,4,1,4,1,4,1,5,4,5,52,8,5,11,5,12,5,53,1,5,1,5,1,6,1,6,1,
       6,1,6,1,7,1,7,1,7,1,8,1,8,1,8,1,8,1,8,1,8,1,9,1,9,1,9,3,9,74,8,9,1,
       10,1,10,1,10,3,10,79,8,10,1,10,0,0,11,0,2,4,6,8,10,12,14,16,18,20,
-      0,3,1,0,5,7,1,0,8,10,3,0,14,14,16,16,18,18,79,0,22,1,0,0,0,2,26,1,
+      0,3,1,0,5,7,1,0,8,14,3,0,18,18,20,20,22,22,79,0,22,1,0,0,0,2,26,1,
       0,0,0,4,41,1,0,0,0,6,43,1,0,0,0,8,45,1,0,0,0,10,51,1,0,0,0,12,57,1,
       0,0,0,14,61,1,0,0,0,16,64,1,0,0,0,18,70,1,0,0,0,20,78,1,0,0,0,22,23,
-      5,1,0,0,23,24,5,18,0,0,24,25,5,2,0,0,25,1,1,0,0,0,26,27,5,18,0,0,27,
-      31,5,3,0,0,28,32,3,18,9,0,29,32,3,6,3,0,30,32,5,16,0,0,31,28,1,0,0,
-      0,31,29,1,0,0,0,31,30,1,0,0,0,32,3,1,0,0,0,33,42,5,14,0,0,34,42,5,
-      18,0,0,35,36,5,4,0,0,36,37,3,18,9,0,37,38,5,2,0,0,38,42,1,0,0,0,39,
+      5,1,0,0,23,24,5,22,0,0,24,25,5,2,0,0,25,1,1,0,0,0,26,27,5,22,0,0,27,
+      31,5,3,0,0,28,32,3,18,9,0,29,32,3,6,3,0,30,32,5,20,0,0,31,28,1,0,0,
+      0,31,29,1,0,0,0,31,30,1,0,0,0,32,3,1,0,0,0,33,42,5,18,0,0,34,42,5,
+      22,0,0,35,36,5,4,0,0,36,37,3,18,9,0,37,38,5,2,0,0,38,42,1,0,0,0,39,
       42,3,8,4,0,40,42,3,0,0,0,41,33,1,0,0,0,41,34,1,0,0,0,41,35,1,0,0,0,
       41,39,1,0,0,0,41,40,1,0,0,0,42,5,1,0,0,0,43,44,7,0,0,0,44,7,1,0,0,
       0,45,46,7,1,0,0,46,47,5,4,0,0,47,48,3,18,9,0,48,49,5,2,0,0,49,9,1,
       0,0,0,50,52,3,20,10,0,51,50,1,0,0,0,52,53,1,0,0,0,53,51,1,0,0,0,53,
-      54,1,0,0,0,54,55,1,0,0,0,55,56,5,0,0,1,56,11,1,0,0,0,57,58,5,13,0,
-      0,58,59,3,2,1,0,59,60,5,11,0,0,60,13,1,0,0,0,61,62,3,2,1,0,62,63,5,
-      11,0,0,63,15,1,0,0,0,64,65,5,12,0,0,65,66,5,4,0,0,66,67,7,2,0,0,67,
-      68,5,2,0,0,68,69,5,11,0,0,69,17,1,0,0,0,70,73,3,4,2,0,71,72,5,15,0,
+      54,1,0,0,0,54,55,1,0,0,0,55,56,5,0,0,1,56,11,1,0,0,0,57,58,5,17,0,
+      0,58,59,3,2,1,0,59,60,5,15,0,0,60,13,1,0,0,0,61,62,3,2,1,0,62,63,5,
+      15,0,0,63,15,1,0,0,0,64,65,5,16,0,0,65,66,5,4,0,0,66,67,7,2,0,0,67,
+      68,5,2,0,0,68,69,5,15,0,0,69,17,1,0,0,0,70,73,3,4,2,0,71,72,5,19,0,
       0,72,74,3,4,2,0,73,71,1,0,0,0,73,74,1,0,0,0,74,19,1,0,0,0,75,79,3,
       16,8,0,76,79,3,14,7,0,77,79,3,12,6,0,78,75,1,0,0,0,78,76,1,0,0,0,78,
       77,1,0,0,0,79,21,1,0,0,0,5,31,41,53,73,78

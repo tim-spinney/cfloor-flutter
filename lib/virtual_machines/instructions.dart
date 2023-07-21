@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../console_state.dart';
 import 'data_type.dart';
 import 'execution_exception.dart';
@@ -105,7 +107,11 @@ class WriteInstruction extends Instruction {
 enum MathFunction {
   ceil,
   floor,
-  round
+  round,
+  sqrt,
+  sin,
+  cos,
+  tan
 }
 
 class MathFunctionInstruction extends Instruction {
@@ -122,6 +128,10 @@ class MathFunctionInstruction extends Instruction {
       MathFunction.ceil => sourceValue.ceil(),
       MathFunction.floor => sourceValue.floor(),
       MathFunction.round => sourceValue.round(),
+      MathFunction.sqrt => sqrt(sourceValue.sqrt),
+      MathFunction.sin => sin(sourceValue),
+      MathFunction.cos => cos(sourceValue),
+      MathFunction.tan => tan(sourceValue),
     };
     destination.set(result);
   }

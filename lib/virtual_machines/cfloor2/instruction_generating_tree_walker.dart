@@ -1,4 +1,3 @@
-import 'package:antlr4/antlr4.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
 import '../virtual_machine.dart';
