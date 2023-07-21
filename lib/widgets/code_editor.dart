@@ -1,7 +1,9 @@
 import 'package:cfloor_flutter/virtual_machines/instructions.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
+import 'help_page.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
@@ -109,10 +111,22 @@ class _CodeEditorState extends State<CodeEditor> {
             flex: 1,
             child: Column(
               children: [
-                DropdownButton<LanguageLevel>(
-                  items: LanguageLevel.values.map((level) => DropdownMenuItem(value: level, child: Text(_levelDescriptions[level] ?? '???'))).toList(),
-                  onChanged: _virtualMachine.isRunning ? null : _changeLanguageLevel,
-                  value: _languageLevel,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DropdownButton<LanguageLevel>(
+                      items: LanguageLevel.values.map((level) => DropdownMenuItem(value: level, child: Text(_levelDescriptions[level] ?? '???'))).toList(),
+                      onChanged: _virtualMachine.isRunning ? null : _changeLanguageLevel,
+                      value: _languageLevel,
+                    ),
+                    IconButton(
+                      tooltip: 'Click to read more about language levels and features!',
+                      onPressed: () {
+                        context.push('/help/language-levels/${_languageLevel.index}');
+                      },
+                      icon: const Icon(Icons.help_outline),
+                    )
+                  ],
                 ),
                 Expanded(
                   child: Container(
