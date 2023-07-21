@@ -1,5 +1,6 @@
 import '../console_state.dart';
 import 'data_type.dart';
+import 'execution_exception.dart';
 import 'instruction.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
@@ -60,6 +61,9 @@ class MathInstruction extends Instruction {
     void evaluate() {
       final leftValue = left.get();
       final rightValue = right.get();
+      if((operator == MathOperator.divide || operator == MathOperator.modulo) && rightValue == 0) {
+        throw ExecutionException('Dividing by zero is not allowed.');
+      }
       dynamic result = switch(operator) {
         MathOperator.plus => leftValue + rightValue,
         MathOperator.minus => leftValue - rightValue,
@@ -67,7 +71,7 @@ class MathInstruction extends Instruction {
         MathOperator.divide => leftValue / rightValue,
         MathOperator.modulo => leftValue % rightValue,
       };
-      if(destination.dataType == DataType.int) {
+      if(destination.dataType == DataType.int && result is! int) {
         result = result.toInt();
       }
       destination.set(result);
@@ -94,7 +98,7 @@ class WriteInstruction extends Instruction {
 
   @override
   void evaluate() {
-    _consoleState.addConsoleOutput(source.get().toString());
+    _consoleState.addConsoleOutput(ConsoleMessage(source.get().toString()));
   }
 }
 

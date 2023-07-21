@@ -68,8 +68,12 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
               shrinkWrap: true,
               itemCount: widget.consoleState.consoleOutput.length,
               itemBuilder: (context, index) => Text(
-                widget.consoleState.consoleOutput[index],
-                style: GoogleFonts.robotoMono(),
+                widget.consoleState.consoleOutput[index].message,
+                style: GoogleFonts.robotoMono(
+                  color: widget.consoleState.consoleOutput[index].isError
+                      ? Theme.of(context).colorScheme.error
+                      : Theme.of(context).colorScheme.onSurface,
+                )
               ),
             ),
             if(widget.consoleState.isWaitingForInput) Form(

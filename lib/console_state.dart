@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'virtual_machines/data_type.dart';
 
 class ConsoleState extends ChangeNotifier {
-  final List<String> consoleOutput = [];
+  final List<ConsoleMessage> consoleOutput = [];
   DataType? _inputType;
   bool get isWaitingForInput => _inputType != null;
   DataType? get inputType => _inputType;
@@ -19,7 +19,7 @@ class ConsoleState extends ChangeNotifier {
     }
   }
 
-  void addConsoleOutput(String output) {
+  void addConsoleOutput(ConsoleMessage output) {
     consoleOutput.add(output);
     notifyListeners();
   }
@@ -29,4 +29,14 @@ class ConsoleState extends ChangeNotifier {
     _inputType = null;
     notifyListeners();
   }
+}
+
+class ConsoleMessage {
+  final String message;
+  final bool isError;
+
+  const ConsoleMessage(this.message, {this.isError = false});
+
+  @override
+  String toString() => message;
 }
