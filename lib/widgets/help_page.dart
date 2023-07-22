@@ -292,7 +292,7 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navIndex = languageLevel == null ? 0 : languageLevel!.index + 1;
+    final navIndex = languageLevel!.index;
     return Scaffold(
       appBar: AppBar(
         title: Text(languageLevel == null
@@ -304,16 +304,15 @@ class HelpPage extends StatelessWidget {
           // TODO: replace with list of links; requiring icon doesn't work well for these topics
           NavigationRail(
             destinations: const [
-              NavigationRailDestination(
-                  label: Text('About CFloor'), icon: Icon(Icons.info)),
               NavigationRailDestination(label: Text(''), icon: Text('Level 1')),
               NavigationRailDestination(label: Text(''), icon: Text('Level 2')),
               NavigationRailDestination(label: Text(''), icon: Text('Level 3')),
+              NavigationRailDestination(label: Text(''), icon: Text('Level 4')),
             ],
             selectedIndex: navIndex,
             onDestinationSelected: (index) {
               if (index != navIndex) {
-                context.push('/help/language-levels/${index - 1}');
+                context.push('/help/language-levels/$index');
               }
             },
           ),
