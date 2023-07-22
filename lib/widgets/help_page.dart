@@ -274,7 +274,51 @@ Note: each level builds on the last. If you haven't already, read about [Level 2
 
 # Level 3: Text Strings
 
-Documentation coming soon!
+Level 3 of CFloor introduces the ability to read and assemble your own strings of text. You've already
+had the ability to use strings from the beginning, but they were limited to literals, or text that you
+hard-coded into your program. For example, `write("Hello, world!");` would display the text "Hello, world!"
+to the console, but you could not make a variable to hold "Hello, world!", nor could you combine variables
+to make a string.
+
+Starting with level 3, you can use "string" as a variable type: `string s = "This is a string!";`. You can
+also read strings in from the user: `string s = readString();`.
+
+## String Interpolation
+
+Unlike ints and floats, strings of text are not numbers, so you can't use math operators on them. However,
+CFloor does include a way to combine strings with any other type of variable, whether int, float, or another
+string. The way CFloor enables this is called _string interpolation_, "interpolation" meaning "inserting
+something in between other parts". In our case, we can insert variables in between parts of a string. For
+example, we can insert the result of a calculation directly into a string that describes it:
+
+```
+write("Enter in a side length of a cube.");
+float side_length = readFloat();
+float volume = side_length * side_length * side_length;
+float surface_area = 6 * side_length * side_length;
+string message = "Your cube has a volume of \$volume and a surface area of \$surface area."; 
+write(message);
+```
+
+The dollar signs (`\$`) in the second to last line tell the program that "volume" and "surface area" are the 
+names of variables, and that it should splice in their current values when determining what the actual 
+contents of our string should be. 
+
+Side note: if you want to write an actual dollar sign in your string, you can do so by using two dollar signs
+back to back: `write("The cost is \$\$5.00.");`. You can even combine this with interpolation:
+`write("The cost is \$\$\$price.");`. The first two dollar signs will turn into a single dollar sign, while
+`\$price` turns into the current value of the variable named "price".
+
+## String Functions
+
+Similar to the mathematical functions available at level 2, such as `floor()` and `sin()`, CFloor level 3
+introduces a function that works on strings: `length(<string>)`. This function takes a string and returns
+an integer that represents how long the string is.
+
+## Grammar
+
+Level 3 does not contain any significant changes to the grammar of the language, other than string interpolation.
+
 """,
   LanguageLevel.cfloor4: """
 Note: each level builds on the last. If you haven't already, read about [Level 3](/help/language-levels/2).
