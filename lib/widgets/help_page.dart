@@ -325,7 +325,256 @@ Note: each level builds on the last. If you haven't already, read about [Level 3
 
 # Level 4: Booleans and Conditionals
 
-Documentation coming soon!
+With the first three levels of CFloor, you can write simple but effective calculations, taking input from the user,
+performing math operations, and then writing text back to the user with the results. However, we're missing several
+components that are essential to writing more complex programs. The first of these is the ability to make decisions
+based on the results of our calculations, or in other words, to only run part of our program when certain conditions
+have been met. To represent whether certain conditions have been met, we use a new type of variable called a
+_boolean_.
+
+## Booleans
+
+Boolean variables are named after George Boole, who invented a system of logic that uses only two values: true and
+false. At level 3 of CFloor, we can now use `true` and `false` as values in addition to numbers and strings. We can
+also create boolean-typed variables: `bool b = true;`.
+
+Similar to numbers, we can perform operations on our booleans. The three operations we can use on booleans are
+`and`, `or`, and `not`. 
+
+`not` is the simplest of the boolean operators. It takes whatever value it's given and flips it to the opposite,
+so `true` becomes `false` and `false` becomes `true`: `bool b = not true;` will set b to `false`.
+
+`and` and `or` combine two boolean values into one. `and` will only return `true` if both of the values it's given
+are `true`, while `or` will return `true` if either of the values it's given are `true`:
+
+- true and true = true
+- true and false = false
+- false and true = false
+- false and false = false
+
+- true or true = true
+- true or false = true
+- false or true = true
+- false or false = false
+
+You can combine these using parentheses, just like with math operators:
+
+```
+bool is_wednesday = false;
+bool is_raining = true;
+bool is_mercury_in_retrograde = true;
+bool should_stay_home = (is_wednesday and is_raining) or is_mercury_in_retrograde;
+```
+
+## Comparison Operators
+
+In addition to boolean operators, we can also use comparison operators to compare two numbers and
+produce a boolean result. The comparison operators are:
+
+- `>` - greater than
+- `<` - less than
+- `>=` - greater than or equal to
+- `<=` - less than or equal to
+- `==` - equal to
+- `!=` - not equal to
+
+Note that the second to last one is two equal signs, not one. This is because we already use one 
+equal sign to assign values to variables (i.e., make the left side equal to the right side), so 
+we use `==` to say that we want to know _whether_ the two sides are equal.
+
+Here are some examples of comparison operators in action:
+
+```
+int spiciness = readInt();
+bool is_spicy = spiciness > 3;
+bool is_not_too_spicy = spiciness != 5;
+bool is_not_spicy_at_all = spiciness == 0;
+```
+
+## Conditionals
+
+Boolean values are particularly useful for determining whether to run a section of our programs
+or to choose between different sections of our program. In CFloor, we use the word `if` to
+determine whether to run a section of our program. For example:
+
+```
+int x = readInt();
+int y = readInt();
+if (x > y) {
+  write("x is greater than y!");
+}
+```
+
+In this example, the word `if` is followed by something that produces a boolean and one or more
+statements. We put the thing that produces the boolean in parentheses and the statements to run
+in braces (`{` and `}`). If x turns out to be strictly greater than y, the program will write
+"x is greater than y!" to the console, otherwise it will not write anything.
+
+The word `else` lets us chain together `if` statements, so that instead of choosing whether or
+not to run some code, we can choose between two different sections of code. For example:
+
+```
+int x = readInt();
+if(x > 0) {
+  write("Your number is positive.");
+} else {
+  write("Your number is not positive.");
+}
+```
+
+We can even chain together if statements when we have more than two possible situations. In the
+following example we have three possible _branches_ of code to follow: 
+
+```
+int spiciness = readInt();
+if(spiciness > 4) {
+  write("Too spicy!");
+} else if(spiciness >= 2) {
+  write("Just right.");
+} else {
+  write("Not spicy enough.");
+}
+```
+
+This program will keep trying each if statement until it finds one that's true and run just that one. 
+If none of them are true, it will run the else statement at the end. For example, a spiciness of 5 
+would make the first condition true, meaning the program would write "Too spicy!" and then continue with
+whatever code is after the "else" (if any). A spiciness of 3 would make the first condition false, so the 
+code would continue to the second if statement, find that the condition is true, and write "Just right."
+
+You can do anything inside of the braces that you could do outside of them, including writing more if 
+statements. You may find this to be helpful in situations like the following:
+
+```
+write("Enter your age.");
+int age = readInt();
+if(age >= 18) {
+  write("Do you have a VIP pass?");
+  bool has_vip_pass = readBool();
+  if(has_vip_pass) {
+    string name = readString();
+    write("Welcome to the party, \$name!");
+  } else {
+    write("Please wait in line.");
+  }
+} else {
+  write("Sorry, you are not old enough to attend.");
+}
+```
+
+In the previous example, we have logic that only applies to people who are 18 or older,
+so we put our "has_vip_pass" check inside of the first if statement to avoid asking people
+who aren't eligible either way. (Side note: in a more realistic scenario we would check
+their name against a list of VIPs, but lists won't be available for several more levels.)
+
+## Scope
+
+Here's a problem to consider: if the statements inside of braces only run when under
+certain conditions, what happens to variables declared in only one or some of the branches?
+Consider the following program:
+
+```
+int x = readInt();
+int y = readInt();
+write("Enter in z-axis?");
+bool is_three_dimensional = readBool();
+if(is_three_dimensional) {
+  int z = readInt();
+}
+```
+
+What happens to `z` if the user inputs `false`? The answer is that the program doesn't
+create a variable called `z` at all. This has implications for the rest of the program -
+how can later statements use `z` if it may or may not exist? To avoid confusion and errors
+resulting from this sort of situation, CFloor restricts where you can use variables. Each time
+you use a set of braces, you create a new _scope_ for variables, or a section of code where
+those variables are usable. You can still use variables from outside of your braces, but any
+variables inside the braces will get cleaned up when you reach the ending brace. In the previous
+example, we declare `x` and `y` outside of any braces, meaning they are available for the entire
+rest of the program. However, we declare `z` inside of the `if` statement, meaning we can only
+use `z` inside of that same `if`, not in an `else if` or `else` or after the `if` statement has
+ended. If we have an `if` statement nested inside another, the inner `if` statement can use
+anything from the outer `if` statement, but not vice versa.
+
+```
+int dimensions = readInt();
+int x = readInt();
+if(dimensions >= 2) {
+  int y = readInt();
+  if(dimensions == 3) {
+    int z = readInt();
+    float distance = sqrt((x * x) + ((y * y) + (z * z)));
+    write("The distance from the origin is \$distance.");
+  } else {
+    float distance = sqrt((x * x) + (y * y));
+    write("The distance from the origin is \$distance.");
+  }
+} else {
+  write("The distance from the origin is \$x.");
+}
+```
+
+In the previous example, `x` is available for the entire program, `y` is available in the
+if statement but not the else at the end, and `z` is only available in the inner if statement,
+not the else at the end, not the outer if, and not the inner else. 
+
+You'll also notice that we declare `distance` multiple times, which previously was not possible.
+Since `distance` gets cleaned up at the end of the braces, we can declare it again after we've
+left the branch in which it was declared. If we want to use it across branches or from outside
+the if statement, we need to declare it outside of the if statement:
+
+``` 
+int dimensions = readInt();
+int x = readInt();
+if(dimensions >= 2) {
+  float distance = 0;
+  int y = readInt();
+  if(dimensions == 3) {
+    int z = readInt();
+    distance = sqrt((x * x) + ((y * y) + (z * z)));
+  } else {
+    distance = sqrt((x * x) + (y * y));
+  }
+  write("The distance from the origin is \$distance.");
+} else {
+  write("The distance from the origin is \$x.");
+}
+```
+
+## Grammar
+
+CFloor level 4 introduces a few changes to the grammar to incorporate if statements:
+
+- A statement can be an "if block" in addition to the previous possibilities.
+- An "if statement" is the word "if", followed by a boolean expression in parentheses, followed by 
+  one or more statements inside of braces.
+- An "if block" is one or more if statements separated by the word "else", optionally followed by 
+  an "else" and one last set of statements inside of braces.
+
+Here's the full technical version:
+```
+BinaryBooleanOperator: 'and' | 'or' ;
+
+UnaryBooleanOperator: 'not' ;
+
+BooleanLiteral: 'true' | 'false' ;
+
+Comparator: '==' | '!=' | '<' | '<=' | '>' | '>=' ;
+
+booleanOperand: BooleanLiteral | Identifier | '(' booleanExpression ')' ;
+
+booleanExpression:
+    UnaryBooleanOperator booleanOperand |
+    mathOperand  Comparator mathOperand |
+    booleanOperand (BinaryBooleanOperator booleanOperand)? ;
+    
+block: '{' statement+ '}' ;
+ifStatement: 'if' '(' booleanExpression ')' block ;
+elseBlock: 'else' block ;
+ifBlock: ifStatement ('else' ifStatement)* elseBlock? ;
+
+statement: writeStatement | assignStatement | declAssignStatement | ifBlock ;
+```
 """
 };
 

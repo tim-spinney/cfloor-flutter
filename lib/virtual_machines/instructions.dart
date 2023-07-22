@@ -128,7 +128,7 @@ class MathFunctionInstruction extends Instruction {
       MathFunction.ceil => sourceValue.ceil(),
       MathFunction.floor => sourceValue.floor(),
       MathFunction.round => sourceValue.round(),
-      MathFunction.sqrt => sqrt(sourceValue.sqrt),
+      MathFunction.sqrt => sqrt(sourceValue),
       MathFunction.sin => sin(sourceValue),
       MathFunction.cos => cos(sourceValue),
       MathFunction.tan => tan(sourceValue),
