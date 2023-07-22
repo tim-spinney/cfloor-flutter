@@ -1,4 +1,5 @@
 import 'package:antlr4/antlr4.dart';
+import 'built_in_globals.dart';
 import 'instruction.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
@@ -54,6 +55,7 @@ mixin InstructionGeneratorUtils on InstructionGeneratingTreeWalker {
 
 mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
   final List<Map<String, DataType>> _variableDeclarations = [{}];
+  Map<String, Constant> get builtInVariables;
 
   void addDeclaration(String variableName, DataType dataType, Token startToken) {
     if(getDeclaredType(variableName) != null) {
@@ -68,6 +70,9 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
         return scope[variableName];
       }
     }
+    if(builtInVariables.containsKey(variableName)) {
+      return builtInVariables[variableName]!.dataType;
+    }
     return null;
   }
 
@@ -75,6 +80,12 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
     if(getDeclaredType(variableName) == null) {
       semanticErrors.add(
           'Semantic error at ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
+    }
+  }
+
+  checkConstantAssignment(String variableName, Token startToken) {
+    if(builtInVariables.containsKey(variableName)) {
+      semanticErrors.add('Semantic error at ${startToken.line}:${startToken.charPositionInLine}: cannot change the value of built-in variable $variableName.');
     }
   }
 

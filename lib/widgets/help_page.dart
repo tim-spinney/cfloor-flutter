@@ -190,9 +190,98 @@ readFunctionExpression: 'readInt()' ;
 # Level 2: floats vs. ints
 Note: each level builds on the last. If you haven't already, read about [Level 1](/help/language-levels/0).
 
+## Floats
+
+In CFloor level 1, you only had one data type - integers, or whole numbers. Level 2 introduces 
+"floating point" numbers, or "floats" for short. Floats are numbers that can have decimal points,
+like 1.5, 2.75, 3.14159, etc., as shown here:
+
+```
+float pi = 3.14;
+float r = 3.0;
+float area = pi * r * r;
+```
+
+## Type Conversion
+
+The previous example used float-type variables exclusively, but what happens if we mix floats and
+ints? The outcome has to be one type or the other, so our program needs to convert one of the types
+to match the other. Since decimals are a superset of whole numbers, CFloor will automatically convert
+any mix of floats and ints into a floating point result. Here are some examples:
+
+```
+float a = 1 + 2.5;
+int x = 10;
+float b = x / 4.0;
+float c = a * x; 
+```
+
+`a`, `b`, and `c`, will have the values `3.5`, `2.5`, and `35.0`, respectively.
+
+Caveat 1: CFloor will only convert at the point it needs to, not before. If you divide two integers and
+store the result in a float, the program will use integer division (chopping off the decimal part), then
+store the whole number result as a decimal. The statement `float y = 3 / 2;` will set y to 1.0. To avoid
+this, you will want to make sure that at least one of the values involved in the math operation is a
+float, either by using a float-type variable or writing a decimal number, such as `float y = 3.0 / 2;`.
+
+Caveat 2: CFloor will not convert from float to int. If you try to assign a float to an int-type variable,
+the editor will refuse to run your program. However, you do have some ways to convert a float to an int,
+as detailed in the next section.
+
+Caveat 3: The modulo operator (`%`) only works on integers. If you try to use it on a float, the editor
+will refuse to run your program.
+
+## Math Functions
+
+CFloor level 2 comes with some mathematical _functions_. Similar to how you can write `y = f(x)` in Algebra,
+CFloor provides some functions that take a number and transform it into another number. At level 2, you can
+use the following functions:
+
+- `floor(<number>)` - rounds a number down to the nearest whole number, producing an int
+- `ceil(<number>)` - rounds a number up to the nearest whole number, producing an int
+- `round(<number>)` - rounds a number to the nearest whole number, producing an int
+- `sqrt(<number>)` - takes the square root of a number, producing a float
+- `sin(<number>)` - takes the sine of a number, producing a float
+- `cos(<number>)` - takes the cosine of a number, producing a float
+- `tan(<number>)` - takes the tangent of a number, producing a float
+
+Note: all three trigonometric functions work on radians. To make them easier to use, the variable "pi"
+will be available automatically in all of your programs at level 2 and above.
+
+Additionally, you can now use `readFloat()` to get a decimal number from the user in addition to `readInt()`.
+
+Here's an example of how you can use these functions:
+
+```
+float x = readFloat();
+float next_lowest = floor(x);
+float next_highest = ceil(x);
+float rounded_x = round(x);
+float root_of_x = sqrt(x);
+float sine_of_x = sin(x);
+float cosine_of_x = cos(x);
+float tangent_of_x = tan(x);
+```
+
+## Grammar
+
+Level 2 does not contain any significant changes to the grammar of the language, other than allowing 
+decimal numbers.
+
 """,
   LanguageLevel.cfloor3: """
 Note: each level builds on the last. If you haven't already, read about [Level 2](/help/language-levels/1).
+
+# Level 3: Text Strings
+
+Documentation coming soon!
+""",
+  LanguageLevel.cfloor4: """
+Note: each level builds on the last. If you haven't already, read about [Level 3](/help/language-levels/2).
+
+# Level 4: Booleans and Conditionals
+
+Documentation coming soon!
 """
 };
 

@@ -1,6 +1,7 @@
 import 'data_type.dart';
 
 class VirtualMemory {
+  final Map<String, dynamic> builtInVariables = {};
   final List<Map<String, dynamic>> variableValues = [{}];
   final Map<int, dynamic> registers = {};
 
@@ -10,10 +11,15 @@ class VirtualMemory {
         return variableValues[i][name];
       }
     }
+    if(builtInVariables.containsKey(name)) {
+      return builtInVariables[name];
+    }
     throw Exception('Variable $name not found');
   }
 
   setVariableValue(String name, dynamic value) => variableValues.last[name] = value;
+
+  addBuiltInVariable(String name, dynamic value) => builtInVariables[name] = value;
 
   pushScope() => variableValues.add({});
 

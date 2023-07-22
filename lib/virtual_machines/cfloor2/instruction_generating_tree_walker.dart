@@ -1,3 +1,5 @@
+import 'package:cfloor_flutter/virtual_machines/built_in_globals.dart';
+
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
 import '../virtual_machine.dart';
@@ -20,6 +22,9 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
   CFloor2TreeWalker(this.virtualMachine);
 
   @override
+  get builtInVariables => builtInMathConstants;
+
+  @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
@@ -32,7 +37,9 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    checkDeclareBeforeUse(variableName, ctx.assignment()!.Identifier()!.symbol);
+    final startToken = ctx.assignment()!.Identifier()!.symbol;
+    checkDeclareBeforeUse(variableName, startToken);
+    checkConstantAssignment(variableName, startToken);
   }
 
   @override

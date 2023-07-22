@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4BaseListener.dart';
+import '../built_in_globals.dart';
 import '../instructions.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
@@ -29,6 +30,9 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
   @override
   final List<String> semanticErrors = [];
 
+  @override
+  get builtInVariables => builtInMathConstants;
+
   CFloor4TreeWalker(this.virtualMachine);
   
   @override
@@ -50,7 +54,9 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    checkDeclareBeforeUse(variableName, ctx.assignment()!.start!);
+    final startToken = ctx.assignment()!.Identifier()!.symbol;
+    checkDeclareBeforeUse(variableName, startToken);
+    checkConstantAssignment(variableName, startToken);
   }
 
   @override
