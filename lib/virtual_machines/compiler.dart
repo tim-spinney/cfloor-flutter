@@ -1,3 +1,4 @@
+import 'package:cfloor_flutter/virtual_machines/cfloor5/compiler.dart';
 import 'package:cfloor_flutter/virtual_machines/instruction_generating_tree_walker.dart';
 
 import '../console_state.dart';
@@ -21,6 +22,7 @@ class Compiler {
       LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, virtualMachine),
       LanguageLevel.cfloor3 => compileCFloor3(sourceText, errorCollector, virtualMachine),
       LanguageLevel.cfloor4 => compileCFloor4(sourceText, errorCollector, virtualMachine),
+      LanguageLevel.cfloor5 => compileCFloor5(sourceText, errorCollector, virtualMachine)
     };
     if(instructionGenerator is VariableDeclarationManager) {
       instructionGenerator.builtInVariables.forEach((name, constant) { virtualMachine.memory.addBuiltInVariable(name, constant.value); });

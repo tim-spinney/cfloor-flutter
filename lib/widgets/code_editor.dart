@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
-import 'help_page.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
@@ -20,9 +19,11 @@ class CodeEditor extends StatefulWidget {
 }
 
 const _sampleProgram = '''
-int x = 1;
-x = x + 2;
-write(x);
+write("a");
+while(true) {
+ write("b");
+}
+write("c");
 ''';
 
 const _levelDescriptions = {
@@ -30,13 +31,14 @@ const _levelDescriptions = {
   LanguageLevel.cfloor2: 'Level 2: floats vs. ints',
   LanguageLevel.cfloor3: 'Level 3: strings',
   LanguageLevel.cfloor4: 'Level 4: booleans and conditionals',
+  LanguageLevel.cfloor5: 'Level 5: while loops',
 };
 
 class _CodeEditorState extends State<CodeEditor> {
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
-  LanguageLevel _languageLevel = LanguageLevel.cfloor1;
+  LanguageLevel _languageLevel = LanguageLevel.cfloor5;
 
   @override
   void dispose() {

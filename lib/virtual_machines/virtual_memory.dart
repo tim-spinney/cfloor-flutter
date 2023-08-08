@@ -17,7 +17,15 @@ class VirtualMemory {
     throw Exception('Variable $name not found');
   }
 
-  setVariableValue(String name, dynamic value) => variableValues.last[name] = value;
+  setVariableValue(String name, dynamic value) {
+    for(int i = variableValues.length - 1; i >= 0; i--) {
+      if(variableValues[i].containsKey(name)) {
+        variableValues[i][name] = value;
+        return;
+      }
+    }
+    variableValues.last[name] = value;
+  }
 
   addBuiltInVariable(String name, dynamic value) => builtInVariables[name] = value;
 

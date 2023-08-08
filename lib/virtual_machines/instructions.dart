@@ -256,7 +256,7 @@ class JumpIfFalseInstruction extends Instruction {
   final int offset;
   final VirtualMachine _virtualMachine;
   @override
-  late final bool shouldIncrementProgramCounter;
+  late bool shouldIncrementProgramCounter;
 
   JumpIfFalseInstruction(super.textRange, this.condition, this.offset, this._virtualMachine);
 
