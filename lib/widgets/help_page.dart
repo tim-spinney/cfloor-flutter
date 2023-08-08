@@ -575,7 +575,46 @@ ifBlock: ifStatement ('else' ifStatement)* elseBlock? ;
 
 statement: writeStatement | assignStatement | declAssignStatement | ifBlock ;
 ```
-"""
+""",
+  LanguageLevel.cfloor5: """
+TODO: more detail
+
+Level 5 introduces the ability to create a basic _loop_, a section of code that
+can repeat. Similar to if statements, you can now write a _while loop_. It works
+like an if statement, but instead of continuing after the end of the block, it
+will check the condition again and repeat the block if the condition is still true.
+
+Example: the following program will write 10 times. When it encounters "while", it
+will see that the condition is true, so it will run the block. After the block, it
+goes back and checks if the counter is still less than 10. Since it is, it runs the
+block again, until after the 10th run the condition is no longer true and it moves
+on.
+
+```
+int counter = 0;
+while(counter < 10) {
+  write("counter is now \$counter");
+  counter = counter + 1;
+}
+```
+
+In this second example, we check user input for a specific value. The program
+could run indefinitely if the user never enters the right answer.
+
+```
+write("What is the new keyword introduced at this level?");
+string answer = readString();
+while(answer != "while") {
+  write("That is not correct. Try again.");
+  answer = readString();
+}
+```
+
+Keep in mind that just like with if statements, any variables you declare inside
+the block go away at the end of the block, even if the program runs the block
+again. If you want to carry over the value of a variable between loops, you must
+declare that variable outside the block so it survives past the end of the block.
+""",
 };
 
 class HelpPage extends StatelessWidget {
@@ -601,6 +640,7 @@ class HelpPage extends StatelessWidget {
               NavigationRailDestination(label: Text(''), icon: Text('Level 2')),
               NavigationRailDestination(label: Text(''), icon: Text('Level 3')),
               NavigationRailDestination(label: Text(''), icon: Text('Level 4')),
+              NavigationRailDestination(label: Text(''), icon: Text('Level 5')),
             ],
             selectedIndex: navIndex,
             onDestinationSelected: (index) {

@@ -19,11 +19,9 @@ class CodeEditor extends StatefulWidget {
 }
 
 const _sampleProgram = '''
-write("a");
-while(true) {
- write("b");
-}
-write("c");
+int x = 1;
+x = x + 2;
+write(x);
 ''';
 
 const _levelDescriptions = {
@@ -34,11 +32,18 @@ const _levelDescriptions = {
   LanguageLevel.cfloor5: 'Level 5: while loops',
 };
 
+const _skippableInstructionTypes = [
+  NoOpInstruction,
+  JumpInstruction,
+  JumpIfFalseInstruction,
+  PushScopeInstruction
+];
+
 class _CodeEditorState extends State<CodeEditor> {
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
-  LanguageLevel _languageLevel = LanguageLevel.cfloor5;
+  LanguageLevel _languageLevel = LanguageLevel.cfloor1;
 
   @override
   void dispose() {
@@ -82,7 +87,8 @@ class _CodeEditorState extends State<CodeEditor> {
     }
   }
 
-  _isSkippableInstruction(Instruction i) => i is NoOpInstruction || i is JumpInstruction || i is JumpIfFalseInstruction;
+
+  _isSkippableInstruction(Instruction i) => _skippableInstructionTypes.contains(i.runtimeType);
 
   void _submitInput(dynamic value) {
     _virtualMachine.submitInput(value);
