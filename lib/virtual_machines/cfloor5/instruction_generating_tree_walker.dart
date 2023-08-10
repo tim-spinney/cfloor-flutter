@@ -104,7 +104,7 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
     if(ctx.Identifier() != null) {
       dataSource = sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
-      dataSource = sourceFromConstant(ctx.Number()!.text!);
+      dataSource = sourceFromNumericConstant(ctx.Number()!.text!);
     } else {
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     }
@@ -235,7 +235,7 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
     } else if(ctx.Identifier() != null) {
       return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
-      return sourceFromConstant(ctx.Number()!.text!);
+      return sourceFromNumericConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
       return _handleMathFunctionExpression(ctx.mathFunctionExpression()!);
     } else if(ctx.stringLengthExpression() != null) {

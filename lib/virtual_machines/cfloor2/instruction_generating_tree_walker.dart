@@ -83,7 +83,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     if(ctx.Identifier() != null || ctx.Number() != null) {
       final dataSource = ctx.Identifier() != null
           ? sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol)
-          : sourceFromConstant(ctx.Number()!.text!);
+          : sourceFromNumericConstant(ctx.Number()!.text!);
       virtualMachine.addInstruction(
         WriteInstruction(
           getTextRange(ctx),
@@ -143,7 +143,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
     } else if(ctx.Identifier() != null) {
       return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
     } else if(ctx.Number() != null) {
-      return sourceFromConstant(ctx.Number()!.text!);
+      return sourceFromNumericConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
       return _handleMathFunctionExpression(ctx.mathFunctionExpression()!);
     } else {

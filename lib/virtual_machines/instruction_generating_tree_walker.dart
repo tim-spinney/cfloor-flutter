@@ -32,10 +32,13 @@ mixin InstructionGeneratorUtils on InstructionGeneratingTreeWalker {
     }
   }
 
-  ConstantDataSource sourceFromConstant(String numberText) {
-    bool isInt = int.tryParse(numberText) != null;
-    final value = double.parse(numberText);
-    return ConstantDataSource(isInt ? DataType.int : DataType.float, value);
+  ConstantDataSource sourceFromNumericConstant(String numberText) {
+    final asInt = int.tryParse(numberText);
+    if(asInt != null) {
+      return ConstantDataSource(DataType.int, asInt);
+    }
+    final asDouble = double.parse(numberText);
+    return ConstantDataSource(DataType.float, asDouble);
   }
 
   bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
