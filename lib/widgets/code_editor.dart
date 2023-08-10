@@ -37,7 +37,8 @@ const _skippableInstructionTypes = [
   NoOpInstruction,
   JumpInstruction,
   JumpIfFalseInstruction,
-  PushScopeInstruction
+  PushScopeInstruction,
+  PopScopeInstruction,
 ];
 
 class _CodeEditorState extends State<CodeEditor> {
