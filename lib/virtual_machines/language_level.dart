@@ -4,5 +4,6 @@ enum LanguageLevel {
   cfloor2,
   cfloor3,
   cfloor4,
-  cfloor5
+  cfloor5,
+  cfloor6,
 }

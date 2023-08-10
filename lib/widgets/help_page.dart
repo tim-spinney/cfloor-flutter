@@ -615,6 +615,9 @@ the block go away at the end of the block, even if the program runs the block
 again. If you want to carry over the value of a variable between loops, you must
 declare that variable outside the block so it survives past the end of the block.
 """,
+LanguageLevel.cfloor6: """
+TODO
+""",
 };
 
 class HelpPage extends StatelessWidget {
