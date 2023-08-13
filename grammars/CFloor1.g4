@@ -2,7 +2,7 @@ grammar CFloor1 ;
 
 MathOperator: '+' | '-' | '*' | '/' | '%' ;
 
-Type: 'int' ;
+type: 'int' ;
 
 StringLiteral: '"' .*? '"' ;
 
@@ -14,13 +14,15 @@ Identifier: [a-z][a-z_]* ;
 
 program: statement+ EOF;
 
-declAssignStatement: Type assignment ';' ;
+declAssignStatement: type assignment ';' ;
 
 assignStatement: assignment ';' ;
 
-writeStatement: 'write' '(' (Identifier | Number | StringLiteral) ')' ';' ;
+writeStatement: 'write' '(' (variableAccessor | Number | StringLiteral) ')' ';' ;
 
-mathOperand: Number | Identifier | ( '(' mathExpression ')') ;
+variableAccessor: Identifier ;
+
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;
 
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 

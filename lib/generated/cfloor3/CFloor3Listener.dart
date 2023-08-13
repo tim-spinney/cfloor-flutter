@@ -7,6 +7,13 @@ import 'CFloor3Parser.dart';
 /// This abstract class defines a complete listener for a parse tree produced by
 /// [CFloor3Parser].
 abstract class CFloor3Listener extends ParseTreeListener {
+  /// Enter a parse tree produced by [CFloor3Parser.type].
+  /// [ctx] the parse tree
+  void enterType(TypeContext ctx);
+  /// Exit a parse tree produced by [CFloor3Parser.type].
+  /// [ctx] the parse tree
+  void exitType(TypeContext ctx);
+
   /// Enter a parse tree produced by [CFloor3Parser.stringLengthExpression].
   /// [ctx] the parse tree
   void enterStringLengthExpression(StringLengthExpressionContext ctx);
@@ -69,6 +76,13 @@ abstract class CFloor3Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor3Parser.writeStatement].
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor3Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void enterVariableAccessor(VariableAccessorContext ctx);
+  /// Exit a parse tree produced by [CFloor3Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void exitVariableAccessor(VariableAccessorContext ctx);
 
   /// Enter a parse tree produced by [CFloor3Parser.mathExpression].
   /// [ctx] the parse tree

@@ -10,9 +10,9 @@ BooleanLiteral: 'true' | 'false' ;
 
 Comparator: '==' | '!=' | '<' | '<=' | '>' | '>=' ;
 
-Type: 'int' | 'float' | 'string' | 'bool' ;
+type: 'int' | 'float' | 'string' | 'bool' ;
 
-booleanOperand: BooleanLiteral | Identifier | '(' booleanExpression ')' ;
+booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' ;
 
 booleanExpression:
     UnaryBooleanOperator booleanOperand |

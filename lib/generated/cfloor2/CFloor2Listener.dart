@@ -7,6 +7,13 @@ import 'CFloor2Parser.dart';
 /// This abstract class defines a complete listener for a parse tree produced by
 /// [CFloor2Parser].
 abstract class CFloor2Listener extends ParseTreeListener {
+  /// Enter a parse tree produced by [CFloor2Parser.type].
+  /// [ctx] the parse tree
+  void enterType(TypeContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.type].
+  /// [ctx] the parse tree
+  void exitType(TypeContext ctx);
+
   /// Enter a parse tree produced by [CFloor2Parser.mathOperand].
   /// [ctx] the parse tree
   void enterMathOperand(MathOperandContext ctx);
@@ -55,6 +62,13 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor2Parser.writeStatement].
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor2Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void enterVariableAccessor(VariableAccessorContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void exitVariableAccessor(VariableAccessorContext ctx);
 
   /// Enter a parse tree produced by [CFloor2Parser.mathExpression].
   /// [ctx] the parse tree

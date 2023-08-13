@@ -12,6 +12,62 @@ import 'CFloor6Listener.dart';
 class CFloor6BaseListener implements CFloor6Listener {
   /// The default implementation does nothing.
   @override
+  void enterType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterArrayLiteralElement(ArrayLiteralElementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayLiteralElement(ArrayLiteralElementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterArrayLiteral(ArrayLiteralContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayLiteral(ArrayLiteralContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterArrayInitializer(ArrayInitializerContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayInitializer(ArrayInitializerContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterAssignment(AssignmentContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitAssignment(AssignmentContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterArrayIndexer(ArrayIndexerContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayIndexer(ArrayIndexerContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterVariableAccessor(VariableAccessorContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitVariableAccessor(VariableAccessorContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterTypedAssignment(TypedAssignmentContext ctx) {}
 
   /// The default implementation does nothing.
@@ -36,6 +92,14 @@ class CFloor6BaseListener implements CFloor6Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterProgram(ProgramContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitProgram(ProgramContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterWhileLoop(WhileLoopContext ctx) {}
 
   /// The default implementation does nothing.
@@ -57,14 +121,6 @@ class CFloor6BaseListener implements CFloor6Listener {
   /// The default implementation does nothing.
   @override
   void exitBooleanExpression(BooleanExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterAssignment(AssignmentContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitAssignment(AssignmentContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -97,14 +153,6 @@ class CFloor6BaseListener implements CFloor6Listener {
   /// The default implementation does nothing.
   @override
   void exitIfBlock(IfBlockContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
   @override

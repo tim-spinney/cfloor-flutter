@@ -12,6 +12,14 @@ import 'CFloor1Listener.dart';
 class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
+  void enterType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
@@ -41,6 +49,14 @@ class CFloor1BaseListener implements CFloor1Listener {
   /// The default implementation does nothing.
   @override
   void exitWriteStatement(WriteStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterVariableAccessor(VariableAccessorContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
   @override

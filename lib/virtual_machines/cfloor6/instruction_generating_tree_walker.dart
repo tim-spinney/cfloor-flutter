@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor6/CFloor6Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor6/CFloor6BaseListener.dart';
+import 'package:cfloor_flutter/virtual_machines/cfloor_array.dart';
 import '../built_in_globals.dart';
 import '../instructions.dart';
 import '../instruction_generating_tree_walker.dart';
@@ -23,6 +24,8 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   final List<Instruction> _instructions = [];
   final List<_IfBlock> _ifBlocks = [];
 
+  final Map<String, DataType> _arrayVariableInnerTypes = {};
+
   List<Instruction> get _currentInstructionTarget => _ifBlocks.isEmpty
     ? _instructions
     : _ifBlocks.last.branches.last.body;
@@ -43,7 +46,7 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
-    _handleDeclarationAssignment(ctx.Type()!, ctx.assignment()!, ctx);
+    _handleDeclarationAssignment(ctx.type()!, ctx.assignment()!, ctx);
   }
 
   @override
@@ -51,8 +54,8 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
     final assignment = ctx.assignment()!;
-    final variableName = assignment.Identifier()!.text!;
-    final startToken = assignment.Identifier()!.symbol;
+    final variableName = assignment.variableAccessor()!.Identifier()!.text!;
+    final startToken = assignment.variableAccessor()!.Identifier()!.symbol;
     checkDeclareBeforeUse(variableName, startToken);
     checkConstantAssignment(variableName, startToken);
     _handleAssignment(assignment);
@@ -61,8 +64,8 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
     late final DataSource dataSource;
-    if(ctx.Identifier() != null) {
-      dataSource = sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    if(ctx.variableAccessor() != null) {
+      dataSource = _handleVariableAccessor(ctx.variableAccessor()!);
     } else if(ctx.Number() != null) {
       dataSource = sourceFromNumericConstant(ctx.Number()!.text!);
     } else {
@@ -141,7 +144,7 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
     initBlock.branches.add(_IfBranch());
     _ifBlocks.add(initBlock);
     final initExpression = ctx.typedAssignment()!;
-    _handleDeclarationAssignment(initExpression.Type()!, initExpression.assignment()!, initExpression);
+    _handleDeclarationAssignment(initExpression.type()!, initExpression.assignment()!, initExpression);
     final loopBlock = _IfBlock();
     loopBlock.branches.add(_IfBranch());
     _ifBlocks.add(loopBlock);
@@ -229,8 +232,8 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   DataSource _handleMathOperand(MathOperandContext ctx) {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
-    } else if(ctx.Identifier() != null) {
-      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    } else if(ctx.variableAccessor() != null) {
+      return _handleVariableAccessor(ctx.variableAccessor()!);
     } else if(ctx.Number() != null) {
       return sourceFromNumericConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
@@ -292,8 +295,8 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   DataSource _handleBooleanOperand(BooleanOperandContext ctx) {
     if(ctx.BooleanLiteral() != null) {
       return ConstantDataSource(DataType.bool, bool.parse(ctx.text));
-    } else if(ctx.Identifier() != null) {
-      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    } else if(ctx.variableAccessor() != null) {
+      return _handleVariableAccessor(ctx.variableAccessor()!);
     } else if(ctx.booleanExpression() != null) {
       return _handleBooleanExpression(ctx.booleanExpression()!);
     } else {
@@ -375,14 +378,13 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   }
 
   DataSource _handleStringLengthExpression(StringLengthExpressionContext ctx) {
-    final identifier = ctx.Identifier()!;
-    final variableName = identifier.text!;
-    checkDeclareBeforeUse(variableName, identifier.symbol);
-    final lengthRegister = allocateRegister(DataType.int);
+    final stringSource = _handleVariableAccessor(ctx.variableAccessor()!);
+    // TODO: make second source optional
+    final lengthRegister = _recycleOrAllocateRegister(stringSource, stringSource, DataType.int);
     _addInstruction(
         StringLengthInstruction(
             getTextRange(ctx),
-            sourceFromMemory(variableName, identifier.symbol),
+            stringSource,
             lengthRegister
         )
     );
@@ -404,9 +406,16 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
   }
 
   // records that the variable was declared and with which type
-  void _handleDeclarationAssignment(TerminalNode typeNode, AssignmentContext assignment, ParserRuleContext ctx) {
-    final variableName = assignment.Identifier()!.text!;
-    final variableType = DataType.values.firstWhere((type) => type.name == typeNode.text);
+  void _handleDeclarationAssignment(TypeContext typeNode, AssignmentContext assignment, ParserRuleContext ctx) {
+    if(assignment.variableAccessor()!.arrayIndexer() != null) {
+      semanticErrors.add('Semantic error at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: you can only declare the type of a whole array, not a specific element.');
+    }
+    final variableName = assignment.variableAccessor()!.Identifier()!.text!;
+    final isArrayType = typeNode.text.contains('array');
+    final variableType = isArrayType ? DataType.array : DataType.values.firstWhere((type) => type.name == typeNode.text);
+    if(isArrayType) {
+      _arrayVariableInnerTypes[variableName] = DataType.values.firstWhere((type) => type.name == typeNode.Primitive()!.text);
+    }
     addDeclaration(variableName, variableType, ctx.start!);
     _handleAssignment(assignment);
   }
@@ -422,31 +431,98 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with RegisterManager, Ins
       dataSource = _handleStringLiteral(ctx.StringLiteral()!.text!, ctx.StringLiteral()!.symbol);
     } else if(ctx.booleanExpression() != null) {
       dataSource = _handleBooleanExpression(ctx.booleanExpression()!);
+    } else if(ctx.arrayInitializer() != null) {
+      dataSource = _handleArrayInitializer(ctx.arrayInitializer()!);
+    } else if(ctx.arrayLiteral() != null) {
+      dataSource = _handleArrayLiteral(ctx.arrayLiteral()!);
     } // else there was a syntax error
+
     if(dataSource != null) {
       // validate rhs type matches lhs type
-      final variableName = ctx.Identifier()!.text!;
+      final destinationName = ctx.variableAccessor()!.Identifier()!.text!;
+      final arrayIndexer = ctx.variableAccessor()?.arrayIndexer()?.text;
+      final destinationIndex = arrayIndexer == null ? null : int.tryParse(arrayIndexer);
 
       // get lhs type - either it was declared previously, this is part of a
       // declAssign, or we'll end up with a declare before use error anyway
-      DataType? variableType = getDeclaredType(variableName);
+      DataType? variableType = getDeclaredType(destinationName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
-        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
+        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).type()!.text);
       }
       if(variableType != null) {
-        checkTypeConversion(dataSource.dataType, variableType, ctx);
+        _checkTypeConversion(dataSource.dataType, destinationName, variableType, ctx);
       }
 
       _addInstruction(
           AssignmentInstruction(
             getTextRange(ctx),
-            VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, variableName),
+            VariableDataDestination(variableType ?? dataSource.dataType, virtualMachine.memory, destinationName, index: destinationIndex),
             dataSource,
           )
       );
     }
     // recycle any registers used by expressions
     nextRegister = 0;
+  }
+
+  DataSource _handleArrayInitializer(ArrayInitializerContext ctx) {
+    final length = int.parse(ctx.Number()!.text!);
+    final typeName = ctx.Primitive()!.text!;
+    final dataType = DataType.values.firstWhere((type) => type.name == typeName);
+    return ConstantDataSource(DataType.array, CFloorArray.filled(dataType, length));
+  }
+
+  MemorySource _handleArrayLiteral(ArrayLiteralContext ctx) {
+    throw UnimplementedError();
+  }
+
+  MemorySource _handleVariableAccessor(VariableAccessorContext accessor) {
+    final variableName = accessor.Identifier()!.text!;
+    checkDeclareBeforeUse(variableName, accessor.start!);
+    if(accessor.arrayIndexer() == null) {
+      return VariableMemorySource(getDeclaredType(variableName)!, virtualMachine.memory, variableName);
+    }
+
+    final arrayIndexer = accessor.arrayIndexer()!;
+    final arrayName = accessor.Identifier()!.text!;
+    final arrayType = getDeclaredType(arrayName)!;
+    if(arrayType != DataType.array) {
+      semanticErrors.add('Semantic error at ${accessor.start!.line}:${accessor.start!.charPositionInLine}: cannot index into non-array variable "$arrayName".');
+      throw Exception('Cannot index into non-array variable');
+    }
+    DataSource indexDataSource;
+    if(arrayIndexer.Number() != null) {
+      indexDataSource = ConstantDataSource(DataType.int, int.parse(arrayIndexer.Number()!.text!));
+    } else {
+      indexDataSource = _handleMathExpression(arrayIndexer.mathExpression()!);
+    }
+    if(indexDataSource.dataType != DataType.int) {
+      semanticErrors.add('Semantic error at ${arrayIndexer.start!.line}:${arrayIndexer.start!.charPositionInLine}: array index must be an integer.');
+      throw Exception('Array index must be an integer');
+    }
+    final arrayInnerType = _arrayVariableInnerTypes[arrayName]!;
+    final arrayDataSource = sourceFromMemory(arrayName, accessor.Identifier()!.symbol);
+    final targetRegister = _recycleOrAllocateRegister(arrayDataSource, indexDataSource, arrayInnerType);
+    _addInstruction(ArrayDereferenceInstruction(getTextRange(accessor), arrayDataSource, indexDataSource, targetRegister));
+    return targetRegister.toSource();
+  }
+
+  _checkTypeConversion(DataType sourceType, String destinationName, DataType destinationType, ParserRuleContext ctx) {
+    if(sourceType == destinationType) {
+      return;
+    } else if(sourceType == DataType.int && destinationType == DataType.float) {
+      return;
+    } else if(destinationType == DataType.array) {
+      // RHS could be expression that can only be evaluated at runtime so we have to delay checking until then
+      if(sourceType == DataType.array) {
+        return;
+      }
+      final destinationInnerType = _arrayVariableInnerTypes[destinationName]!;
+      if(checkTypeConversion(sourceType, destinationInnerType, ctx)) {
+        return;
+      }
+    }
+    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${sourceType.name} to a(n) ${destinationType.name}.');
   }
 }
 

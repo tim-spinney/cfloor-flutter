@@ -298,3 +298,16 @@ class PopScopeInstruction extends Instruction {
     _virtualMemory.popScope();
   }
 }
+
+class ArrayDereferenceInstruction extends Instruction {
+  final DataSource arraySource;
+  final DataSource indexSource;
+  final DataDestination destination;
+
+  ArrayDereferenceInstruction(super.textRange, this.arraySource, this.indexSource, this.destination);
+
+  @override
+  void evaluate() {
+    destination.set(arraySource.get()[indexSource.get()]);
+  }
+}

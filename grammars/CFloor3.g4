@@ -2,14 +2,13 @@ grammar CFloor3 ;
 
 import CFloor2 ;
 
-Type: 'int' | 'float' | 'string' ;
+type: 'int' | 'float' | 'string' ;
 
-
-stringLengthExpression: 'length(' Identifier ')' ;
+stringLengthExpression: 'length(' variableAccessor ')' ;
 
 assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLiteral) ;
 
-mathOperand: Number | Identifier | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
 
 readFunctionExpression: 'readInt()' | 'readFloat()' | 'readString()' ;
 

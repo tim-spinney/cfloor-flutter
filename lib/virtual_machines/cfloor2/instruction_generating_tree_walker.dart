@@ -28,7 +28,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
+    final variableType = DataType.values.firstWhere((type) => type.name == ctx.type()!.text);
     addDeclaration(variableName, variableType, ctx.start!);
   }
 
@@ -60,7 +60,7 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
       // declAssign, or we'll end up with a declare before use error anyway
       DataType? variableType = getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
-        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
+        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).type()!.text);
       }
       if(variableType != null) {
         checkTypeConversion(dataSource.dataType, variableType, ctx);
@@ -80,9 +80,9 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    if(ctx.Identifier() != null || ctx.Number() != null) {
-      final dataSource = ctx.Identifier() != null
-          ? sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol)
+    if(ctx.variableAccessor() != null || ctx.Number() != null) {
+      final dataSource = ctx.variableAccessor() != null
+          ? sourceFromMemory(ctx.variableAccessor()!.text!, ctx.variableAccessor()!.start!)
           : sourceFromNumericConstant(ctx.Number()!.text!);
       virtualMachine.addInstruction(
         WriteInstruction(
@@ -140,8 +140,8 @@ class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with RegisterManager, Ins
   DataSource _handleMathOperand(MathOperandContext ctx) {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
-    } else if(ctx.Identifier() != null) {
-      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    } else if(ctx.variableAccessor() != null) {
+      return sourceFromMemory(ctx.variableAccessor()!.text, ctx.variableAccessor()!.start!);
     } else if(ctx.Number() != null) {
       return sourceFromNumericConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {

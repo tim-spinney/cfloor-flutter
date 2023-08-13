@@ -60,8 +60,8 @@ class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with RegisterManager, Ins
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    if(ctx.Identifier() != null) {
-      final variableName = ctx.Identifier()!.text!;
+    if(ctx.variableAccessor() != null) {
+      final variableName = ctx.variableAccessor()!.text;
       virtualMachine.addInstruction(
         WriteInstruction(
           getTextRange(ctx),
@@ -113,9 +113,9 @@ class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with RegisterManager, Ins
   DataSource _handleMathOperand(MathOperandContext ctx) {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
-    } else if(ctx.Identifier() != null) {
-      _checkDeclareBeforeUse(ctx.Identifier()!.text!, ctx);
-      return VariableMemorySource(DataType.int, virtualMachine.memory, ctx.Identifier()!.text!);
+    } else if(ctx.variableAccessor() != null) {
+      _checkDeclareBeforeUse(ctx.variableAccessor()!.text, ctx);
+      return VariableMemorySource(DataType.int, virtualMachine.memory, ctx.variableAccessor()!.text);
     } else if(ctx.Number() != null) {
       return ConstantDataSource(DataType.int, int.parse(ctx.Number()!.text!));
     } else {

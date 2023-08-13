@@ -17,14 +17,19 @@ class VirtualMemory {
     throw Exception('Variable $name not found');
   }
 
-  setVariableValue(String name, dynamic value) {
-    for(int i = variableValues.length - 1; i >= 0; i--) {
+  setVariableValue(String name, dynamic value, int? index) {
+    Map<String, dynamic> destinationScope = variableValues.last;
+    for(int i = variableValues.length - 2; i >= 0; i--) {
       if(variableValues[i].containsKey(name)) {
-        variableValues[i][name] = value;
-        return;
+        destinationScope = variableValues[i];
+        break;
       }
     }
-    variableValues.last[name] = value;
+    if(index == null) {
+      destinationScope[name] = value;
+    } else {
+      destinationScope[name][index] = value;
+    }
   }
 
   addBuiltInVariable(String name, dynamic value) => builtInVariables[name] = value;
@@ -105,9 +110,10 @@ class RegisterDataDestination extends DataDestination {
 
 class VariableDataDestination extends DataDestination {
   final String _variableName;
+  final int? _index;
 
-  VariableDataDestination(super.dataType, super._memory, this._variableName);
+  VariableDataDestination(super.dataType, super._memory, this._variableName, { int? index }) : _index = index;
 
   @override
-  void set(dynamic value) => _memory.setVariableValue(_variableName, value);
+  void set(dynamic value) => _memory.setVariableValue(_variableName, value, _index);
 }

@@ -21,6 +21,13 @@ abstract class CFloor5Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitStatement(StatementContext ctx);
 
+  /// Enter a parse tree produced by [CFloor5Parser.type].
+  /// [ctx] the parse tree
+  void enterType(TypeContext ctx);
+  /// Exit a parse tree produced by [CFloor5Parser.type].
+  /// [ctx] the parse tree
+  void exitType(TypeContext ctx);
+
   /// Enter a parse tree produced by [CFloor5Parser.booleanOperand].
   /// [ctx] the parse tree
   void enterBooleanOperand(BooleanOperandContext ctx);
@@ -125,6 +132,13 @@ abstract class CFloor5Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor5Parser.writeStatement].
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor5Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void enterVariableAccessor(VariableAccessorContext ctx);
+  /// Exit a parse tree produced by [CFloor5Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void exitVariableAccessor(VariableAccessorContext ctx);
 
   /// Enter a parse tree produced by [CFloor5Parser.mathExpression].
   /// [ctx] the parse tree

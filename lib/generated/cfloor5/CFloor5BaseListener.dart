@@ -28,6 +28,14 @@ class CFloor5BaseListener implements CFloor5Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterBooleanOperand(BooleanOperandContext ctx) {}
 
   /// The default implementation does nothing.
@@ -145,6 +153,14 @@ class CFloor5BaseListener implements CFloor5Listener {
   /// The default implementation does nothing.
   @override
   void exitWriteStatement(WriteStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterVariableAccessor(VariableAccessorContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
   @override

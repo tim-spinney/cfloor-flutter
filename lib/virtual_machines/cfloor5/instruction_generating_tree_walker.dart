@@ -45,7 +45,7 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     // record that the variable was declared and what type it has
     final variableName = ctx.assignment()!.Identifier()!.text!;
-    final variableType = DataType.values.firstWhere((type) => type.name == ctx.Type()!.text);
+    final variableType = DataType.values.firstWhere((type) => type.name == ctx.type()!.text);
     addDeclaration(variableName, variableType, ctx.start!);
   }
 
@@ -80,7 +80,7 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
       // declAssign, or we'll end up with a declare before use error anyway
       DataType? variableType = getDeclaredType(variableName);
       if(variableType == null && ctx.parent is DeclAssignStatementContext) {
-        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).Type()!.text);
+        variableType = DataType.values.firstWhere((type) => type.name == (ctx.parent as DeclAssignStatementContext).type()!.text);
       }
       if(variableType != null) {
         checkTypeConversion(dataSource.dataType, variableType, ctx);
@@ -101,8 +101,8 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
     late final DataSource dataSource;
-    if(ctx.Identifier() != null) {
-      dataSource = sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    if(ctx.variableAccessor() != null) {
+      dataSource = sourceFromMemory(ctx.variableAccessor()!.text!, ctx.variableAccessor()!.start!);
     } else if(ctx.Number() != null) {
       dataSource = sourceFromNumericConstant(ctx.Number()!.text!);
     } else {
@@ -232,8 +232,8 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
   DataSource _handleMathOperand(MathOperandContext ctx) {
     if(ctx.mathExpression() != null) {
       return _handleMathExpression(ctx.mathExpression()!);
-    } else if(ctx.Identifier() != null) {
-      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    } else if(ctx.variableAccessor() != null) {
+      return sourceFromMemory(ctx.variableAccessor()!.text!, ctx.variableAccessor()!.start!);
     } else if(ctx.Number() != null) {
       return sourceFromNumericConstant(ctx.Number()!.text!);
     } else if(ctx.mathFunctionExpression() != null) {
@@ -295,8 +295,8 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
   DataSource _handleBooleanOperand(BooleanOperandContext ctx) {
     if(ctx.BooleanLiteral() != null) {
       return ConstantDataSource(DataType.bool, bool.parse(ctx.text));
-    } else if(ctx.Identifier() != null) {
-      return sourceFromMemory(ctx.Identifier()!.text!, ctx.Identifier()!.symbol);
+    } else if(ctx.variableAccessor() != null) {
+      return sourceFromMemory(ctx.variableAccessor()!.text!, ctx.variableAccessor()!.start!);
     } else if(ctx.booleanExpression() != null) {
       return _handleBooleanExpression(ctx.booleanExpression()!);
     } else {
@@ -378,14 +378,15 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with RegisterManager, Ins
   }
 
   DataSource _handleStringLengthExpression(StringLengthExpressionContext ctx) {
-    final identifier = ctx.Identifier()!;
-    final variableName = identifier.text!;
-    checkDeclareBeforeUse(variableName, identifier.symbol);
+    final identifier = ctx.variableAccessor()!;
+    final variableName = identifier.text;
+    final startSymbol = identifier.start!;
+    checkDeclareBeforeUse(variableName, startSymbol);
     final lengthRegister = allocateRegister(DataType.int);
     _addInstruction(
         StringLengthInstruction(
             getTextRange(ctx),
-            sourceFromMemory(variableName, identifier.symbol),
+            sourceFromMemory(variableName, startSymbol),
             lengthRegister
         )
     );

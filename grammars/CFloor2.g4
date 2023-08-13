@@ -4,9 +4,9 @@ import CFloor1 ;
 
 Number: [-]?[0-9]+ | [-]?[0-9]* '.' [0-9]+? ;
 
-Type: 'int' | 'float' ;
+type: 'int' | 'float' ;
 
-mathOperand: Number | Identifier | ( '(' mathExpression ')') | mathFunctionExpression ;
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression ;
 
 mathFunctionExpression: ('floor' | 'ceil' | 'round' | 'sqrt' | 'sin' | 'cos' | 'tan') '(' mathExpression ')' ;
 
