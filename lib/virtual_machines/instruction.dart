@@ -1,10 +1,13 @@
-import '../console_state.dart';
-import 'data_type.dart';
-import 'virtual_memory.dart';
+import 'package:antlr4/antlr4.dart';
 
 class TextRange {
-  final int start, end;
-  TextRange(this.start, this.end);
+  final Token _startToken, _endToken;
+
+  int get start => _startToken.startIndex;
+  int get end => _endToken.stopIndex;
+  String get startPosition => '${_startToken.line}:${_startToken.charPositionInLine}';
+
+  TextRange(this._startToken, this._endToken);
 }
 
 abstract class Instruction {

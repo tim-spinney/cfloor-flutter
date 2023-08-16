@@ -46,7 +46,7 @@ class VirtualMemory {
 }
 
 abstract class DataSource {
-  final DataType dataType;
+  final CompositeDataType dataType;
 
   DataSource(this.dataType);
 
@@ -86,10 +86,19 @@ class ConstantDataSource extends DataSource {
 
   @override
   dynamic get() => _value;
+
+  static ConstantDataSource fromNumericConstant(String numberText) {
+    final asInt = int.tryParse(numberText);
+    if(asInt != null) {
+      return ConstantDataSource(DataType.int.toCompositeType(), asInt);
+    }
+    final asDouble = double.parse(numberText);
+    return ConstantDataSource(DataType.float.toCompositeType(), asDouble);
+  }
 }
 
 abstract class DataDestination {
-  final DataType dataType;
+  final CompositeDataType dataType;
   final VirtualMemory _memory;
 
   DataDestination(this.dataType, this._memory);
@@ -110,10 +119,10 @@ class RegisterDataDestination extends DataDestination {
 
 class VariableDataDestination extends DataDestination {
   final String _variableName;
-  final int? _index;
+  final DataSource? _indexSource;
 
-  VariableDataDestination(super.dataType, super._memory, this._variableName, { int? index }) : _index = index;
+  VariableDataDestination(super.dataType, super._memory, this._variableName, this._indexSource);
 
   @override
-  void set(dynamic value) => _memory.setVariableValue(_variableName, value, _index);
+  void set(dynamic value) => _memory.setVariableValue(_variableName, value, _indexSource?.get());
 }

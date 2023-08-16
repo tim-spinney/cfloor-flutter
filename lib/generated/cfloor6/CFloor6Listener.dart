@@ -42,13 +42,6 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitAssignment(AssignmentContext ctx);
 
-  /// Enter a parse tree produced by [CFloor6Parser.arrayIndexer].
-  /// [ctx] the parse tree
-  void enterArrayIndexer(ArrayIndexerContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.arrayIndexer].
-  /// [ctx] the parse tree
-  void exitArrayIndexer(ArrayIndexerContext ctx);
-
   /// Enter a parse tree produced by [CFloor6Parser.variableAccessor].
   /// [ctx] the parse tree
   void enterVariableAccessor(VariableAccessorContext ctx);

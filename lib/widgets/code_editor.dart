@@ -17,11 +17,18 @@ class CodeEditor extends StatefulWidget {
   @override
   State<CodeEditor> createState() => _CodeEditorState();
 }
-
+/*
 const _sampleProgram = '''
 array<int> a = array<int>[4];
 a[0] = 1;
 write(a[0]);
+''';
+ */
+
+const _sampleProgram = '''
+int a = 4;
+a = a * a;
+write(a);
 ''';
 
 const _levelDescriptions = {
@@ -45,7 +52,7 @@ class _CodeEditorState extends State<CodeEditor> {
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
-  LanguageLevel _languageLevel = LanguageLevel.cfloor6;
+  LanguageLevel _languageLevel = LanguageLevel.cfloor1;
 
   @override
   void dispose() {

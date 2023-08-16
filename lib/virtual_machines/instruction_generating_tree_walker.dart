@@ -1,4 +1,6 @@
 import 'package:antlr4/antlr4.dart';
+import 'package:cfloor_flutter/virtual_machines/semantic_error_collector.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/identifier.dart';
 import 'built_in_globals.dart';
 import 'instruction.dart';
 import 'virtual_machine.dart';
@@ -6,89 +8,75 @@ import 'virtual_memory.dart';
 import 'data_type.dart';
 
 abstract class InstructionGeneratingTreeWalker implements ParseTreeListener {
-  final VirtualMachine virtualMachine;
-  List<String> get semanticErrors;
-
-  InstructionGeneratingTreeWalker(this.virtualMachine);
-}
-
-mixin RegisterManager {
   abstract final VirtualMachine virtualMachine;
-  int nextRegister = 0;
-
-  RegisterDataDestination allocateRegister(DataType dataType) => RegisterDataDestination(dataType, virtualMachine.memory, nextRegister++);
+  abstract final SemanticErrorCollector semanticErrorCollector;
+  Map<String, Constant> get builtInVariables;
 }
 
-mixin InstructionGeneratorUtils on InstructionGeneratingTreeWalker {
-  combineNumericDataTypes(DataType left, DataType right, Token startToken) {
-    if(!_typeIsNumeric(left) || !_typeIsNumeric(right)) {
-      semanticErrors.add('Type mismatch at ${startToken.line}:${startToken.charPositionInLine}: math operators only work on numbers.');
-      throw Exception('Cannot combine non-numeric types');
-    }
-    if(left == DataType.float || right == DataType.float) {
-      return DataType.float;
+class RegisterManager {
+  final VirtualMemory _virtualMemory;
+  int _nextRegister = 0;
+
+  RegisterManager(this._virtualMemory);
+
+  RegisterDataDestination allocateRegister(CompositeDataType dataType) => RegisterDataDestination(dataType, _virtualMemory, _nextRegister++);
+
+  RegisterDataDestination recycleOrAllocateRegister(DataSource left, DataSource right, CompositeDataType dataType) {
+    if(left is RegisterMemorySource) {
+      return left.toDestination();
+    } else if(right is RegisterMemorySource) {
+      return right.toDestination();
     } else {
-      return DataType.int;
+      return allocateRegister(dataType);
     }
   }
 
-  ConstantDataSource sourceFromNumericConstant(String numberText) {
-    final asInt = int.tryParse(numberText);
-    if(asInt != null) {
-      return ConstantDataSource(DataType.int, asInt);
-    }
-    final asDouble = double.parse(numberText);
-    return ConstantDataSource(DataType.float, asDouble);
+  void resetRegisterUsage() {
+    _nextRegister = 0;
   }
+}
 
-  bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
+extension ParserRuleContextTextRangeGetter on ParserRuleContext {
+  TextRange get textRange => TextRange(start!, stop!);
+}
 
-  bool checkTypeConversion(DataType source, DataType destination, ParserRuleContext ctx) {
-    if(source == destination) {
-      return true;
-    } else if(source == DataType.int && destination == DataType.float) {
-      return true;
-    }
-    semanticErrors.add('Type mismatch at ${ctx.start!.line}:${ctx.start!.charPositionInLine}: cannot assign ${source.name} to a(n) ${destination.name}.');
-    return false;
-  }
-
-  TextRange getTextRange(ParserRuleContext ctx) => TextRange(ctx.start!.startIndex, ctx.stop!.stopIndex);
+extension TerminalNodeTextRangeGetter on TerminalNode {
+  TextRange get textRange => TextRange(symbol, symbol);
 }
 
 mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
-  final List<Map<String, DataType>> _variableDeclarations = [{}];
-  Map<String, Constant> get builtInVariables;
 
-  void addDeclaration(String variableName, DataType dataType, Token startToken) {
+  final List<Map<String, CompositeDataType>> _variableDeclarations = [{}];
+
+  void addDeclaration(String variableName, CompositeDataType dataType, TextRange textRange) {
     if(getDeclaredType(variableName) != null) {
-      semanticErrors.add('Semantic error at ${startToken.line}:${startToken.charPositionInLine}: variable "$variableName" already declared in current scope.');
+      semanticErrorCollector.add('Semantic error at ${textRange.startPosition}: variable "$variableName" already declared in current scope.');
     }
     _variableDeclarations.last[variableName] = dataType;
   }
 
-  DataType? getDeclaredType(String variableName) {
+  CompositeDataType? getDeclaredType(String variableName) {
     for(final scope in _variableDeclarations.reversed) {
       if(scope.containsKey(variableName)) {
         return scope[variableName];
       }
     }
     if(builtInVariables.containsKey(variableName)) {
-      return builtInVariables[variableName]!.dataType;
+      return CompositeDataType.fromPrimitive(builtInVariables[variableName]!.dataType);
     }
     return null;
   }
 
-  checkDeclareBeforeUse(String variableName, Token startToken) {
-    if(getDeclaredType(variableName) == null) {
-      semanticErrors.add(
-          'Semantic error at ${startToken.line}:${startToken.charPositionInLine}: variable name $variableName needs to be declared in the current scope before use.');
+  checkDeclareBeforeUse(Identifier id) {
+    if(getDeclaredType(id.variableName) == null) {
+      semanticErrorCollector.add(
+          'Semantic error at ${id.textRange.startPosition}: variable name ${id.variableName} needs to be declared in the current scope before use.');
     }
   }
 
-  checkConstantAssignment(String variableName, Token startToken) {
-    if(builtInVariables.containsKey(variableName)) {
-      semanticErrors.add('Semantic error at ${startToken.line}:${startToken.charPositionInLine}: cannot change the value of built-in variable $variableName.');
+  checkConstantAssignment(Identifier id) {
+    if(builtInVariables.containsKey(id.variableName)) {
+      semanticErrorCollector.add('Semantic error at ${id.textRange.startPosition}: cannot change the value of built-in variable ${id.variableName}.');
     }
   }
 
@@ -100,8 +88,32 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
     _variableDeclarations.removeLast();
   }
 
-  VariableMemorySource sourceFromMemory(String variableName, Token startToken) {
-    checkDeclareBeforeUse(variableName, startToken);
-    return VariableMemorySource(getDeclaredType(variableName)!, virtualMachine.memory, variableName);
+  VariableMemorySource sourceFromMemory(Identifier id) {
+    checkDeclareBeforeUse(id);
+    return VariableMemorySource(getDeclaredType(id.variableName)!, virtualMachine.memory, id.variableName);
+  }
+
+  DataType combineNumericDataTypes(DataType left, DataType right, TextRange textRange) {
+    if(!_typeIsNumeric(left) || !_typeIsNumeric(right)) {
+      semanticErrorCollector.add('Type mismatch at ${textRange.startPosition}: math operators only work on numbers.');
+      throw Exception('Cannot combine non-numeric types');
+    }
+    if(left == DataType.float || right == DataType.float) {
+      return DataType.float;
+    } else {
+      return DataType.int;
+    }
+  }
+
+  bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
+
+  bool checkTypeConversion(CompositeDataType source, CompositeDataType destination, TextRange textRange) {
+    if(source == destination) {
+      return true;
+    } else if(source.dataType == DataType.int && destination.dataType == DataType.float) {
+      return true;
+    }
+    semanticErrorCollector.add('Type mismatch at ${textRange.startPosition}: cannot assign ${source.name} to a(n) ${destination.name}.');
+    return false;
   }
 }

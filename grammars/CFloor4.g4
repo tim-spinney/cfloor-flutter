@@ -16,7 +16,7 @@ booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' ;
 
 booleanExpression:
     UnaryBooleanOperator booleanOperand |
-    mathOperand  Comparator mathOperand |
+    mathOperand Comparator mathOperand |
     booleanOperand (BinaryBooleanOperator booleanOperand)? ;
 
 assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLiteral | booleanExpression) ;

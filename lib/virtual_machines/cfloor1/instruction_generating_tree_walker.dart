@@ -1,132 +1,108 @@
 import 'package:antlr4/antlr4.dart';
+import 'package:cfloor_flutter/virtual_machines/built_in_globals.dart';
+import 'package:cfloor_flutter/virtual_machines/semantic_error_collector.dart';
+import 'package:cfloor_flutter/virtual_machines/generic/compiler.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/identifier.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'package:cfloor_flutter/virtual_machines/data_type.dart';
 import '../virtual_machine.dart';
 import '../instructions.dart';
-import '../virtual_memory.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
+
+import '../wrappers/assignment.dart';
+import '../wrappers/math_expression.dart';
+import '../wrappers/math_operand.dart';
+import '../wrappers/read_expression.dart';
+import '../wrappers/string_literal.dart';
+import '../wrappers/variable_accessor.dart';
+import '../wrappers/write_statement.dart';
 
 // hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
 // to satisfy InstructionGeneratorUtils' "on" type narrowing
 abstract class _CFloor1TreeWalkerBase extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
 }
 
-class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with RegisterManager, InstructionGeneratorUtils {
-  final Set<String> _variableNames = {};
-
+class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final VirtualMachine virtualMachine;
   @override
-  final List<String> semanticErrors = [];
+  final SemanticErrorCollector semanticErrorCollector = SemanticErrorCollector();
 
-  CFloor1TreeWalker(this.virtualMachine);
+  @override
+  final RegisterManager registerManager;
+
+  @override
+  Map<String, Constant> get builtInVariables => {};
+
+  CFloor1TreeWalker(this.virtualMachine) : registerManager = RegisterManager(virtualMachine.memory);
+
+  @override
+  void exitProgram(ProgramContext ctx) {
+    // TODO: trim no-ops
+    topLevelInstructions.forEach(virtualMachine.addInstruction);
+  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
-    final variableName = ctx.assignment()!.Identifier()!.text!;
-    _variableNames.add(variableName);
+    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), DataType.int.toCompositeType());
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    final variableName = ctx.assignment()!.Identifier()!.text!;
-    _checkDeclareBeforeUse(variableName, ctx.assignment()!);
-  }
-
-  @override
-  void exitAssignment(AssignmentContext ctx) {
-    final variableName = ctx.Identifier()!.text!;
-    DataSource? dataSource;
-    if(ctx.readFunctionExpression() != null) {
-      final destination = allocateRegister(DataType.int);
-      final textRange = getTextRange(ctx.readFunctionExpression()!);
-      virtualMachine.addInstruction(ReadInstruction(textRange, virtualMachine.consoleState, destination, DataType.int));
-      dataSource = destination.toSource();
-    } else if(ctx.mathExpression() != null) {
-      dataSource = _handleMathExpression(ctx.mathExpression()!);
-    }
-    if(dataSource != null) {
-      virtualMachine.addInstruction(
-          AssignmentInstruction(
-            getTextRange(ctx),
-            VariableDataDestination(DataType.int, virtualMachine.memory, variableName),
-            dataSource,
-          )
-      );
-    }
-    nextRegister = 0;
+    handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    if(ctx.variableAccessor() != null) {
-      final variableName = ctx.variableAccessor()!.text;
-      virtualMachine.addInstruction(
-        WriteInstruction(
-          getTextRange(ctx),
-          virtualMachine.consoleState,
-          VariableMemorySource(DataType.int, virtualMachine.memory, variableName),
-        )
-      );
-    } else if(ctx.Number() != null) {
-      final value = int.parse(ctx.Number()!.text!);
-      virtualMachine.addInstruction(
-        WriteInstruction(
-          getTextRange(ctx),
-          virtualMachine.consoleState,
-          ConstantDataSource(DataType.int, value),
-        )
-      );
-    } else {
-      final value = ctx.StringLiteral()!.text!;
-      virtualMachine.addInstruction(WriteInstruction(getTextRange(ctx), virtualMachine.consoleState, ConstantDataSource(DataType.string, value)));
-    }
+    handleWriteStatement(_toWriteStatement(ctx));
   }
 
-  DataSource _handleMathExpression(MathExpressionContext ctx) {
-    final leftOperand = ctx.mathOperand(0)!;
-    if(ctx.MathOperator() == null) {
-      return _handleMathOperand(leftOperand);
-    }
-    final mathOperator = MathOperator.bySymbol[ctx.MathOperator()!.text]!;
-    final rightOperand = ctx.mathOperand(1)!;
-    final leftDataSource = _handleMathOperand(leftOperand);
-    final rightDataSource = _handleMathOperand(rightOperand);
-    final targetRegister =
-      leftDataSource is RegisterMemorySource ? leftDataSource.toDestination() :
-      rightDataSource is RegisterMemorySource ? rightDataSource.toDestination() :
-      allocateRegister(DataType.int)
-    ;
-    virtualMachine.addInstruction(
-      MathInstruction(
-        getTextRange(ctx),
-        mathOperator,
-        leftDataSource,
-        rightDataSource,
-        targetRegister,
-      )
-    );
-    return targetRegister.toSource();
-  }
+  MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(
+    ctx.textRange,
+    ctx.mathExpression() != null ? _toMathExpression(ctx.mathExpression()!) : null,
+    ctx.variableAccessor() != null ? _toVariableAccessor(ctx.variableAccessor()!) : null,
+    ctx.Number()?.text,
+  );
 
-  DataSource _handleMathOperand(MathOperandContext ctx) {
-    if(ctx.mathExpression() != null) {
-      return _handleMathExpression(ctx.mathExpression()!);
-    } else if(ctx.variableAccessor() != null) {
-      _checkDeclareBeforeUse(ctx.variableAccessor()!.text, ctx);
-      return VariableMemorySource(DataType.int, virtualMachine.memory, ctx.variableAccessor()!.text);
-    } else if(ctx.Number() != null) {
-      return ConstantDataSource(DataType.int, int.parse(ctx.Number()!.text!));
-    } else {
-      throw Exception('Unknown math operand type');
-    }
-  }
+  MathExpression _toMathExpression(MathExpressionContext ctx) => MathExpression(
+    ctx.textRange,
+    ctx.mathOperand(0) != null ? _toMathOperand(ctx.mathOperand(0)!) : null,
+    ctx.mathOperand(1) != null ? _toMathOperand(ctx.mathOperand(1)!) : null,
+    ctx.MathOperator() != null ? MathOperator.bySymbol[ctx.MathOperator()!.text]! : null,
+  );
 
-  _checkDeclareBeforeUse(String variableName, ParserRuleContext ctx) {
-    if(!_variableNames.contains(variableName)) {
-      semanticErrors.add(
-          'Semantic error at line ${ctx.start!.line}:${ctx.start!.charPositionInLine}: variable name $variableName needs to be declared before use.');
-    }
-  }
+  VariableAccessor _toVariableAccessor(VariableAccessorContext ctx) => VariableAccessor(
+    ctx.textRange,
+    _toIdentifier(ctx.Identifier()!),
+  );
+
+  WriteStatement _toWriteStatement(WriteStatementContext ctx) => WriteStatement(
+    ctx.textRange,
+    ctx.Number() == null ? null : int.parse(ctx.Number()!.text!),
+    ctx.variableAccessor() == null ? null : _toVariableAccessor(ctx.variableAccessor()!),
+    ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
+  );
+
+  Assignment _toAssignment(AssignmentContext ctx) => Assignment(
+    ctx.textRange,
+    VariableAccessor(ctx.textRange, _toIdentifier(ctx.Identifier()!)),
+    ctx.readFunctionExpression() != null ? _toReadExpression(ctx.readFunctionExpression()!) : null,
+    ctx.mathExpression() != null ? _toMathExpression(ctx.mathExpression()!) : null,
+  );
+
+  Identifier _toIdentifier(TerminalNode ctx) => Identifier(
+    ctx.textRange,
+    ctx.text!,
+  );
+
+  ReadExpression _toReadExpression(ReadFunctionExpressionContext ctx) => ReadExpression(
+    ctx.textRange,
+    DataType.int,
+  );
+
+  StringLiteral _toStringLiteral(TerminalNode ctx) => StringLiteral(
+    ctx.textRange,
+    ctx.text!,
+  );
 }

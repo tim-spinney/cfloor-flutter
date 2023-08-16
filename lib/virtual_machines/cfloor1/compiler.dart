@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Lexer.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import '../virtual_machine.dart';
-import '../error_collector.dart';
+import '../syntax_error_collector.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'instruction_generating_tree_walker.dart';
 
-InstructionGeneratingTreeWalker compileCFloor1(String sourceText, ErrorCollector errorCollector, VirtualMachine virtualMachine) {
+InstructionGeneratingTreeWalker compileCFloor1(String sourceText, SyntaxErrorCollector errorCollector, VirtualMachine virtualMachine) {
   final parser = CFloor1Parser(
       CommonTokenStream(
           CFloor1Lexer(

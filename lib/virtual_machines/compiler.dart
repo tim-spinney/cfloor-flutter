@@ -1,5 +1,5 @@
 import 'instruction_generating_tree_walker.dart';
-import 'error_collector.dart';
+import 'syntax_error_collector.dart';
 import 'virtual_machine.dart';
 import 'cfloor1/compiler.dart';
 import 'cfloor2/compiler.dart';
@@ -15,7 +15,7 @@ class Compiler {
   Compiler(this.languageLevel);
 
   CompileResult compile(String sourceText, VirtualMachine virtualMachine) {
-    final ErrorCollector errorCollector = ErrorCollector();
+    final SyntaxErrorCollector errorCollector = SyntaxErrorCollector();
     final instructionGenerator = switch(languageLevel) {
       LanguageLevel.cfloor1 => compileCFloor1(sourceText, errorCollector, virtualMachine),
       LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector, virtualMachine),
@@ -24,10 +24,8 @@ class Compiler {
       LanguageLevel.cfloor5 => compileCFloor5(sourceText, errorCollector, virtualMachine),
       LanguageLevel.cfloor6 => compileCFloor6(sourceText, errorCollector, virtualMachine),
     };
-    if(instructionGenerator is VariableDeclarationManager) {
-      instructionGenerator.builtInVariables.forEach((name, constant) { virtualMachine.memory.addBuiltInVariable(name, constant.value); });
-    }
-    return CompileResult(errorCollector.errors + instructionGenerator.semanticErrors, instructionGenerator.virtualMachine);
+    instructionGenerator.builtInVariables.forEach((name, constant) { virtualMachine.memory.addBuiltInVariable(name, constant.value); });
+    return CompileResult(errorCollector.errors + instructionGenerator.semanticErrorCollector.errors, instructionGenerator.virtualMachine);
   }
 }
 

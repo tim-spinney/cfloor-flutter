@@ -1,7 +1,6 @@
-
 import 'package:antlr4/antlr4.dart';
 
-class ErrorCollector extends BaseErrorListener {
+class SyntaxErrorCollector extends BaseErrorListener {
   final List<String> errors = [];
 
   @override
