@@ -84,7 +84,7 @@ class CFloor3TreeWalker extends _CFloor3TreeWalkerBase  with VariableDeclaration
 
   WriteStatement _toWriteStatement(WriteStatementContext ctx) => WriteStatement(
     ctx.textRange,
-    processNumericLiteral(ctx.Number()),
+    ctx.Number()?.text,
     ctx.variableAccessor() == null ? null : _toVariableAccessor(ctx.variableAccessor()!),
     ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
   );

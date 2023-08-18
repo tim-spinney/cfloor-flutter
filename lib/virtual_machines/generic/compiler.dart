@@ -90,9 +90,8 @@ mixin GenericCompiler on VariableDeclarationManager {
 
   void handleWriteStatement(WriteStatement ctx) {
     late final DataSource dataSource;
-    if(ctx.number != null) {
-      // TODO: check if this should be float type
-      dataSource = ConstantDataSource(DataType.int.toCompositeType(), ctx.number!);
+    if(ctx.numberText != null) {
+      dataSource = _handleNumericLiteral(ctx.numberText)!;
     } else if(ctx.variableAccessor != null) {
       dataSource = sourceFromMemory(ctx.variableAccessor!.variableIdentifier);
     } else if(ctx.stringLiteral != null) {
@@ -262,6 +261,21 @@ mixin GenericCompiler on VariableDeclarationManager {
     return outputRegister.toSource();
   }
 
+  DataSource? _handleNumericLiteral(String? numberText) {
+    if(numberText == null) {
+      return null;
+    }
+    final asInt = int.tryParse(numberText);
+    if(asInt != null) {
+      return ConstantDataSource(DataType.int.toCompositeType(), asInt);
+    }
+    final asDouble = double.tryParse(numberText);
+    if(asDouble != null) {
+      return ConstantDataSource(DataType.float.toCompositeType(), asDouble);
+    }
+    return null;
+  }
+
   DataSource _handleBooleanExpression(BooleanExpression ctx) {
     if(ctx.isNegation) {
       final operandSource = _handleBooleanOperand(ctx.booleanOperands.first);
@@ -367,22 +381,6 @@ mixin GenericCompiler on VariableDeclarationManager {
         )
     );
     return targetRegister.toSource();
-  }
-
-  num? processNumericLiteral(TerminalNode? node) {
-    final text = node?.text;
-    if(text == null) {
-      return null;
-    }
-    final asInt = int.tryParse(text);
-    if(asInt != null) {
-      return asInt;
-    }
-    final asDouble = double.tryParse(text);
-    if(asDouble != null) {
-      return asDouble;
-    }
-    return null;
   }
 
   DataSource _handleMathFunctionExpression(MathFunctionExpression ctx) {

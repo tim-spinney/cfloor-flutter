@@ -45,7 +45,6 @@ extension TerminalNodeTextRangeGetter on TerminalNode {
 }
 
 mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
-
   final List<Map<String, CompositeDataType>> _variableDeclarations = [{}];
 
   void addDeclaration(String variableName, CompositeDataType dataType, TextRange textRange) {

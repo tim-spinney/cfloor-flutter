@@ -5,9 +5,9 @@ import 'variable_accessor.dart';
 
 class WriteStatement {
   final TextRange textRange;
-  final num? number;
+  final String? numberText;
   final VariableAccessor? variableAccessor;
   final StringLiteral? stringLiteral;
 
-  WriteStatement(this.textRange, this.number, this.variableAccessor, this.stringLiteral);
+  WriteStatement(this.textRange, this.numberText, this.variableAccessor, this.stringLiteral);
 }
