@@ -1,8 +1,8 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'variable_accessor.dart';
 
 class LengthFunctionExpression {
-  TextRange textRange;
+  TextInterval textRange;
   VariableAccessor variableAccessor;
 
   LengthFunctionExpression(this.textRange, this.variableAccessor);

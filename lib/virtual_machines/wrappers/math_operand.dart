@@ -1,11 +1,11 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'length_function_expression.dart';
 import 'math_expression.dart';
 import 'math_function_expression.dart';
 import 'variable_accessor.dart';
 
 class MathOperand {
-  final TextRange textRange;
+  final TextInterval textRange;
   final MathExpression? mathExpression;
   final VariableAccessor? variableAccessor;
   final String? numberText;

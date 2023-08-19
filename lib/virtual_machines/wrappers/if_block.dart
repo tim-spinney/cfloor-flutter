@@ -1,8 +1,8 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'boolean_expression.dart';
 
 class IfBlock {
-  final TextRange textRange;
+  final TextInterval textRange;
   final List<BooleanExpression> conditions;
   final bool hasElse;
 

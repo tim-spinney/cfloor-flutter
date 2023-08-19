@@ -1,9 +1,9 @@
 
 import '../data_type.dart';
-import '../instruction.dart';
+import '../text_interval.dart';
 
 class ArrayInitializer {
-  final TextRange textRange;
+  final TextInterval textRange;
   final int length;
   final DataType innerType;
 

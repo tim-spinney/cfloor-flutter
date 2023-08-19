@@ -1,5 +1,5 @@
 import '../cfloor_array.dart';
-import '../instruction.dart';
+import '../text_interval.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
 import '../instructions.dart';
@@ -135,12 +135,12 @@ mixin GenericCompiler on VariableDeclarationManager {
     _codeBlocks.last.branches.add(_CodeSequence());
   }
 
-  void handleEnteringBlock(TextRange blockTextRange) {
+  void handleEnteringBlock(TextInterval blockTextRange) {
     _addInstruction(PushScopeInstruction(blockTextRange, virtualMachine.memory));
     pushVariableScope();
   }
 
-  void handleExitingBlock(TextRange blockTextRange) {
+  void handleExitingBlock(TextInterval blockTextRange) {
     _addInstruction(PopScopeInstruction(blockTextRange, virtualMachine.memory));
     popVariableScope();
   }
@@ -474,7 +474,7 @@ mixin GenericCompiler on VariableDeclarationManager {
 
 // hack: we don't have tokens to represent the start and end of interpolation inserts,
 // so this class provides the TextRange interface using fixed positions instead of tokens
-class _StringInterpolationTextRange implements TextRange {
+class _StringInterpolationTextRange implements TextInterval {
   @override
   final int start, end;
   @override

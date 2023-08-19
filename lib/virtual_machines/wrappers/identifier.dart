@@ -1,8 +1,8 @@
 
-import '../instruction.dart';
+import '../text_interval.dart';
 
 class Identifier {
-  final TextRange textRange;
+  final TextInterval textRange;
   final String variableName;
 
   Identifier(this.textRange, this.variableName);

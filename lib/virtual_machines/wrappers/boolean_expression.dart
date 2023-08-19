@@ -1,10 +1,10 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import '../instructions.dart';
 import 'boolean_operand.dart';
 import 'math_operand.dart';
 
 class BooleanExpression {
-  final TextRange textRange;
+  final TextInterval textRange;
   final bool isNegation;
   final BooleanOperator? binaryOperator;
   final ComparisonOperator? comparator;

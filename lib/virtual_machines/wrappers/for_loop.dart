@@ -1,10 +1,10 @@
 import '../data_type.dart';
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'assignment.dart';
 import 'boolean_expression.dart';
 
 class ForLoop {
-  final TextRange textRange;
+  final TextInterval textRange;
   final BooleanExpression condition;
   final Assignment initialAssignment;
   final CompositeDataType initialAssignmentDestinationType;

@@ -2,7 +2,7 @@ import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/virtual_machines/semantic_error_collector.dart';
 import 'package:cfloor_flutter/virtual_machines/wrappers/identifier.dart';
 import 'built_in_globals.dart';
-import 'instruction.dart';
+import 'text_interval.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 import 'data_type.dart';
@@ -37,17 +37,17 @@ class RegisterManager {
 }
 
 extension ParserRuleContextTextRangeGetter on ParserRuleContext {
-  TextRange get textRange => TextRange(start!, stop!);
+  TextInterval get textRange => TextInterval(start!, stop!);
 }
 
 extension TerminalNodeTextRangeGetter on TerminalNode {
-  TextRange get textRange => TextRange(symbol, symbol);
+  TextInterval get textRange => TextInterval(symbol, symbol);
 }
 
 mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
   final List<Map<String, CompositeDataType>> _variableDeclarations = [{}];
 
-  void addDeclaration(String variableName, CompositeDataType dataType, TextRange textRange) {
+  void addDeclaration(String variableName, CompositeDataType dataType, TextInterval textRange) {
     if(getDeclaredType(variableName) != null) {
       semanticErrorCollector.add('Semantic error at ${textRange.startPosition}: variable "$variableName" already declared in current scope.');
     }
@@ -92,7 +92,7 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
     return VariableMemorySource(getDeclaredType(id.variableName)!, virtualMachine.memory, id.variableName);
   }
 
-  DataType combineNumericDataTypes(DataType left, DataType right, TextRange textRange) {
+  DataType combineNumericDataTypes(DataType left, DataType right, TextInterval textRange) {
     if(!_typeIsNumeric(left) || !_typeIsNumeric(right)) {
       semanticErrorCollector.add('Type mismatch at ${textRange.startPosition}: math operators only work on numbers.');
       throw Exception('Cannot combine non-numeric types');
@@ -106,7 +106,7 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
 
   bool _typeIsNumeric(DataType type) => type == DataType.int || type == DataType.float;
 
-  bool checkTypeConversion(CompositeDataType source, CompositeDataType destination, TextRange textRange) {
+  bool checkTypeConversion(CompositeDataType source, CompositeDataType destination, TextInterval textRange) {
     if(source == destination) {
       return true;
     } else if(source.dataType == DataType.int && destination.dataType == DataType.float) {

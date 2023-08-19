@@ -1,9 +1,9 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'identifier.dart';
 import 'math_expression.dart';
 
 class VariableAccessor {
-  final TextRange textRange;
+  final TextInterval textRange;
   final Identifier variableIdentifier;
   final MathExpression? arrayIndexer;
 

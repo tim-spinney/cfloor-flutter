@@ -3,9 +3,16 @@ import 'dart:math';
 import '../console_state.dart';
 import 'data_type.dart';
 import 'execution_exception.dart';
-import 'instruction.dart';
+import 'text_interval.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
+
+abstract class Instruction {
+  final TextInterval textRange;
+  Instruction(this.textRange);
+  void evaluate();
+  bool get shouldIncrementProgramCounter => true;
+}
 
 enum MathOperator {
   plus,

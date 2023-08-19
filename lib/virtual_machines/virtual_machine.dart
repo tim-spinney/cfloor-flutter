@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../console_state.dart';
-import 'instruction.dart';
+import 'text_interval.dart';
 import 'instructions.dart';
 import 'virtual_memory.dart';
 

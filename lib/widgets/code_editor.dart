@@ -6,7 +6,7 @@ import 'execution_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
-import 'package:cfloor_flutter/virtual_machines/instruction.dart';
+import 'package:cfloor_flutter/virtual_machines/text_interval.dart';
 import 'package:cfloor_flutter/virtual_machines/compiler.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import '../console_state.dart';
@@ -201,7 +201,7 @@ class _CodeEditorState extends State<CodeEditor> {
 
 class ExecutionCodeView extends StatelessWidget {
   final String codeText;
-  final TextRange currentExpressionRange;
+  final TextInterval currentExpressionRange;
 
   const ExecutionCodeView({super.key, required this.codeText, required this.currentExpressionRange});
 

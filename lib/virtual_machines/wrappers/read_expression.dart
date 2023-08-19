@@ -1,8 +1,8 @@
 import '../data_type.dart';
-import '../instruction.dart';
+import '../text_interval.dart';
 
 class ReadExpression {
-  final TextRange textRange;
+  final TextInterval textRange;
   final DataType dataType;
 
   ReadExpression(this.textRange, this.dataType);

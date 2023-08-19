@@ -1,4 +1,4 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'array_literal.dart';
 import 'boolean_expression.dart';
 import 'math_expression.dart';
@@ -8,7 +8,7 @@ import 'variable_accessor.dart';
 import 'array_initializer.dart';
 
 class Assignment {
-  final TextRange textRange;
+  final TextInterval textRange;
   final VariableAccessor destination;
   final ReadExpression? readExpression;
   final MathExpression? mathExpression;

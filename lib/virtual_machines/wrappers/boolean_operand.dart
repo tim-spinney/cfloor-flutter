@@ -1,9 +1,9 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'boolean_expression.dart';
 import 'variable_accessor.dart';
 
 class BooleanOperand {
-  final TextRange textRange;
+  final TextInterval textRange;
   final bool? literalValue;
   final VariableAccessor? variableAccessor;
   final BooleanExpression? booleanExpression;

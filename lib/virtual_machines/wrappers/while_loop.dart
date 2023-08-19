@@ -1,8 +1,8 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'boolean_expression.dart';
 
 class WhileLoop {
-  final TextRange textRange;
+  final TextInterval textRange;
   final BooleanExpression condition;
 
   WhileLoop(this.textRange, this.condition);

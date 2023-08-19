@@ -1,7 +1,7 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 
 class StringLiteral {
-  final TextRange textRange;
+  final TextInterval textRange;
   final String content;
 
   StringLiteral(this.textRange, this.content);

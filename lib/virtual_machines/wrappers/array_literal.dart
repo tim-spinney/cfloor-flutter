@@ -1,4 +1,4 @@
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'array_initializer.dart';
 
 class ArrayLiteralElement {
@@ -12,7 +12,7 @@ class ArrayLiteralElement {
 }
 
 class ArrayLiteral {
-  final TextRange textRange;
+  final TextInterval textRange;
   final List<ArrayLiteralElement> elements;
 
   ArrayLiteral(this.textRange, this.elements);

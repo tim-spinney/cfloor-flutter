@@ -1,10 +1,10 @@
 import 'package:antlr4/antlr4.dart';
-import '../instruction.dart';
+import '../text_interval.dart';
 import 'string_literal.dart';
 import 'variable_accessor.dart';
 
 class WriteStatement {
-  final TextRange textRange;
+  final TextInterval textRange;
   final String? numberText;
   final VariableAccessor? variableAccessor;
   final StringLiteral? stringLiteral;
