@@ -6,7 +6,7 @@ Primitive: 'int' | 'float' | 'string' | 'bool' ;
 
 type: Primitive | 'array<' Primitive '>' ;
 
-arrayLiteralElement: Number | Identifier | StringLiteral | BooleanLiteral | arrayLiteral ;
+arrayLiteralElement: Number | StringLiteral | BooleanLiteral | arrayLiteral | arrayInitializer;
 
 arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
 

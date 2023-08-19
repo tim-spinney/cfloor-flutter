@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor6/CFloor6Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor6/CFloor6BaseListener.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/array_literal.dart';
 import '../built_in_globals.dart';
 import '../instructions.dart';
 import '../instruction_generating_tree_walker.dart';
@@ -154,6 +155,7 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with VariableDeclarationM
     stringLiteral: ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
     booleanExpression: ctx.booleanExpression() == null ? null : _toBooleanExpression(ctx.booleanExpression()!),
     arrayInitializer: ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
+    arrayLiteral: ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
   );
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(
@@ -221,6 +223,19 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with VariableDeclarationM
       ctx.textRange,
       int.parse(ctx.Number()!.text!),
       DataType.byName(ctx.Primitive()!.text!)
+  );
+
+  ArrayLiteral _toArrayLiteral(ArrayLiteralContext ctx) => ArrayLiteral(
+    ctx.textRange,
+    ctx.arrayLiteralElements().map((element) => _toArrayLiteralElement(element)).toList(),
+  );
+
+  ArrayLiteralElement _toArrayLiteralElement(ArrayLiteralElementContext ctx) => ArrayLiteralElement(
+    ctx.Number()?.text,
+    ctx.StringLiteral()?.text,
+    ctx.BooleanLiteral()?.text,
+    ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
+    ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
   );
 
   DataType _determineReadExpressionType(ReadFunctionExpressionContext ctx) {

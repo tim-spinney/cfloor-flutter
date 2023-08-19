@@ -125,25 +125,25 @@ class CFloor6Parser extends Parser {
         state = 56;
         match(TOKEN_Number);
         break;
-      case TOKEN_Identifier:
+      case TOKEN_StringLiteral:
         enterOuterAlt(_localctx, 2);
         state = 57;
-        match(TOKEN_Identifier);
-        break;
-      case TOKEN_StringLiteral:
-        enterOuterAlt(_localctx, 3);
-        state = 58;
         match(TOKEN_StringLiteral);
         break;
       case TOKEN_BooleanLiteral:
-        enterOuterAlt(_localctx, 4);
-        state = 59;
+        enterOuterAlt(_localctx, 3);
+        state = 58;
         match(TOKEN_BooleanLiteral);
         break;
       case TOKEN_T__2:
+        enterOuterAlt(_localctx, 4);
+        state = 59;
+        arrayLiteral();
+        break;
+      case TOKEN_T__0:
         enterOuterAlt(_localctx, 5);
         state = 60;
-        arrayLiteral();
+        arrayInitializer();
         break;
       default:
         throw NoViableAltException(this);
@@ -934,8 +934,8 @@ class CFloor6Parser extends Parser {
       32,173,1,0,0,0,34,184,1,0,0,0,36,196,1,0,0,0,38,198,1,0,0,0,40,200,
       1,0,0,0,42,205,1,0,0,0,44,209,1,0,0,0,46,212,1,0,0,0,48,222,1,0,0,
       0,50,55,5,28,0,0,51,52,5,1,0,0,52,53,5,28,0,0,53,55,5,2,0,0,54,50,
-      1,0,0,0,54,51,1,0,0,0,55,1,1,0,0,0,56,62,5,33,0,0,57,62,5,37,0,0,58,
-      62,5,35,0,0,59,62,5,31,0,0,60,62,3,4,2,0,61,56,1,0,0,0,61,57,1,0,0,
+      1,0,0,0,54,51,1,0,0,0,55,1,1,0,0,0,56,62,5,33,0,0,57,62,5,35,0,0,58,
+      62,5,31,0,0,59,62,3,4,2,0,60,62,3,6,3,0,61,56,1,0,0,0,61,57,1,0,0,
       0,61,58,1,0,0,0,61,59,1,0,0,0,61,60,1,0,0,0,62,3,1,0,0,0,63,64,5,3,
       0,0,64,77,5,4,0,0,65,66,5,3,0,0,66,71,3,2,1,0,67,68,5,5,0,0,68,70,
       3,2,1,0,69,67,1,0,0,0,70,73,1,0,0,0,71,69,1,0,0,0,71,72,1,0,0,0,72,
@@ -1006,10 +1006,10 @@ class TypeContext extends ParserRuleContext {
 
 class ArrayLiteralElementContext extends ParserRuleContext {
   TerminalNode? Number() => getToken(CFloor6Parser.TOKEN_Number, 0);
-  TerminalNode? Identifier() => getToken(CFloor6Parser.TOKEN_Identifier, 0);
   TerminalNode? StringLiteral() => getToken(CFloor6Parser.TOKEN_StringLiteral, 0);
   TerminalNode? BooleanLiteral() => getToken(CFloor6Parser.TOKEN_BooleanLiteral, 0);
   ArrayLiteralContext? arrayLiteral() => getRuleContext<ArrayLiteralContext>(0);
+  ArrayInitializerContext? arrayInitializer() => getRuleContext<ArrayInitializerContext>(0);
   ArrayLiteralElementContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_arrayLiteralElement;

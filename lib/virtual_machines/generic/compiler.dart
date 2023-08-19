@@ -1,4 +1,3 @@
-import 'package:antlr4/antlr4.dart';
 import '../cfloor_array.dart';
 import '../instruction.dart';
 import '../instruction_generating_tree_walker.dart';
@@ -437,7 +436,31 @@ mixin GenericCompiler on VariableDeclarationManager {
   }
 
   DataSource _handleArrayLiteral(ArrayLiteral ctx) {
-    throw UnimplementedError();
+    final elementSources = ctx.elements.map((e) => _handleArrayLiteralElement(e)).toList();
+    final dataTypes = elementSources.map((e) => e.dataType).toSet();
+    if(dataTypes.length > 1) {
+      semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: array literal are only allowed to contain one data type, not $dataTypes.');
+      throw Exception('Array literal must contain only one data type.');
+    }
+    final values = elementSources.map((e) => e.get()).toList();
+    return ConstantDataSource(
+        CompositeDataType(DataType.array, dataTypes.first.dataType),
+        CFloorArray(dataTypes.first.dataType, values)
+    );
+  }
+
+  DataSource _handleArrayLiteralElement(ArrayLiteralElement ctx) {
+    if(ctx.numberText != null) {
+      return ConstantDataSource(DataType.int.toCompositeType(), int.parse(ctx.numberText!));
+    } else if(ctx.stringText != null) {
+      return ConstantDataSource(DataType.string.toCompositeType(), ctx.stringText!);
+    } else if(ctx.booleanText != null) {
+      return ConstantDataSource(DataType.bool.toCompositeType(), bool.parse(ctx.booleanText!));
+    } else if(ctx.nestedArray != null) {
+      return _handleArrayLiteral(ctx.nestedArray!);
+    } else {
+      return _handleArrayInitializer(ctx.arrayInitializer!);
+    }
   }
 
   _addInstruction(Instruction instruction) {
