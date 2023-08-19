@@ -1,5 +1,5 @@
+import '../math_function.dart';
 import '../text_interval.dart';
-import '../instructions.dart';
 import 'math_expression.dart';
 
 class MathFunctionExpression {

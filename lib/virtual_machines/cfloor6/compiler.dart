@@ -4,10 +4,9 @@ import 'package:cfloor_flutter/generated/cfloor6/CFloor6Lexer.dart';
 import 'package:cfloor_flutter/generated/cfloor6/CFloor6Parser.dart';
 import '../syntax_error_collector.dart';
 import '../instruction_generating_tree_walker.dart';
-import '../virtual_machine.dart';
 import 'instruction_generating_tree_walker.dart';
 
-InstructionGeneratingTreeWalker compileCFloor6(String sourceText, SyntaxErrorCollector errorCollector, VirtualMachine virtualMachine) {
+InstructionGeneratingTreeWalker compileCFloor6(String sourceText, SyntaxErrorCollector errorCollector) {
   final parser = CFloor6Parser(
       CommonTokenStream(
           CFloor6Lexer(
@@ -16,7 +15,7 @@ InstructionGeneratingTreeWalker compileCFloor6(String sourceText, SyntaxErrorCol
       )
   );
   parser.addErrorListener(errorCollector);
-  final instructionGenerator = CFloor6TreeWalker(virtualMachine);
+  final instructionGenerator = CFloor6TreeWalker();
   try {
     ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
   } catch(e) {

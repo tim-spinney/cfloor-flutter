@@ -7,7 +7,7 @@ import '../syntax_error_collector.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'instruction_generating_tree_walker.dart';
 
-InstructionGeneratingTreeWalker compileCFloor1(String sourceText, SyntaxErrorCollector errorCollector, VirtualMachine virtualMachine) {
+InstructionGeneratingTreeWalker compileCFloor1(String sourceText, SyntaxErrorCollector errorCollector) {
   final parser = CFloor1Parser(
       CommonTokenStream(
           CFloor1Lexer(
@@ -16,7 +16,7 @@ InstructionGeneratingTreeWalker compileCFloor1(String sourceText, SyntaxErrorCol
       )
   );
   parser.addErrorListener(errorCollector);
-  final instructionGenerator = CFloor1TreeWalker(virtualMachine);
+  final instructionGenerator = CFloor1TreeWalker();
   try {
     ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
   } catch(e) {

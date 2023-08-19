@@ -1,10 +1,12 @@
 import '../cfloor_array.dart';
+import '../math_operator.dart';
 import '../text_interval.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
-import '../instructions.dart';
-import '../virtual_memory.dart';
+import '../wrappers/data_destination.dart';
+import '../wrappers/data_source.dart';
 import '../wrappers/identifier.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/read_expression.dart';
 import '../wrappers/assignment.dart';
@@ -30,6 +32,7 @@ mixin GenericCompiler on VariableDeclarationManager {
   final List<_CodeBlock> _codeBlocks = [_CodeBlock(initialBranches: [_CodeSequence()])];
   List<Instruction> get _currentInstructionTarget => _codeBlocks.last.branches.last.body;
 
+  @override
   List<Instruction> get topLevelInstructions => _codeBlocks.first.branches.first.body;
 
   handleDeclAssignStatement(Assignment assignment, CompositeDataType destinationType) {
@@ -77,7 +80,6 @@ mixin GenericCompiler on VariableDeclarationManager {
           ctx.textRange,
           VariableDataDestination(
             destinationType,
-            virtualMachine.memory,
             ctx.destination.variableIdentifier.variableName,
             indexSource,
           ),
@@ -98,7 +100,7 @@ mixin GenericCompiler on VariableDeclarationManager {
     } else {
       throw Exception('Write statements must include either a literal or a variable accessor.');
     }
-    _addInstruction(WriteInstruction(ctx.textRange, virtualMachine.consoleState, dataSource));
+    _addInstruction(WriteInstruction(ctx.textRange, dataSource));
   }
 
   void handleEnteringIfBlock() {
@@ -113,7 +115,7 @@ mixin GenericCompiler on VariableDeclarationManager {
       final branchConditional = ctx.conditions[i];
       final branchRegister = _handleBooleanExpression(branchConditional);
       final jumpOffset = branchBody.body.length + 2; // +2 to go 1 past the no-op
-      _addInstruction(JumpIfFalseInstruction(branchConditional.textRange, branchRegister, jumpOffset, virtualMachine));
+      _addInstruction(JumpIfFalseInstruction(branchConditional.textRange, branchRegister, jumpOffset));
       branchBody.body.forEach(_addInstruction);
       _addInstruction(NoOpInstruction(ctx.textRange));
       endOfBlockJumpPlaceholderIndices.add(_currentInstructionTarget.length - 1);
@@ -127,7 +129,7 @@ mixin GenericCompiler on VariableDeclarationManager {
     final jumpDestination = instructionList.length - 1;
     // do not include instruction we just added or else it will end up in a loop
     for(final index in endOfBlockJumpPlaceholderIndices) {
-      instructionList[index] = JumpInstruction(ctx.textRange, jumpDestination - index, virtualMachine);
+      instructionList[index] = JumpInstruction(ctx.textRange, jumpDestination - index);
     }
   }
 
@@ -136,12 +138,12 @@ mixin GenericCompiler on VariableDeclarationManager {
   }
 
   void handleEnteringBlock(TextInterval blockTextRange) {
-    _addInstruction(PushScopeInstruction(blockTextRange, virtualMachine.memory));
+    _addInstruction(PushScopeInstruction(blockTextRange));
     pushVariableScope();
   }
 
   void handleExitingBlock(TextInterval blockTextRange) {
-    _addInstruction(PopScopeInstruction(blockTextRange, virtualMachine.memory));
+    _addInstruction(PopScopeInstruction(blockTextRange));
     popVariableScope();
   }
 
@@ -156,9 +158,9 @@ mixin GenericCompiler on VariableDeclarationManager {
     final branchRegister = _handleBooleanExpression(booleanExpression);
     final branch = block.branches.first;
     final falseJumpOffset = branch.body.length + 2; // +2 to go 1 past the jump back to start
-    _addInstruction(JumpIfFalseInstruction(booleanExpression.textRange, branchRegister, falseJumpOffset, virtualMachine));
+    _addInstruction(JumpIfFalseInstruction(booleanExpression.textRange, branchRegister, falseJumpOffset));
     branch.body.forEach(_addInstruction);
-    _addInstruction(JumpInstruction(ctx.textRange, jumpToStartIndex - _currentInstructionTarget.length, virtualMachine));
+    _addInstruction(JumpInstruction(ctx.textRange, jumpToStartIndex - _currentInstructionTarget.length));
     _addInstruction(NoOpInstruction(ctx.textRange));
   }
 
@@ -179,9 +181,9 @@ mixin GenericCompiler on VariableDeclarationManager {
     final branchRegister = _handleBooleanExpression(booleanExpression);
     final branch = loopBlock.branches.first;
     final falseJumpOffset = branch.body.length + 2; // +2 to go 1 past the jump back to start
-    _addInstruction(JumpIfFalseInstruction(booleanExpression.textRange, branchRegister, falseJumpOffset, virtualMachine));
+    _addInstruction(JumpIfFalseInstruction(booleanExpression.textRange, branchRegister, falseJumpOffset));
     branch.body.forEach(_addInstruction);
-    _addInstruction(JumpInstruction(ctx.textRange, jumpToStartIndex - _currentInstructionTarget.length, virtualMachine));
+    _addInstruction(JumpInstruction(ctx.textRange, jumpToStartIndex - _currentInstructionTarget.length));
     _addInstruction(NoOpInstruction(ctx.textRange));
 
     // remove and flatten initializer block after processing loop block
@@ -194,7 +196,6 @@ mixin GenericCompiler on VariableDeclarationManager {
     _addInstruction(
         ReadInstruction(
             readExpression.textRange,
-            virtualMachine.consoleState,
             destination,
             readExpression.dataType)
     );
@@ -431,25 +432,24 @@ mixin GenericCompiler on VariableDeclarationManager {
     return targetRegister.toSource();
   }
 
-  DataSource _handleArrayInitializer(ArrayInitializer ctx) {
-    return ConstantDataSource(CompositeDataType(DataType.array, ctx.innerType), CFloorArray.filled(ctx.innerType, ctx.length));
-  }
+  ConstantDataSource _handleArrayInitializer(ArrayInitializer ctx) =>
+    ConstantDataSource(CompositeDataType(DataType.array, ctx.innerType), CFloorArray.filled(ctx.innerType, ctx.length));
 
-  DataSource _handleArrayLiteral(ArrayLiteral ctx) {
+  ConstantDataSource _handleArrayLiteral(ArrayLiteral ctx) {
     final elementSources = ctx.elements.map((e) => _handleArrayLiteralElement(e)).toList();
     final dataTypes = elementSources.map((e) => e.dataType).toSet();
     if(dataTypes.length > 1) {
       semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: array literal are only allowed to contain one data type, not $dataTypes.');
       throw Exception('Array literal must contain only one data type.');
     }
-    final values = elementSources.map((e) => e.get()).toList();
+    final values = elementSources.map((e) => e.value).toList();
     return ConstantDataSource(
         CompositeDataType(DataType.array, dataTypes.first.dataType),
         CFloorArray(dataTypes.first.dataType, values)
     );
   }
 
-  DataSource _handleArrayLiteralElement(ArrayLiteralElement ctx) {
+  ConstantDataSource _handleArrayLiteralElement(ArrayLiteralElement ctx) {
     if(ctx.numberText != null) {
       return ConstantDataSource(DataType.int.toCompositeType(), int.parse(ctx.numberText!));
     } else if(ctx.stringText != null) {

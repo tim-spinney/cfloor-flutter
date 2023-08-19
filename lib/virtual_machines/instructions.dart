@@ -1,70 +1,140 @@
 import 'dart:math';
 
+import 'boolean_operator.dart';
+import 'comparison_operator.dart';
+import 'math_function.dart';
+import 'math_operator.dart';
+import 'wrappers/instructions.dart';
 import '../console_state.dart';
+import 'data_destination.dart';
+import 'data_source.dart';
 import 'data_type.dart';
 import 'execution_exception.dart';
 import 'text_interval.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 
-abstract class Instruction {
+sealed class VMInstruction {
   final TextInterval textRange;
-  Instruction(this.textRange);
+  VMInstruction(this.textRange);
   void evaluate();
   bool get shouldIncrementProgramCounter => true;
+
+  static VMInstruction fromInstruction(Instruction instruction, VirtualMachine virtualMachine) =>
+      switch(instruction) {
+        MathInstruction() =>
+            VMMathInstruction(
+                instruction.textRange,
+                instruction.operator,
+                VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        AssignmentInstruction() =>
+            VMAssignmentInstruction(
+                instruction.textRange,
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.source, virtualMachine.memory)
+            ),
+        WriteInstruction() =>
+            VMWriteInstruction(
+                instruction.textRange,
+                virtualMachine.consoleState,
+                VMDataSource.fromDataSource(instruction.source, virtualMachine.memory)
+            ),
+        MathFunctionInstruction() =>
+            VMMathFunctionInstruction(
+                instruction.textRange,
+                instruction.function,
+                VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        ReadInstruction() =>
+            VMReadInstruction(
+                instruction.textRange,
+                virtualMachine.consoleState,
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory),
+                instruction.dataType
+            ),
+        StringConcatenationInstruction() =>
+            VMStringConcatenationInstruction(
+                instruction.textRange,
+                VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        StringLengthInstruction() =>
+            VMStringLengthInstruction(
+                instruction.textRange,
+                VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        BooleanNegationInstruction() =>
+            VMBooleanNegationInstruction(
+                instruction.textRange,
+                VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        BinaryBooleanInstruction() =>
+            VMBinaryBooleanInstruction(
+                instruction.textRange,
+                instruction.operator,
+                VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        ComparisonInstruction() =>
+            VMComparisonInstruction(
+                instruction.textRange,
+                instruction.operator,
+                VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        JumpInstruction() =>
+            VMJumpInstruction(
+                instruction.textRange,
+                instruction.offset,
+                virtualMachine
+            ),
+        JumpIfFalseInstruction() =>
+            VMJumpIfFalseInstruction(
+                instruction.textRange,
+                VMDataSource.fromDataSource(instruction.condition, virtualMachine.memory),
+                instruction.offset,
+                virtualMachine
+            ),
+        NoOpInstruction() =>
+            VMNoOpInstruction(
+                instruction.textRange
+            ),
+        PushScopeInstruction() =>
+            VMPushScopeInstruction(
+                instruction.textRange,
+                virtualMachine.memory
+            ),
+        PopScopeInstruction() =>
+            VMPopScopeInstruction(
+                instruction.textRange,
+                virtualMachine.memory
+            ),
+        ArrayDereferenceInstruction() =>
+            VMArrayDereferenceInstruction(
+                instruction.textRange,
+                VMDataSource.fromDataSource(instruction.arraySource, virtualMachine.memory),
+                VMDataSource.fromDataSource(instruction.indexSource, virtualMachine.memory),
+                VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+      };
 }
 
-enum MathOperator {
-  plus,
-  minus,
-  times,
-  divide,
-  modulo
-  ;
-  static const bySymbol = {
-    '+': MathOperator.plus,
-    '-': MathOperator.minus,
-    '*': MathOperator.times,
-    '/': MathOperator.divide,
-    '%': MathOperator.modulo,
-  };
-}
-
-enum BooleanOperator {
-  and,
-  or
-  ;
-  static const bySymbol = {
-    'and': BooleanOperator.and,
-    'or': BooleanOperator.or,
-  };
-}
-
-enum ComparisonOperator {
-  equal,
-  notEqual,
-  lessThan,
-  lessThanOrEqual,
-  greaterThan,
-  greaterThanOrEqual
-  ;
-  static const bySymbol = {
-    '==': ComparisonOperator.equal,
-    '!=': ComparisonOperator.notEqual,
-    '<': ComparisonOperator.lessThan,
-    '<=': ComparisonOperator.lessThanOrEqual,
-    '>': ComparisonOperator.greaterThan,
-    '>=': ComparisonOperator.greaterThanOrEqual,
-  };
-}
-
-class MathInstruction extends Instruction {
+class VMMathInstruction extends VMInstruction {
     final MathOperator operator;
-    final DataSource left;
-    final DataSource right;
-    final DataDestination destination;
+    final VMDataSource left;
+    final VMDataSource right;
+    final VMDataDestination destination;
 
-    MathInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
+    VMMathInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
     @override
     void evaluate() {
@@ -80,18 +150,18 @@ class MathInstruction extends Instruction {
         MathOperator.divide => leftValue / rightValue,
         MathOperator.modulo => leftValue % rightValue,
       };
-      if(destination.dataType == DataType.int && result is! int) {
+      if(destination.dataType.dataType == DataType.int && result is! int) {
         result = result.toInt();
       }
       destination.set(result);
     }
 }
 
-class AssignmentInstruction extends Instruction {
-  final DataDestination destination;
-  final DataSource source;
+class VMAssignmentInstruction extends VMInstruction {
+  final VMDataDestination destination;
+  final VMDataSource source;
 
-  AssignmentInstruction(super.textRange, this.destination, this.source);
+  VMAssignmentInstruction(super.textRange, this.destination, this.source);
 
   @override
   void evaluate() {
@@ -99,11 +169,11 @@ class AssignmentInstruction extends Instruction {
   }
 }
 
-class WriteInstruction extends Instruction {
+class VMWriteInstruction extends VMInstruction {
   final ConsoleState _consoleState;
-  final DataSource source;
+  final VMDataSource source;
 
-  WriteInstruction(super.textRange, this._consoleState, this.source);
+  VMWriteInstruction(super.textRange, this._consoleState, this.source);
 
   @override
   void evaluate() {
@@ -111,22 +181,12 @@ class WriteInstruction extends Instruction {
   }
 }
 
-enum MathFunction {
-  ceil,
-  floor,
-  round,
-  sqrt,
-  sin,
-  cos,
-  tan
-}
-
-class MathFunctionInstruction extends Instruction {
+class VMMathFunctionInstruction extends VMInstruction {
   final MathFunction function;
-  final DataSource source;
-  final DataDestination destination;
+  final VMDataSource source;
+  final VMDataDestination destination;
 
-  MathFunctionInstruction(super.textRange, this.function, this.source, this.destination);
+  VMMathFunctionInstruction(super.textRange, this.function, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -144,12 +204,12 @@ class MathFunctionInstruction extends Instruction {
   }
 }
 
-class ReadInstruction extends Instruction {
+class VMReadInstruction extends VMInstruction {
   final ConsoleState _consoleState;
-  final DataDestination destination;
+  final VMDataDestination destination;
   final DataType dataType;
 
-  ReadInstruction(super.textRange, this._consoleState, this.destination, this.dataType);
+  VMReadInstruction(super.textRange, this._consoleState, this.destination, this.dataType);
 
   @override
   void evaluate() {
@@ -162,12 +222,12 @@ class ReadInstruction extends Instruction {
   }
 }
 
-class StringConcatenationInstruction extends Instruction {
-  final DataSource left;
-  final DataSource right;
-  final DataDestination destination;
+class VMStringConcatenationInstruction extends VMInstruction {
+  final VMDataSource left;
+  final VMDataSource right;
+  final VMDataDestination destination;
 
-  StringConcatenationInstruction(super.textRange, this.left, this.right, this.destination);
+  VMStringConcatenationInstruction(super.textRange, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -175,11 +235,11 @@ class StringConcatenationInstruction extends Instruction {
   }
 }
 
-class StringLengthInstruction extends Instruction {
-  final DataSource source;
-  final DataDestination destination;
+class VMStringLengthInstruction extends VMInstruction {
+  final VMDataSource source;
+  final VMDataDestination destination;
 
-  StringLengthInstruction(super.textRange, this.source, this.destination);
+  VMStringLengthInstruction(super.textRange, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -187,11 +247,11 @@ class StringLengthInstruction extends Instruction {
   }
 }
 
-class BooleanNegationInstruction extends Instruction {
-  final DataSource source;
-  final DataDestination destination;
+class VMBooleanNegationInstruction extends VMInstruction {
+  final VMDataSource source;
+  final VMDataDestination destination;
 
-  BooleanNegationInstruction(super.textRange, this.source, this.destination);
+  VMBooleanNegationInstruction(super.textRange, this.source, this.destination);
 
   @override
   void evaluate() {
@@ -199,13 +259,13 @@ class BooleanNegationInstruction extends Instruction {
   }
 }
 
-class BinaryBooleanInstruction extends Instruction {
+class VMBinaryBooleanInstruction extends VMInstruction {
   final BooleanOperator operator;
-  final DataSource left;
-  final DataSource right;
-  final DataDestination destination;
+  final VMDataSource left;
+  final VMDataSource right;
+  final VMDataDestination destination;
 
-  BinaryBooleanInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
+  VMBinaryBooleanInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -219,13 +279,13 @@ class BinaryBooleanInstruction extends Instruction {
   }
 }
 
-class ComparisonInstruction extends Instruction {
+class VMComparisonInstruction extends VMInstruction {
   final ComparisonOperator operator;
-  final DataSource left;
-  final DataSource right;
-  final DataDestination destination;
+  final VMDataSource left;
+  final VMDataSource right;
+  final VMDataDestination destination;
 
-  ComparisonInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
+  VMComparisonInstruction(super.textRange, this.operator, this.left, this.right, this.destination);
 
   @override
   void evaluate() {
@@ -243,11 +303,11 @@ class ComparisonInstruction extends Instruction {
   }
 }
 
-class JumpInstruction extends Instruction {
+class VMJumpInstruction extends VMInstruction {
   final int offset;
   final VirtualMachine _virtualMachine;
 
-  JumpInstruction(super.textRange, this.offset, this._virtualMachine);
+  VMJumpInstruction(super.textRange, this.offset, this._virtualMachine);
 
   @override
   void evaluate() {
@@ -258,14 +318,14 @@ class JumpInstruction extends Instruction {
   bool get shouldIncrementProgramCounter => false;
 }
 
-class JumpIfFalseInstruction extends Instruction {
-  final DataSource condition;
+class VMJumpIfFalseInstruction extends VMInstruction {
+  final VMDataSource condition;
   final int offset;
   final VirtualMachine _virtualMachine;
   @override
   late bool shouldIncrementProgramCounter;
 
-  JumpIfFalseInstruction(super.textRange, this.condition, this.offset, this._virtualMachine);
+  VMJumpIfFalseInstruction(super.textRange, this.condition, this.offset, this._virtualMachine);
 
   @override
   void evaluate() {
@@ -277,17 +337,17 @@ class JumpIfFalseInstruction extends Instruction {
   }
 }
 
-class NoOpInstruction extends Instruction {
-  NoOpInstruction(super.textRange);
+class VMNoOpInstruction extends VMInstruction {
+  VMNoOpInstruction(super.textRange);
 
   @override
   void evaluate() {}
 }
 
-class PushScopeInstruction extends Instruction {
+class VMPushScopeInstruction extends VMInstruction {
   final VirtualMemory _virtualMemory;
 
-  PushScopeInstruction(super.textRange, this._virtualMemory);
+  VMPushScopeInstruction(super.textRange, this._virtualMemory);
 
   @override
   void evaluate() {
@@ -295,10 +355,10 @@ class PushScopeInstruction extends Instruction {
   }
 }
 
-class PopScopeInstruction extends Instruction {
+class VMPopScopeInstruction extends VMInstruction {
   final VirtualMemory _virtualMemory;
 
-  PopScopeInstruction(super.textRange, this._virtualMemory);
+  VMPopScopeInstruction(super.textRange, this._virtualMemory);
 
   @override
   void evaluate() {
@@ -306,12 +366,12 @@ class PopScopeInstruction extends Instruction {
   }
 }
 
-class ArrayDereferenceInstruction extends Instruction {
-  final DataSource arraySource;
-  final DataSource indexSource;
-  final DataDestination destination;
+class VMArrayDereferenceInstruction extends VMInstruction {
+  final VMDataSource arraySource;
+  final VMDataSource indexSource;
+  final VMDataDestination destination;
 
-  ArrayDereferenceInstruction(super.textRange, this.arraySource, this.indexSource, this.destination);
+  VMArrayDereferenceInstruction(super.textRange, this.arraySource, this.indexSource, this.destination);
 
   @override
   void evaluate() {

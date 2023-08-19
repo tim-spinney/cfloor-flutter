@@ -1,14 +1,14 @@
-import 'package:cfloor_flutter/virtual_machines/instructions.dart';
+import '../virtual_machines/instructions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
-import 'package:cfloor_flutter/virtual_machines/virtual_machine.dart';
-import 'package:cfloor_flutter/virtual_machines/text_interval.dart';
-import 'package:cfloor_flutter/virtual_machines/compiler.dart';
-import 'package:cfloor_flutter/virtual_machines/language_level.dart';
+import '../virtual_machines/virtual_machine.dart';
+import '../virtual_machines/text_interval.dart';
+import '../virtual_machines/compiler.dart';
+import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
 
 class CodeEditor extends StatefulWidget {
@@ -41,11 +41,11 @@ const _levelDescriptions = {
 };
 
 const _skippableInstructionTypes = [
-  NoOpInstruction,
-  JumpInstruction,
-  JumpIfFalseInstruction,
-  PushScopeInstruction,
-  PopScopeInstruction,
+  VMNoOpInstruction,
+  VMJumpInstruction,
+  VMJumpIfFalseInstruction,
+  VMPushScopeInstruction,
+  VMPopScopeInstruction,
 ];
 
 class _CodeEditorState extends State<CodeEditor> {
@@ -73,10 +73,14 @@ class _CodeEditorState extends State<CodeEditor> {
       _virtualMachine.stop();
     } else {
       _virtualMachine.clear();
-      final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text, _virtualMachine);
+      final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text);
       setState(() {
         _compileErrors = compileResult.errors;
-        if(_compileErrors.isEmpty && compileResult.virtualMachine.instructionCount > 0) {
+        if(_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {
+          compileResult.builtInVariables.forEach((name, constant) { _virtualMachine.memory.addBuiltInVariable(name, constant.value); });
+          for (var instruction in compileResult.instructions) {
+            _virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, _virtualMachine));
+          }
           _virtualMachine.start();
         }
       });
@@ -96,8 +100,7 @@ class _CodeEditorState extends State<CodeEditor> {
     }
   }
 
-
-  _isSkippableInstruction(Instruction i) => _skippableInstructionTypes.contains(i.runtimeType);
+  _isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);
 
   void _submitInput(dynamic value) {
     _virtualMachine.submitInput(value);

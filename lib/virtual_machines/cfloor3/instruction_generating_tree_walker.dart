@@ -1,12 +1,12 @@
 import 'package:antlr4/antlr4.dart';
+import '../math_function.dart';
+import '../math_operator.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/string_literal.dart';
 import '../built_in_globals.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
 import '../semantic_error_collector.dart';
-import '../virtual_machine.dart';
-import '../instructions.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor3/CFloor3BaseListener.dart';
 
@@ -27,23 +27,13 @@ abstract class _CFloor3TreeWalkerBase extends CFloor3BaseListener implements Ins
 
 class CFloor3TreeWalker extends _CFloor3TreeWalkerBase  with VariableDeclarationManager, GenericCompiler {
   @override
-  final VirtualMachine virtualMachine;
-  @override
-  final SemanticErrorCollector semanticErrorCollector = SemanticErrorCollector();
+  final semanticErrorCollector = SemanticErrorCollector();
 
   @override
-  final RegisterManager registerManager;
+  final registerManager = RegisterManager();
 
   @override
   get builtInVariables => builtInMathConstants;
-
-  CFloor3TreeWalker(this.virtualMachine) : registerManager = RegisterManager(virtualMachine.memory);
-
-  @override
-  void exitProgram(ProgramContext ctx) {
-    // TODO: trim no-ops
-    topLevelInstructions.forEach(virtualMachine.addInstruction);
-  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {

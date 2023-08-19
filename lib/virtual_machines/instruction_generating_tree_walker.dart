@@ -1,25 +1,24 @@
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/virtual_machines/semantic_error_collector.dart';
-import 'package:cfloor_flutter/virtual_machines/wrappers/identifier.dart';
+import 'wrappers/data_source.dart';
+import 'wrappers/identifier.dart';
+import 'wrappers/data_destination.dart';
 import 'built_in_globals.dart';
 import 'text_interval.dart';
 import 'virtual_machine.dart';
-import 'virtual_memory.dart';
 import 'data_type.dart';
+import 'semantic_error_collector.dart';
+import 'wrappers/instructions.dart';
 
 abstract class InstructionGeneratingTreeWalker implements ParseTreeListener {
-  abstract final VirtualMachine virtualMachine;
   abstract final SemanticErrorCollector semanticErrorCollector;
   Map<String, Constant> get builtInVariables;
+  List<Instruction> get topLevelInstructions;
 }
 
 class RegisterManager {
-  final VirtualMemory _virtualMemory;
   int _nextRegister = 0;
 
-  RegisterManager(this._virtualMemory);
-
-  RegisterDataDestination allocateRegister(CompositeDataType dataType) => RegisterDataDestination(dataType, _virtualMemory, _nextRegister++);
+  RegisterDataDestination allocateRegister(CompositeDataType dataType) => RegisterDataDestination(dataType, _nextRegister++);
 
   RegisterDataDestination recycleOrAllocateRegister(DataSource left, DataSource right, CompositeDataType dataType) {
     if(left is RegisterMemorySource) {
@@ -89,7 +88,7 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
 
   VariableMemorySource sourceFromMemory(Identifier id) {
     checkDeclareBeforeUse(id);
-    return VariableMemorySource(getDeclaredType(id.variableName)!, virtualMachine.memory, id.variableName);
+    return VariableMemorySource(getDeclaredType(id.variableName)!, id.variableName);
   }
 
   DataType combineNumericDataTypes(DataType left, DataType right, TextInterval textRange) {

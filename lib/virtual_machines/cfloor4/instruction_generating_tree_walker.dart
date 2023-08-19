@@ -4,12 +4,14 @@ import 'package:cfloor_flutter/generated/cfloor4/CFloor4BaseListener.dart';
 import 'package:cfloor_flutter/virtual_machines/wrappers/boolean_expression.dart';
 import 'package:cfloor_flutter/virtual_machines/wrappers/boolean_operand.dart';
 import 'package:cfloor_flutter/virtual_machines/wrappers/if_block.dart';
+import '../boolean_operator.dart';
 import '../built_in_globals.dart';
-import '../instructions.dart';
+import '../comparison_operator.dart';
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
+import '../math_function.dart';
+import '../math_operator.dart';
 import '../semantic_error_collector.dart';
-import '../virtual_machine.dart';
 import '../wrappers/assignment.dart';
 import '../generic/compiler.dart';
 import '../wrappers/identifier.dart';
@@ -29,24 +31,13 @@ abstract class _CFloor4TreeWalkerBase extends CFloor4BaseListener implements Ins
 
 class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
-  final VirtualMachine virtualMachine;
-
-  @override
-  final SemanticErrorCollector semanticErrorCollector = SemanticErrorCollector();
+  final semanticErrorCollector = SemanticErrorCollector();
 
   @override
   get builtInVariables => builtInMathConstants;
 
   @override
-  RegisterManager registerManager;
-
-  CFloor4TreeWalker(this.virtualMachine) : registerManager = RegisterManager(virtualMachine.memory);
-  
-  @override
-  void exitProgram(ProgramContext ctx) {
-    // TODO: trim no-ops
-    topLevelInstructions.forEach(virtualMachine.addInstruction);
-  }
+  final registerManager = RegisterManager();
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {

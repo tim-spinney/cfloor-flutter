@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 import '../console_state.dart';
-import 'text_interval.dart';
 import 'instructions.dart';
 import 'virtual_memory.dart';
 
 class VirtualMachine extends ChangeNotifier {
   final VirtualMemory memory = VirtualMemory();
-  final List<Instruction> _instructions = [];
+  final List<VMInstruction> _instructions = [];
   final ConsoleState consoleState;
   int _instructionIndex = 0;
   bool _isRunning = false;
@@ -16,11 +15,11 @@ class VirtualMachine extends ChangeNotifier {
 
   bool get isRunning => _isRunning;
 
-  Instruction get currentInstruction => _instructions[_instructionIndex];
+  VMInstruction get currentInstruction => _instructions[_instructionIndex];
 
   int get instructionCount => _instructions.length;
 
-  void addInstruction(Instruction instruction) {
+  void addInstruction(VMInstruction instruction) {
     _instructions.add(instruction);
   }
 
@@ -61,7 +60,7 @@ class VirtualMachine extends ChangeNotifier {
   }
 
   void submitInput(dynamic value) {
-    (currentInstruction as ReadInstruction).complete(value);
+    (currentInstruction as VMReadInstruction).complete(value);
     _instructionIndex++;
     notifyListeners();
   }

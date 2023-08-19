@@ -1,5 +1,6 @@
+import '../boolean_operator.dart';
+import '../comparison_operator.dart';
 import '../text_interval.dart';
-import '../instructions.dart';
 import 'boolean_operand.dart';
 import 'math_operand.dart';
 

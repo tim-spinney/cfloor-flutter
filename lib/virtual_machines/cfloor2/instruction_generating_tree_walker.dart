@@ -3,9 +3,9 @@ import 'package:cfloor_flutter/virtual_machines/built_in_globals.dart';
 
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
+import '../math_function.dart';
+import '../math_operator.dart';
 import '../semantic_error_collector.dart';
-import '../virtual_machine.dart';
-import '../instructions.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
 
@@ -27,23 +27,13 @@ abstract class _CFloor2TreeWalkerBase extends CFloor2BaseListener implements Ins
 
 class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
-  final VirtualMachine virtualMachine;
-  @override
-  final SemanticErrorCollector semanticErrorCollector = SemanticErrorCollector();
+  final semanticErrorCollector = SemanticErrorCollector();
 
   @override
-  final RegisterManager registerManager;
-
-  CFloor2TreeWalker(this.virtualMachine) : registerManager = RegisterManager(virtualMachine.memory);
+  final registerManager = RegisterManager();
 
   @override
   get builtInVariables => builtInMathConstants;
-
-  @override
-  void exitProgram(ProgramContext ctx) {
-    // TODO: trim no-ops
-    topLevelInstructions.forEach(virtualMachine.addInstruction);
-  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
