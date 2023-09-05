@@ -9,12 +9,12 @@ import '../data_type.dart';
 import '../math_function.dart';
 import '../math_operator.dart';
 import '../semantic_error_collector.dart';
-import '../virtual_machine.dart';
 import '../wrappers/assignment.dart';
 import '../wrappers/boolean_expression.dart';
 import '../wrappers/boolean_operand.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/math_expression.dart';
 import '../wrappers/math_function_expression.dart';
@@ -26,12 +26,9 @@ import '../wrappers/write_statement.dart';
 import '../generic/compiler.dart';
 import '../wrappers/while_loop.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor5TreeWalkerBase extends CFloor5BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor5TreeWalker extends CFloor5BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
 
@@ -39,62 +36,66 @@ class CFloor5TreeWalker extends _CFloor5TreeWalkerBase with VariableDeclarationM
   get builtInVariables => builtInMathConstants;
 
   @override
-  final registerManager = RegisterManager();
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  CFloor5TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     final destinationType = DataType.byName(ctx.type()!.text).toCompositeType();
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   @override
   void enterIfBlock(IfBlockContext ctx) {
-    handleEnteringIfBlock();
+    _compiler.handleEnteringIfBlock();
   }
 
   @override
   void exitIfBlock(IfBlockContext ctx) {
-    handleExitingIfBlock(_toIfBlock(ctx));
+    _compiler.handleExitingIfBlock(_toIfBlock(ctx));
   }
 
   @override
   void enterIfStatement(IfStatementContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterElseBlock(ElseBlockContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterBlock(BlockContext ctx) {
-    handleEnteringBlock(ctx.textRange);
+    _compiler.handleEnteringBlock(ctx.textRange);
   }
 
   @override
   void exitBlock(BlockContext ctx) {
-    handleExitingBlock(ctx.textRange);
+    _compiler.handleExitingBlock(ctx.textRange);
   }
 
   @override
   void enterWhileLoop(WhileLoopContext ctx) {
-    handleEnteringWhileLoop();
+    _compiler.handleEnteringWhileLoop();
   }
 
   @override
   void exitWhileLoop(WhileLoopContext ctx) {
-    handleExitingWhileLoop(_toWhileLoop(ctx));
+    _compiler.handleExitingWhileLoop(_toWhileLoop(ctx));
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

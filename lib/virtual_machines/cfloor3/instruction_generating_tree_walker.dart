@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import '../math_function.dart';
 import '../math_operator.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/string_literal.dart';
 import '../built_in_globals.dart';
@@ -20,35 +21,36 @@ import '../wrappers/read_expression.dart';
 import '../wrappers/variable_accessor.dart';
 import '../wrappers/write_statement.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor3TreeWalkerBase extends CFloor3BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor3TreeWalker extends _CFloor3TreeWalkerBase  with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
-
-  @override
-  final registerManager = RegisterManager();
 
   @override
   get builtInVariables => builtInMathConstants;
 
   @override
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  CFloor3TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
+
+  @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     final destinationType = DataType.byName(ctx.type()!.text).toCompositeType();
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

@@ -6,7 +6,7 @@ import '../syntax_error_collector.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'instruction_generating_tree_walker.dart';
 
-InstructionGeneratingTreeWalker compileCFloor2(String sourceText, SyntaxErrorCollector errorCollector) {
+InstructionGenerator compileCFloor2(String sourceText, SyntaxErrorCollector errorCollector) {
   final parser = CFloor2Parser(
       CommonTokenStream(
           CFloor2Lexer(

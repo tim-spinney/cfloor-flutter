@@ -24,22 +24,25 @@ import '../wrappers/variable_accessor.dart';
 import '../wrappers/while_loop.dart';
 import '../wrappers/if_block.dart';
 
-mixin GenericCompiler on VariableDeclarationManager {
+class GenericCompiler extends VariableDeclarationManager {
   static final _interpolationRegex = RegExp(r"\$[a-z][a-z_]*");
 
-  RegisterManager get registerManager;
+  final _registerManager = RegisterManager();
 
   final List<_CodeBlock> _codeBlocks = [_CodeBlock(initialBranches: [_CodeSequence()])];
+
   List<Instruction> get _currentInstructionTarget => _codeBlocks.last.branches.last.body;
 
-  @override
   List<Instruction> get topLevelInstructions => _codeBlocks.first.branches.first.body;
+
+  GenericCompiler(super.semanticErrorCollector, super.builtInVariables);
 
   handleDeclAssignStatement(Assignment assignment, CompositeDataType destinationType) {
     if(assignment.destination.arrayIndexer != null) {
       semanticErrorCollector.add('Semantic error at ${assignment.textRange.startPosition}: you can only declare the type of a whole array, not a specific element.');
+      throw Exception('Cannot declare type of array element.');
     }
-    handleAssignment(assignment, destinationType);
+    _handleAssignment(assignment, destinationType);
     addDeclaration(assignment.destination.variableIdentifier.variableName, destinationType, assignment.textRange);
   }
 
@@ -47,14 +50,14 @@ mixin GenericCompiler on VariableDeclarationManager {
     final id = assignment.destination.variableIdentifier;
     // Verify that lhs was previously declared. Only necessary for assign
     // since declAssign is the declaration.
-    checkDeclareBeforeUse(id);
+    wasDeclaredBeforeUse(id);
     checkConstantAssignment(id);
 
     final destinationType = getDeclaredType(id.variableName)!;
-    handleAssignment(assignment, destinationType);
+    _handleAssignment(assignment, destinationType);
   }
 
-  handleAssignment(Assignment ctx, CompositeDataType destinationType) {
+  _handleAssignment(Assignment ctx, CompositeDataType destinationType) {
     DataSource? dataSource;
     if(ctx.readExpression != null) {
       dataSource = _handleReadExpression(ctx.readExpression!);
@@ -86,7 +89,7 @@ mixin GenericCompiler on VariableDeclarationManager {
           dataSource,
         )
     );
-    registerManager.resetRegisterUsage();
+    _registerManager.resetRegisterUsage();
   }
 
   void handleWriteStatement(WriteStatement ctx) {
@@ -192,7 +195,7 @@ mixin GenericCompiler on VariableDeclarationManager {
   }
 
   DataSource _handleReadExpression(ReadExpression readExpression) {
-    final destination = registerManager.allocateRegister(readExpression.dataType.toCompositeType());
+    final destination = _registerManager.allocateRegister(readExpression.dataType.toCompositeType());
     _addInstruction(
         ReadInstruction(
             readExpression.textRange,
@@ -210,7 +213,7 @@ mixin GenericCompiler on VariableDeclarationManager {
       return ConstantDataSource(DataType.string.toCompositeType(), withoutQuotes);
     }
     int endOfPrevious = 0;
-    final outputRegister = registerManager.allocateRegister(DataType.string.toCompositeType());
+    final outputRegister = _registerManager.allocateRegister(DataType.string.toCompositeType());
     for(final match in matches) {
       final literalFromPrevious = ConstantDataSource(DataType.string.toCompositeType(), withoutQuotes.substring(endOfPrevious, match.start).replaceAll(r"$$", r"$"));
       final variableName = match.group(0)!.substring(1);
@@ -279,7 +282,7 @@ mixin GenericCompiler on VariableDeclarationManager {
   DataSource _handleBooleanExpression(BooleanExpression ctx) {
     if(ctx.isNegation) {
       final operandSource = _handleBooleanOperand(ctx.booleanOperands.first);
-      final destination = registerManager.allocateRegister(DataType.bool.toCompositeType());
+      final destination = _registerManager.allocateRegister(DataType.bool.toCompositeType());
       _addInstruction(
           BooleanNegationInstruction(ctx.textRange, operandSource, destination)
       );
@@ -291,7 +294,7 @@ mixin GenericCompiler on VariableDeclarationManager {
         return leftDataSource;
       }
       final rightDataSource = _handleBooleanOperand(ctx.booleanOperands.last);
-      final targetRegister = registerManager.recycleOrAllocateRegister(leftDataSource, rightDataSource, DataType.bool.toCompositeType());
+      final targetRegister = _registerManager.recycleOrAllocateRegister(leftDataSource, rightDataSource, DataType.bool.toCompositeType());
       _addInstruction(
           BinaryBooleanInstruction(
             ctx.textRange,
@@ -306,7 +309,7 @@ mixin GenericCompiler on VariableDeclarationManager {
       final leftDataSource = _handleMathOperand(ctx.mathOperands.first);
       final rightDataSource = _handleMathOperand(ctx.mathOperands.last);
       // TODO: recycle register, but have to convert register's data type on recycling somehow
-      final targetRegister = registerManager.allocateRegister(DataType.bool.toCompositeType());
+      final targetRegister = _registerManager.allocateRegister(DataType.bool.toCompositeType());
       _addInstruction(
           ComparisonInstruction(
             ctx.textRange,
@@ -358,7 +361,7 @@ mixin GenericCompiler on VariableDeclarationManager {
     }
     final rightOperand = ctx.right!;
     final rightDataSource = _handleMathOperand(rightOperand);
-    final targetRegister = registerManager.recycleOrAllocateRegister(
+    final targetRegister = _registerManager.recycleOrAllocateRegister(
       leftDataSource,
       rightDataSource,
       combineNumericDataTypes(leftDataSource.dataType.dataType, rightDataSource.dataType.dataType, ctx.textRange).toCompositeType()
@@ -385,7 +388,7 @@ mixin GenericCompiler on VariableDeclarationManager {
 
   DataSource _handleMathFunctionExpression(MathFunctionExpression ctx) {
     final dataSource = _handleMathExpression(ctx.mathExpression!);
-    final targetRegister = registerManager.allocateRegister(dataSource.dataType);
+    final targetRegister = _registerManager.allocateRegister(dataSource.dataType);
     _addInstruction(
         MathFunctionInstruction(
           ctx.textRange,
@@ -400,7 +403,7 @@ mixin GenericCompiler on VariableDeclarationManager {
   DataSource _handleLengthFunctionExpression(LengthFunctionExpression ctx) {
     final stringSource = _handleVariableAccessor(ctx.variableAccessor);
     // TODO: make second source optional
-    final targetRegister = registerManager.recycleOrAllocateRegister(stringSource, stringSource, DataType.int.toCompositeType());
+    final targetRegister = _registerManager.recycleOrAllocateRegister(stringSource, stringSource, DataType.int.toCompositeType());
     _addInstruction(
         StringLengthInstruction(
             ctx.textRange,
@@ -427,7 +430,7 @@ mixin GenericCompiler on VariableDeclarationManager {
       throw Exception('Array index must be an integer');
     }
     final arraySource = sourceFromMemory(ctx.variableIdentifier);
-    final targetRegister = registerManager.recycleOrAllocateRegister(arraySource, indexSource, declaredType!.innerType!.toCompositeType());
+    final targetRegister = _registerManager.recycleOrAllocateRegister(arraySource, indexSource, declaredType!.innerType!.toCompositeType());
     _addInstruction(ArrayDereferenceInstruction(ctx.textRange, arraySource, indexSource, targetRegister));
     return targetRegister.toSource();
   }
@@ -451,7 +454,7 @@ mixin GenericCompiler on VariableDeclarationManager {
 
   ConstantDataSource _handleArrayLiteralElement(ArrayLiteralElement ctx) {
     if(ctx.numberText != null) {
-      return ConstantDataSource(DataType.int.toCompositeType(), int.parse(ctx.numberText!));
+      return ConstantDataSource.fromNumericConstant(ctx.numberText!);
     } else if(ctx.stringText != null) {
       return ConstantDataSource(DataType.string.toCompositeType(), ctx.stringText!);
     } else if(ctx.booleanText != null) {

@@ -4,12 +4,11 @@ import 'wrappers/identifier.dart';
 import 'wrappers/data_destination.dart';
 import 'built_in_globals.dart';
 import 'text_interval.dart';
-import 'virtual_machine.dart';
 import 'data_type.dart';
 import 'semantic_error_collector.dart';
 import 'wrappers/instructions.dart';
 
-abstract class InstructionGeneratingTreeWalker implements ParseTreeListener {
+abstract class InstructionGenerator {
   abstract final SemanticErrorCollector semanticErrorCollector;
   Map<String, Constant> get builtInVariables;
   List<Instruction> get topLevelInstructions;
@@ -43,8 +42,12 @@ extension TerminalNodeTextRangeGetter on TerminalNode {
   TextInterval get textRange => TextInterval(symbol, symbol);
 }
 
-mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
+class VariableDeclarationManager {
   final List<Map<String, CompositeDataType>> _variableDeclarations = [{}];
+  final SemanticErrorCollector semanticErrorCollector;
+  final Map<String, Constant> builtInVariables;
+
+  VariableDeclarationManager(this.semanticErrorCollector, this.builtInVariables);
 
   void addDeclaration(String variableName, CompositeDataType dataType, TextInterval textRange) {
     if(getDeclaredType(variableName) != null) {
@@ -65,11 +68,13 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
     return null;
   }
 
-  checkDeclareBeforeUse(Identifier id) {
+  bool wasDeclaredBeforeUse(Identifier id) {
     if(getDeclaredType(id.variableName) == null) {
       semanticErrorCollector.add(
           'Semantic error at ${id.textRange.startPosition}: variable name ${id.variableName} needs to be declared in the current scope before use.');
+      return false;
     }
+    return true;
   }
 
   checkConstantAssignment(Identifier id) {
@@ -87,7 +92,9 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
   }
 
   VariableMemorySource sourceFromMemory(Identifier id) {
-    checkDeclareBeforeUse(id);
+    if(!wasDeclaredBeforeUse(id)) {
+      throw Exception('Cannot create a variable memory source for an undeclared variable.');
+    }
     return VariableMemorySource(getDeclaredType(id.variableName)!, id.variableName);
   }
 
@@ -110,6 +117,12 @@ mixin VariableDeclarationManager on InstructionGeneratingTreeWalker {
       return true;
     } else if(source.dataType == DataType.int && destination.dataType == DataType.float) {
       return true;
+    } else if(
+      source.dataType == DataType.array &&
+      destination.dataType == DataType.array &&
+      source.innerType == destination.innerType
+    ) {
+        return true;
     }
     semanticErrorCollector.add('Type mismatch at ${textRange.startPosition}: cannot assign ${source.name} to a(n) ${destination.name}.');
     return false;

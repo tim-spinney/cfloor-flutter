@@ -1,9 +1,9 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor4/CFloor4BaseListener.dart';
-import 'package:cfloor_flutter/virtual_machines/wrappers/boolean_expression.dart';
-import 'package:cfloor_flutter/virtual_machines/wrappers/boolean_operand.dart';
-import 'package:cfloor_flutter/virtual_machines/wrappers/if_block.dart';
+import '../wrappers/boolean_expression.dart';
+import '../wrappers/boolean_operand.dart';
+import '../wrappers/if_block.dart';
 import '../boolean_operator.dart';
 import '../built_in_globals.dart';
 import '../comparison_operator.dart';
@@ -15,6 +15,7 @@ import '../semantic_error_collector.dart';
 import '../wrappers/assignment.dart';
 import '../generic/compiler.dart';
 import '../wrappers/identifier.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/math_expression.dart';
 import '../wrappers/math_function_expression.dart';
@@ -24,12 +25,9 @@ import '../wrappers/string_literal.dart';
 import '../wrappers/variable_accessor.dart';
 import '../wrappers/write_statement.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor4TreeWalkerBase extends CFloor4BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
 
@@ -37,52 +35,56 @@ class CFloor4TreeWalker extends _CFloor4TreeWalkerBase with VariableDeclarationM
   get builtInVariables => builtInMathConstants;
 
   @override
-  final registerManager = RegisterManager();
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  CFloor4TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     final destinationType = DataType.byName(ctx.type()!.text);
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType.toCompositeType());
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType.toCompositeType());
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   @override
   void enterIfBlock(IfBlockContext ctx) {
-    handleEnteringIfBlock();
+    _compiler.handleEnteringIfBlock();
   }
 
   @override
   void exitIfBlock(IfBlockContext ctx) {
-    handleExitingIfBlock(_toIfBlock(ctx));
+    _compiler.handleExitingIfBlock(_toIfBlock(ctx));
   }
 
   @override
   void enterIfStatement(IfStatementContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterElseBlock(ElseBlockContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterBlock(BlockContext ctx) {
-    handleEnteringBlock(ctx.textRange);
+    _compiler.handleEnteringBlock(ctx.textRange);
   }
 
   @override
   void exitBlock(BlockContext ctx) {
-    handleExitingBlock(ctx.textRange);
+    _compiler.handleExitingBlock(ctx.textRange);
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

@@ -1,16 +1,15 @@
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/virtual_machines/built_in_globals.dart';
-import 'package:cfloor_flutter/virtual_machines/semantic_error_collector.dart';
-import 'package:cfloor_flutter/virtual_machines/generic/compiler.dart';
-import 'package:cfloor_flutter/virtual_machines/wrappers/identifier.dart';
-import '../instruction_generating_tree_walker.dart';
-import 'package:cfloor_flutter/virtual_machines/data_type.dart';
-import '../math_operator.dart';
-import '../virtual_machine.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
-
+import '../built_in_globals.dart';
+import '../semantic_error_collector.dart';
+import '../generic/compiler.dart';
+import '../wrappers/identifier.dart';
+import '../instruction_generating_tree_walker.dart';
+import '../data_type.dart';
+import '../math_operator.dart';
 import '../wrappers/assignment.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/math_expression.dart';
 import '../wrappers/math_operand.dart';
 import '../wrappers/read_expression.dart';
@@ -18,34 +17,35 @@ import '../wrappers/string_literal.dart';
 import '../wrappers/variable_accessor.dart';
 import '../wrappers/write_statement.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor1TreeWalkerBase extends CFloor1BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor1TreeWalker extends _CFloor1TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
 
-  @override
-  final registerManager = RegisterManager();
+  CFloor1TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, {});
+  }
 
   @override
   Map<String, Constant> get builtInVariables => {};
 
   @override
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), DataType.int.toCompositeType());
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), DataType.int.toCompositeType());
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

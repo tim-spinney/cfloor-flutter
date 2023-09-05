@@ -1,5 +1,5 @@
 import 'package:antlr4/antlr4.dart';
-import 'package:cfloor_flutter/virtual_machines/built_in_globals.dart';
+import '../built_in_globals.dart';
 
 import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
@@ -12,6 +12,7 @@ import 'package:cfloor_flutter/generated/cfloor2/CFloor2BaseListener.dart';
 import '../wrappers/assignment.dart';
 import '../generic/compiler.dart';
 import '../wrappers/identifier.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/math_expression.dart';
 import '../wrappers/math_function_expression.dart';
 import '../wrappers/math_operand.dart';
@@ -20,35 +21,36 @@ import '../wrappers/string_literal.dart';
 import '../wrappers/variable_accessor.dart';
 import '../wrappers/write_statement.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor2TreeWalkerBase extends CFloor2BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor2TreeWalker extends _CFloor2TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
-
-  @override
-  final registerManager = RegisterManager();
 
   @override
   get builtInVariables => builtInMathConstants;
 
   @override
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  CFloor2TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
+
+  @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     final destinationType = DataType.byName(ctx.type()!.text).toCompositeType();
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

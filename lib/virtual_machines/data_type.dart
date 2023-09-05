@@ -11,6 +11,9 @@ enum DataType {
   static DataType byName(String name) => name.startsWith('array') ? DataType.array : DataType.values.firstWhere((type) => type.name == name);
 
   CompositeDataType toCompositeType() => CompositeDataType.fromPrimitive(this);
+
+  @override
+  String toString() => name;
 }
 
 const cfloorTypesToDartTypes = {

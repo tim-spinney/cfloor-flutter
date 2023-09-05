@@ -14,4 +14,13 @@ class CFloorArray {
 
     @override
     String toString() => values.toString();
+
+    @override
+    bool operator ==(Object other) =>
+        other is CFloorArray &&
+        other.innerType == innerType &&
+        other.values == values;
+
+    @override
+    int get hashCode => innerType.hashCode ^ values.hashCode;
 }

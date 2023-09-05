@@ -1,6 +1,5 @@
 import 'built_in_globals.dart';
 import 'syntax_error_collector.dart';
-import 'virtual_machine.dart';
 import 'cfloor1/compiler.dart';
 import 'cfloor2/compiler.dart';
 import 'cfloor3/compiler.dart';

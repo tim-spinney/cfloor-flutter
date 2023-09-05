@@ -15,6 +15,7 @@ import '../wrappers/boolean_expression.dart';
 import '../wrappers/boolean_operand.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
+import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/math_expression.dart';
 import '../wrappers/math_function_expression.dart';
@@ -28,12 +29,9 @@ import '../wrappers/array_initializer.dart';
 import '../wrappers/for_loop.dart';
 import '../generic/compiler.dart';
 
-// hack: this exists so we have a base type that implements InstructionGeneratingTreeWalker
-// to satisfy InstructionGeneratorUtils' "on" type narrowing
-abstract class _CFloor6TreeWalkerBase extends CFloor6BaseListener implements InstructionGeneratingTreeWalker {
-}
+class CFloor6TreeWalker extends CFloor6BaseListener implements InstructionGenerator {
+  late final GenericCompiler _compiler;
 
-class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with VariableDeclarationManager, GenericCompiler {
   @override
   final semanticErrorCollector = SemanticErrorCollector();
 
@@ -41,72 +39,76 @@ class CFloor6TreeWalker extends _CFloor6TreeWalkerBase with VariableDeclarationM
   get builtInVariables => builtInMathConstants;
 
   @override
-  final registerManager = RegisterManager();
+  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+
+  CFloor6TreeWalker() {
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {
     final destinationType = CompositeDataType.fromString(ctx.type()!.text);
-    handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
+    _compiler.handleDeclAssignStatement(_toAssignment(ctx.assignment()!), destinationType);
   }
 
   @override
   void exitAssignStatement(AssignStatementContext ctx) {
-    handleAssignStatement(_toAssignment(ctx.assignment()!));
+    _compiler.handleAssignStatement(_toAssignment(ctx.assignment()!));
   }
 
   @override
   void exitWriteStatement(WriteStatementContext ctx) {
-    handleWriteStatement(_toWriteStatement(ctx));
+    _compiler.handleWriteStatement(_toWriteStatement(ctx));
   }
 
   @override
   void enterIfBlock(IfBlockContext ctx) {
-    handleEnteringIfBlock();
+    _compiler.handleEnteringIfBlock();
   }
 
   @override
   void exitIfBlock(IfBlockContext ctx) {
-    handleExitingIfBlock(_toIfBlock(ctx));
+    _compiler.handleExitingIfBlock(_toIfBlock(ctx));
   }
 
   @override
   void enterIfStatement(IfStatementContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterElseBlock(ElseBlockContext ctx) {
-    handleEnteringBranch();
+    _compiler.handleEnteringBranch();
   }
 
   @override
   void enterBlock(BlockContext ctx) {
-    handleEnteringBlock(ctx.textRange);
+    _compiler.handleEnteringBlock(ctx.textRange);
   }
 
   @override
   void exitBlock(BlockContext ctx) {
-    handleExitingBlock(ctx.textRange);
+    _compiler.handleExitingBlock(ctx.textRange);
   }
 
   @override
   void enterWhileLoop(WhileLoopContext ctx) {
-    handleEnteringWhileLoop();
+    _compiler.handleEnteringWhileLoop();
   }
 
   @override
   void exitWhileLoop(WhileLoopContext ctx) {
-    handleExitingWhileLoop(_toWhileLoop(ctx));
+    _compiler.handleExitingWhileLoop(_toWhileLoop(ctx));
   }
 
   @override
   void enterForLoop(ForLoopContext ctx) {
-    handleEnteringForLoop(_toForLoop(ctx));
+    _compiler.handleEnteringForLoop(_toForLoop(ctx));
   }
 
   @override
   void exitForLoop(ForLoopContext ctx) {
-    handleExitingForLoop(_toForLoop(ctx));
+    _compiler.handleExitingForLoop(_toForLoop(ctx));
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(
