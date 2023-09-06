@@ -29,9 +29,9 @@ Identifier=24
 ')'=5
 '='=6
 '('=7
-'readInt()'=8
-'readFloat()'=9
-'readString()'=10
+'read_int()'=8
+'read_float()'=9
+'read_string()'=10
 'floor'=11
 'ceil'=12
 'round'=13

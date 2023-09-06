@@ -10,5 +10,5 @@ assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLite
 
 mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
 
-readFunctionExpression: 'readInt()' | 'readFloat()' | 'readString()' ;
+readFunctionExpression: 'read_int()' | 'read_float()' | 'read_string()' ;
 

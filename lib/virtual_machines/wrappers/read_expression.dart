@@ -2,8 +2,22 @@ import '../data_type.dart';
 import '../text_interval.dart';
 
 class ReadExpression {
-  final TextInterval textRange;
-  final DataType dataType;
+  static const _functionNamePattern = r"^read_([a-z]*)";
 
-  ReadExpression(this.textRange, this.dataType);
+  final TextInterval textRange;
+  late final DataType dataType;
+
+  ReadExpression(this.textRange, String functionName) {
+    dataType = _determineReadExpressionType(functionName);
+  }
+
+  DataType _determineReadExpressionType(String functionName) {
+    final type = RegExp(_functionNamePattern).firstMatch(functionName)?.group(1)?.toLowerCase();
+    return switch(type) {
+      'int' => DataType.int,
+      'float' => DataType.float,
+      'string' => DataType.string,
+      _ => throw Exception('Unrecognized read function: $functionName'),
+    };
+  }
 }

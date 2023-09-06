@@ -30,8 +30,8 @@ Identifier=21
 'sin'=9
 'cos'=10
 'tan'=11
-'readInt()'=12
-'readFloat()'=13
+'read_int()'=12
+'read_float()'=13
 ';'=14
 'write'=15
 '='=16

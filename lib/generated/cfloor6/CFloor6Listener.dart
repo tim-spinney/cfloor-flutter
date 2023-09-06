@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor6.g4 by ANTLR 4.13.0
+// Generated from grammars/CFloor6.g4 by ANTLR 4.13.1
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -70,13 +70,6 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitStatement(StatementContext ctx);
 
-  /// Enter a parse tree produced by [CFloor6Parser.program].
-  /// [ctx] the parse tree
-  void enterProgram(ProgramContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.program].
-  /// [ctx] the parse tree
-  void exitProgram(ProgramContext ctx);
-
   /// Enter a parse tree produced by [CFloor6Parser.whileLoop].
   /// [ctx] the parse tree
   void enterWhileLoop(WhileLoopContext ctx);
@@ -125,6 +118,13 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor6Parser.ifBlock].
   /// [ctx] the parse tree
   void exitIfBlock(IfBlockContext ctx);
+
+  /// Enter a parse tree produced by [CFloor6Parser.program].
+  /// [ctx] the parse tree
+  void enterProgram(ProgramContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.program].
+  /// [ctx] the parse tree
+  void exitProgram(ProgramContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.stringLengthExpression].
   /// [ctx] the parse tree

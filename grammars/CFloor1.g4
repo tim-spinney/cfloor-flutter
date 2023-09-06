@@ -30,5 +30,5 @@ assignment: Identifier '=' (mathExpression | readFunctionExpression) ;
 
 statement: writeStatement | assignStatement | declAssignStatement ;
 
-readFunctionExpression: 'readInt()' ;
+readFunctionExpression: 'read_int()' ;
 

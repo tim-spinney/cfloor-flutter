@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor6.g4 by ANTLR 4.13.0
+// Generated from grammars/CFloor6.g4 by ANTLR 4.13.1
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -84,14 +84,6 @@ class CFloor6BaseListener implements CFloor6Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterWhileLoop(WhileLoopContext ctx) {}
 
   /// The default implementation does nothing.
@@ -145,6 +137,14 @@ class CFloor6BaseListener implements CFloor6Listener {
   /// The default implementation does nothing.
   @override
   void exitIfBlock(IfBlockContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterProgram(ProgramContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
   @override

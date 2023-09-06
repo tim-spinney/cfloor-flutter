@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor1.g4 by ANTLR 4.13.0
+// Generated from grammars/CFloor1.g4 by ANTLR 4.13.1
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -9,7 +9,7 @@ const int RULE_type = 0, RULE_program = 1, RULE_declAssignStatement = 2,
           RULE_mathOperand = 6, RULE_mathExpression = 7, RULE_assignment = 8, 
           RULE_statement = 9, RULE_readFunctionExpression = 10;
 class CFloor1Parser extends Parser {
-  static final checkVersion = () => RuntimeMetaData.checkVersion('4.13.0', RuntimeMetaData.VERSION);
+  static final checkVersion = () => RuntimeMetaData.checkVersion('4.13.1', RuntimeMetaData.VERSION);
   static const int TOKEN_EOF = IntStream.EOF;
 
   static final List<DFA> _decisionToDFA = List.generate(
@@ -28,7 +28,7 @@ class CFloor1Parser extends Parser {
   ];
 
   static final List<String?> _LITERAL_NAMES = [
-      null, "'int'", "';'", "'write'", "'('", "')'", "'='", "'readInt()'"
+      null, "'int'", "';'", "'write'", "'('", "')'", "'='", "'read_int()'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [
       null, null, null, null, null, null, null, null, "MathOperator", "StringLiteral", 

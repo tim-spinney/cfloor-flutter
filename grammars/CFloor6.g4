@@ -21,5 +21,3 @@ typedAssignment: type assignment ;
 forLoop: 'for' '(' typedAssignment ';' booleanExpression ';' assignment ')' block ;
 
 statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop ;
-
-program: statement* ;

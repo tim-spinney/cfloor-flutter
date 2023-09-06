@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor5.g4 by ANTLR 4.13.0
+// Generated from grammars/CFloor5.g4 by ANTLR 4.13.1
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -12,7 +12,7 @@ const int RULE_whileLoop = 0, RULE_statement = 1, RULE_type = 2, RULE_booleanOpe
           RULE_assignStatement = 16, RULE_writeStatement = 17, RULE_variableAccessor = 18, 
           RULE_mathExpression = 19;
 class CFloor5Parser extends Parser {
-  static final checkVersion = () => RuntimeMetaData.checkVersion('4.13.0', RuntimeMetaData.VERSION);
+  static final checkVersion = () => RuntimeMetaData.checkVersion('4.13.1', RuntimeMetaData.VERSION);
   static const int TOKEN_EOF = IntStream.EOF;
 
   static final List<DFA> _decisionToDFA = List.generate(
@@ -41,8 +41,8 @@ class CFloor5Parser extends Parser {
 
   static final List<String?> _LITERAL_NAMES = [
       null, "'while'", "'('", "')'", "'int'", "'float'", "'string'", "'bool'", 
-      "'='", "'{'", "'}'", "'if'", "'else'", "'length('", "'readInt()'", 
-      "'readFloat()'", "'readString()'", "'floor'", "'ceil'", "'round'", 
+      "'='", "'{'", "'}'", "'if'", "'else'", "'length('", "'read_int()'", 
+      "'read_float()'", "'read_string()'", "'floor'", "'ceil'", "'round'", 
       "'sqrt'", "'sin'", "'cos'", "'tan'", "';'", "'write'", null, "'not'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [

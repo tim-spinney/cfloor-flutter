@@ -131,7 +131,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
 
   ReadExpression _toReadExpression(ReadFunctionExpressionContext ctx) => ReadExpression(
     ctx.textRange,
-    _determineReadExpressionType(ctx),
+    ctx.text,
   );
 
   MathFunctionExpression _toMathFunctionExpression(MathFunctionExpressionContext ctx) => MathFunctionExpression(
@@ -171,14 +171,4 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     ctx.variableAccessor() == null ? null : _toVariableAccessor(ctx.variableAccessor()!),
     ctx.booleanExpression() == null ? null : _toBooleanExpression(ctx.booleanExpression()!),
   );
-
-  DataType _determineReadExpressionType(ReadFunctionExpressionContext ctx) {
-    final type = RegExp(r"^read([A-Z][a-z]*)").firstMatch(ctx.text)?.group(1)?.toLowerCase();
-    return switch(type) {
-      'int' => DataType.int,
-      'float' => DataType.float,
-      'string' => DataType.string,
-      _ => throw Exception('Unknown read type: $ctx.text'),
-    };
-  }
 }

@@ -10,4 +10,4 @@ mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctio
 
 mathFunctionExpression: ('floor' | 'ceil' | 'round' | 'sqrt' | 'sin' | 'cos' | 'tan') '(' mathExpression ')' ;
 
-readFunctionExpression: 'readInt()' | 'readFloat()' ;
+readFunctionExpression: 'read_int()' | 'read_float()' ;

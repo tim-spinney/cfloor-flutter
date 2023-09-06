@@ -88,7 +88,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
 
   ReadExpression _toReadExpression(ReadFunctionExpressionContext ctx) => ReadExpression(
     ctx.textRange,
-    DataType.int,
+    ctx.text,
   );
 
   StringLiteral _toStringLiteral(TerminalNode ctx) => StringLiteral(

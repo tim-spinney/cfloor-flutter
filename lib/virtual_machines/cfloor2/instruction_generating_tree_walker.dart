@@ -94,7 +94,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
 
   ReadExpression _toReadExpression(ReadFunctionExpressionContext ctx) => ReadExpression(
     ctx.textRange,
-    _determineReadExpressionType(ctx),
+    ctx.text,
   );
 
   MathFunctionExpression _toMathFunctionExpression(MathFunctionExpressionContext ctx) => MathFunctionExpression(
@@ -107,7 +107,4 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
     ctx.textRange,
     ctx.text!,
   );
-
-  DataType _determineReadExpressionType(ReadFunctionExpressionContext ctx) =>
-      ctx.text.startsWith('readInt') ? DataType.int : DataType.float;
 }
