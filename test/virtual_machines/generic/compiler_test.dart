@@ -229,7 +229,7 @@ void main() {
       final assignment = Assignment(
         _SimpleTextInterval(),
         destination,
-        ReadExpression(_SimpleTextInterval(), DataType.int),
+        ReadExpression(_SimpleTextInterval(), 'read_int'),
         null,
       );
 
