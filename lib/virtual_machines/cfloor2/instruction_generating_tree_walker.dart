@@ -31,7 +31,7 @@ class CFloor2TreeWalker extends CFloor2BaseListener implements InstructionGenera
   get builtInVariables => builtInMathConstants;
 
   @override
-  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+  List<Instruction> get instructions => _compiler.topLevelInstructions;
 
   CFloor2TreeWalker() {
     _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);

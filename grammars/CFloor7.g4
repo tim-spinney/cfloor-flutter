@@ -6,6 +6,6 @@ parameter: type Identifier ;
 
 parameterList: (parameter (',' parameter)*)? ;
 
-functionDefinition: type Identifier '(' parameterList ')' block ;
+functionDefinition: (type | 'void') Identifier '(' parameterList ')' block ;
 
 program: functionDefinition+ EOF ;

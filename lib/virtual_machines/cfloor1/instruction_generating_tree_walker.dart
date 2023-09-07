@@ -31,7 +31,7 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
   Map<String, Constant> get builtInVariables => {};
 
   @override
-  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+  List<Instruction> get instructions => _compiler.topLevelInstructions;
 
   @override
   void exitDeclAssignStatement(DeclAssignStatementContext ctx) {

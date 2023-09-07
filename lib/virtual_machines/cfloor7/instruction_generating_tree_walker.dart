@@ -29,8 +29,10 @@ import '../wrappers/array_initializer.dart';
 import '../wrappers/for_loop.dart';
 import '../generic/compiler.dart';
 
-class CFloor7TreeWalker extends CFloor7BaseListener implements InstructionGenerator {
-  late final GenericCompiler _compiler;
+class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implements InstructionGenerator {
+  late GenericCompiler _compiler;
+  final Map<String, int> _functionStartIndices = {};
+  final Map<int, String> _functionCallPlaceholderIndices = {};
 
   @override
   final semanticErrorCollector = SemanticErrorCollector();
@@ -39,10 +41,33 @@ class CFloor7TreeWalker extends CFloor7BaseListener implements InstructionGenera
   get builtInVariables => builtInMathConstants;
 
   @override
-  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+  List<Instruction> instructions = [];
 
-  CFloor7TreeWalker() {
+  @override
+  int get entryPoint => _functionStartIndices['main'] ?? -1;
+
+  @override
+  void enterFunctionDefinition(FunctionDefinitionContext ctx) {
     _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+  }
+
+  @override
+  void exitFunctionDefinition(FunctionDefinitionContext ctx) {
+    _functionStartIndices[ctx.Identifier()!.text!] = instructions.length;
+    instructions.addAll(_compiler.topLevelInstructions);
+  }
+
+  @override
+  void exitProgram(ProgramContext ctx) {
+    _functionCallPlaceholderIndices.forEach((placeholderIndex, functionName) {
+      final destinationIndex = _functionStartIndices[functionName]!;
+      final original = instructions[placeholderIndex] as CallInstruction;
+      instructions[placeholderIndex] = CallInstruction(
+        original.textRange,
+        original.variablesToCopy,
+        destinationIndex,
+      );
+    });
   }
 
   @override
@@ -109,10 +134,6 @@ class CFloor7TreeWalker extends CFloor7BaseListener implements InstructionGenera
   @override
   void exitForLoop(ForLoopContext ctx) {
     _compiler.handleExitingForLoop(_toForLoop(ctx));
-  }
-
-  @override
-  void enterFunctionDefinition(FunctionDefinitionContext ctx) {
   }
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(

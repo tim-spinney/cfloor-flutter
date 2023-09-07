@@ -121,3 +121,17 @@ class ArrayDereferenceInstruction extends Instruction {
 
   ArrayDereferenceInstruction(super.textRange, this.arraySource, this.indexSource, this.destination);
 }
+
+class CallInstruction extends Instruction {
+  final Map<DataSource, DataDestination> variablesToCopy;
+  final int destinationInstructionIndex;
+
+  CallInstruction(super.textRange, this.variablesToCopy, this.destinationInstructionIndex);
+}
+
+class ReturnInstruction extends Instruction {
+  DataSource? returnValueSource;
+  DataDestination? returnValueDestination;
+
+  ReturnInstruction(super.textRange, this.returnValueSource, this.returnValueDestination);
+}

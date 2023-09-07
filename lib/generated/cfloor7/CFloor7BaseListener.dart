@@ -36,6 +36,14 @@ class CFloor7BaseListener implements CFloor7Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterProgram(ProgramContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitProgram(ProgramContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
@@ -193,14 +201,6 @@ class CFloor7BaseListener implements CFloor7Listener {
   /// The default implementation does nothing.
   @override
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterProgram(ProgramContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitProgram(ProgramContext ctx) {}
 
   /// The default implementation does nothing.
   @override

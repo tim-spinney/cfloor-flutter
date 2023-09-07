@@ -6,6 +6,7 @@ import 'cfloor3/compiler.dart';
 import 'cfloor4/compiler.dart';
 import 'cfloor5/compiler.dart';
 import 'cfloor6/compiler.dart';
+import 'cfloor7/compiler.dart';
 import 'language_level.dart';
 import 'wrappers/instructions.dart';
 
@@ -23,8 +24,9 @@ class Compiler {
       LanguageLevel.cfloor4 => compileCFloor4(sourceText, errorCollector),
       LanguageLevel.cfloor5 => compileCFloor5(sourceText, errorCollector),
       LanguageLevel.cfloor6 => compileCFloor6(sourceText, errorCollector),
+      LanguageLevel.cfloor7 => compileCFloor7(sourceText, errorCollector),
     };
-    return CompileResult(errorCollector.errors + instructionGenerator.semanticErrorCollector.errors, instructionGenerator.topLevelInstructions, instructionGenerator.builtInVariables);
+    return CompileResult(errorCollector.errors + instructionGenerator.semanticErrorCollector.errors, instructionGenerator.instructions, instructionGenerator.builtInVariables);
   }
 }
 

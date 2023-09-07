@@ -36,7 +36,7 @@ class CFloor5TreeWalker extends CFloor5BaseListener implements InstructionGenera
   get builtInVariables => builtInMathConstants;
 
   @override
-  List<Instruction> get topLevelInstructions => _compiler.topLevelInstructions;
+  List<Instruction> get instructions => _compiler.topLevelInstructions;
 
   CFloor5TreeWalker() {
     _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);

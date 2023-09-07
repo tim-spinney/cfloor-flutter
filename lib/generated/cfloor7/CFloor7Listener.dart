@@ -28,6 +28,13 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitFunctionDefinition(FunctionDefinitionContext ctx);
 
+  /// Enter a parse tree produced by [CFloor7Parser.program].
+  /// [ctx] the parse tree
+  void enterProgram(ProgramContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.program].
+  /// [ctx] the parse tree
+  void exitProgram(ProgramContext ctx);
+
   /// Enter a parse tree produced by [CFloor7Parser.type].
   /// [ctx] the parse tree
   void enterType(TypeContext ctx);
@@ -167,13 +174,6 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor7Parser.mathFunctionExpression].
   /// [ctx] the parse tree
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.program].
-  /// [ctx] the parse tree
-  void enterProgram(ProgramContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.program].
-  /// [ctx] the parse tree
-  void exitProgram(ProgramContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.declAssignStatement].
   /// [ctx] the parse tree

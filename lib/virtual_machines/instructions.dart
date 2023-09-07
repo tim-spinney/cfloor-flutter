@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'cfloor_array.dart';
 import 'boolean_operator.dart';
 import 'comparison_operator.dart';
 import 'math_function.dart';
@@ -124,6 +125,23 @@ sealed class VMInstruction {
                 VMDataSource.fromDataSource(instruction.arraySource, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.indexSource, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
+            ),
+        CallInstruction() =>
+            VMCallInstruction(
+              instruction.textRange,
+              instruction.variablesToCopy.map((source, destination) => MapEntry<VMDataSource, VMDataDestination>(
+                  VMDataSource.fromDataSource(source, virtualMachine.memory),
+                  VMDataDestination.fromDataDestination(destination, virtualMachine.memory)
+              )),
+              virtualMachine,
+              instruction.destinationInstructionIndex,
+            ),
+        ReturnInstruction() =>
+            VMReturnInstruction(
+              instruction.textRange,
+              instruction.returnValueSource == null ? null : VMDataSource.fromDataSource(instruction.returnValueSource!, virtualMachine.memory),
+              instruction.returnValueDestination == null ? null : VMDataDestination.fromDataDestination(instruction.returnValueDestination!, virtualMachine.memory),
+              virtualMachine,
             ),
       };
 }
@@ -376,5 +394,46 @@ class VMArrayDereferenceInstruction extends VMInstruction {
   @override
   void evaluate() {
     destination.set(arraySource.get()[indexSource.get()]);
+  }
+}
+
+class VMCallInstruction extends VMInstruction {
+  final Map<VMDataSource, VMDataDestination> _variablesToCopy;
+  final VirtualMachine _virtualMachine;
+  final int _destinationInstructionIndex;
+
+  VMCallInstruction(super.textRange, this._variablesToCopy, this._virtualMachine, this._destinationInstructionIndex);
+
+  @override
+  void evaluate() {
+    final valuesWithDestinations = _variablesToCopy.entries.map((e) => (e.key.get(), e.value));
+    _virtualMachine.memory.pushStack();
+    for (final (value, destination) in valuesWithDestinations) {
+      final valueCopy = value is CFloorArray ? CFloorArray.copy(value) : value;
+      destination.set(valueCopy);
+    }
+    _virtualMachine.jumpAndSetReturn(_destinationInstructionIndex);
+  }
+
+  @override
+  bool get shouldIncrementProgramCounter => false;
+}
+
+class VMReturnInstruction extends VMInstruction {
+  final VMDataSource? _returnValueSource;
+  final VMDataDestination? _returnValueDestination;
+  final VirtualMachine _virtualMachine;
+
+  VMReturnInstruction(super.textRange, this._returnValueSource, this._returnValueDestination, this._virtualMachine);
+
+  @override
+  void evaluate() {
+    if (_returnValueSource != null && _returnValueDestination != null) {
+      final returnValue = _returnValueSource!.get();
+      _virtualMachine.memory.popStack();
+      final valueCopy = returnValue is CFloorArray ? CFloorArray.copy(returnValue) : returnValue;
+      _returnValueDestination!.set(valueCopy);
+      _virtualMachine.jumpToLastReturn();
+    }
   }
 }

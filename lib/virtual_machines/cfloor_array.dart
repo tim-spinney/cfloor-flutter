@@ -6,6 +6,7 @@ class CFloorArray {
 
     CFloorArray(this.innerType, List<dynamic> values) : values = List.of(values, growable: false);
     CFloorArray.filled(this.innerType, int length) : values = List.filled(length, defaultValues[innerType], growable: false);
+    CFloorArray.copy(CFloorArray other) : innerType = other.innerType, values = List.of(other.values, growable: false);
 
     int get length => values.length;
 

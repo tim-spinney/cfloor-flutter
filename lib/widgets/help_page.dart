@@ -618,6 +618,9 @@ declare that variable outside the block so it survives past the end of the block
 LanguageLevel.cfloor6: """
 TODO
 """,
+LanguageLevel.cfloor7: """
+TODO
+""",
 };
 
 class HelpPage extends StatelessWidget {

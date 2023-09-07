@@ -11,7 +11,11 @@ import 'wrappers/instructions.dart';
 abstract class InstructionGenerator {
   abstract final SemanticErrorCollector semanticErrorCollector;
   Map<String, Constant> get builtInVariables;
-  List<Instruction> get topLevelInstructions;
+  List<Instruction> get instructions;
+}
+
+mixin HasEntryPoint {
+  int get entryPoint;
 }
 
 class RegisterManager {

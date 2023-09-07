@@ -10,6 +10,7 @@ class VirtualMachine extends ChangeNotifier {
   final ConsoleState consoleState;
   int _instructionIndex = 0;
   bool _isRunning = false;
+  final List<int> _returnIndices = [];
 
   VirtualMachine(this.consoleState);
 
@@ -37,9 +38,15 @@ class VirtualMachine extends ChangeNotifier {
     notifyListeners();
   }
 
-  void jumpTo(int index) {
-    _instructionIndex = index;
+  void jumpAndSetReturn(int destination) {
+    _returnIndices.add(_instructionIndex + 1);
+    _instructionIndex = destination;
     notifyListeners();
+  }
+
+  void jumpToLastReturn() {
+    final destination = _returnIndices.removeLast();
+    _instructionIndex = destination;
   }
 
   void jumpBy(int offset) {

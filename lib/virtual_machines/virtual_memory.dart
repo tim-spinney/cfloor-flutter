@@ -1,27 +1,30 @@
-import 'data_type.dart';
 
 class VirtualMemory {
-  final Map<String, dynamic> builtInVariables = {};
-  final List<Map<String, dynamic>> variableValues = [{}];
-  final Map<int, dynamic> registers = {};
+  final Map<String, dynamic> _globalVariables = {};
+  final List<List<Map<String, dynamic>>> _variableValues = [[{}]];
+  final List<Map<int, dynamic>> _registers = [{}];
 
-  getVariableValue(String name) {
-    for(int i = variableValues.length - 1; i >= 0; i--) {
-      if(variableValues[i].containsKey(name)) {
-        return variableValues[i][name];
+  List<Map<String, dynamic>> get currentScope => _variableValues.last;
+
+  Map<int, dynamic> get registers => _registers.last;
+
+  dynamic getVariableValue(String name) {
+    for(int i = currentScope.length - 1; i >= 0; i--) {
+      if(currentScope[i].containsKey(name)) {
+        return currentScope[i][name];
       }
     }
-    if(builtInVariables.containsKey(name)) {
-      return builtInVariables[name];
+    if(_globalVariables.containsKey(name)) {
+      return _globalVariables[name];
     }
     throw Exception('Variable $name not found');
   }
 
-  setVariableValue(String name, dynamic value, int? index) {
-    Map<String, dynamic> destinationScope = variableValues.last;
-    for(int i = variableValues.length - 2; i >= 0; i--) {
-      if(variableValues[i].containsKey(name)) {
-        destinationScope = variableValues[i];
+  void setVariableValue(String name, dynamic value, int? index) {
+    Map<String, dynamic> destinationScope = currentScope.last;
+    for(int i = currentScope.length - 2; i >= 0; i--) {
+      if(currentScope[i].containsKey(name)) {
+        destinationScope = currentScope[i];
         break;
       }
     }
@@ -32,15 +35,25 @@ class VirtualMemory {
     }
   }
 
-  addBuiltInVariable(String name, dynamic value) => builtInVariables[name] = value;
+  void addGlobalVariable(String name, dynamic value) => _globalVariables[name] = value;
 
-  pushScope() => variableValues.add({});
+  void pushScope() => currentScope.add({});
 
-  popScope() => variableValues.removeLast();
+  void popScope() => currentScope.removeLast();
+
+  void pushStack() {
+    _variableValues.add([{}]);
+    _registers.add({});
+  }
+
+  void popStack() {
+    _registers.removeLast();
+    _variableValues.removeLast();
+  }
 
   void clear() {
-    variableValues.clear();
-    variableValues.add({});
+    _variableValues.clear();
+    pushScope();
     registers.clear();
   }
 }

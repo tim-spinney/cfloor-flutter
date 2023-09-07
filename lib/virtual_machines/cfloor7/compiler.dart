@@ -1,7 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cfloor_flutter/generated/cfloor7/Cfloor7Lexer.dart';
-import 'package:cfloor_flutter/generated/cfloor7/Cfloor7Parser.dart';
+import 'package:cfloor_flutter/generated/cfloor7/CFloor7Lexer.dart';
+import 'package:cfloor_flutter/generated/cfloor7/CFloor7Parser.dart';
 import '../syntax_error_collector.dart';
 import '../instruction_generating_tree_walker.dart';
 import 'instruction_generating_tree_walker.dart';

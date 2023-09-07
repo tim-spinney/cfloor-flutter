@@ -17,13 +17,6 @@ class CodeEditor extends StatefulWidget {
   @override
   State<CodeEditor> createState() => _CodeEditorState();
 }
-/*
-const _sampleProgram = '''
-array<int> a = array<int>[4];
-a[0] = 1;
-write(a[0]);
-''';
- */
 
 const _sampleProgram = '''
 int a = 4;
@@ -38,6 +31,7 @@ const _levelDescriptions = {
   LanguageLevel.cfloor4: 'Level 4: booleans and conditionals',
   LanguageLevel.cfloor5: 'Level 5: while loops',
   LanguageLevel.cfloor6: 'Level 6: for loops',
+  LanguageLevel.cfloor7: 'Level 7: functions',
 };
 
 const _skippableInstructionTypes = [
@@ -77,7 +71,7 @@ class _CodeEditorState extends State<CodeEditor> {
       setState(() {
         _compileErrors = compileResult.errors;
         if(_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {
-          compileResult.builtInVariables.forEach((name, constant) { _virtualMachine.memory.addBuiltInVariable(name, constant.value); });
+          compileResult.builtInVariables.forEach((name, constant) { _virtualMachine.memory.addGlobalVariable(name, constant.value); });
           for (var instruction in compileResult.instructions) {
             _virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, _virtualMachine));
           }

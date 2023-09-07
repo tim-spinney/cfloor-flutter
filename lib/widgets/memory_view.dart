@@ -24,7 +24,7 @@ class _MemoryViewState extends State<MemoryView> {
   Widget build(BuildContext context) {
     final registers = widget.memory.registers.entries.toList();
     // TODO: make separate panel for each scope
-    final namedVariables = widget.memory.variableValues.expand((scope) => scope.entries).toList();
+    final namedVariables = widget.memory.currentScope.expand((scope) => scope.entries).toList();
     return Column(
       children: [
         Row(
