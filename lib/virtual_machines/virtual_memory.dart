@@ -53,7 +53,7 @@ class VirtualMemory {
 
   void clear() {
     _variableValues.clear();
-    pushScope();
+    pushStack();
     registers.clear();
   }
 }

@@ -209,9 +209,7 @@ void main() {
       final assignment = Assignment(
         _SimpleTextInterval(),
         destination,
-        null,
-        null,
-        stringLiteral: StringLiteral(_SimpleTextInterval(), '"hello"'),
+        StringLiteral(_SimpleTextInterval(), '"hello"'),
       );
 
       expect(() => compiler.handleDeclAssignStatement(assignment, CompositeDataType(DataType.array, DataType.string)), throwsException);
@@ -230,7 +228,6 @@ void main() {
         _SimpleTextInterval(),
         destination,
         ReadExpression(_SimpleTextInterval(), 'read_int'),
-        null,
       );
 
       compiler.handleDeclAssignStatement(assignment, DataType.int.toCompositeType());
@@ -269,9 +266,7 @@ void main() {
       final assignment = Assignment(
         _SimpleTextInterval(),
         destination,
-        null,
-        null,
-        arrayLiteral: arrayLiteral,
+        arrayLiteral,
       );
 
       expect(() => compiler.handleDeclAssignStatement(assignment, CompositeDataType(DataType.array, DataType.string)), throwsException);
@@ -296,9 +291,7 @@ void main() {
       final assignment = Assignment(
         _SimpleTextInterval(),
         destination,
-        null,
-        null,
-        arrayLiteral: arrayLiteral,
+        arrayLiteral,
       );
 
       compiler.handleDeclAssignStatement(assignment, CompositeDataType(DataType.array, DataType.int));
@@ -322,9 +315,7 @@ void main() {
       final assignment = Assignment(
         _SimpleTextInterval(),
         destination,
-        null,
-        null,
-        arrayLiteral: arrayLiteral,
+        arrayLiteral,
       );
 
       compiler.handleDeclAssignStatement(assignment, CompositeDataType(DataType.array, DataType.bool));

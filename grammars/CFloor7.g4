@@ -6,6 +6,18 @@ parameter: type Identifier ;
 
 parameterList: (parameter (',' parameter)*)? ;
 
-functionDefinition: (type | 'void') Identifier '(' parameterList ')' block ;
+returnType: type | 'void' ;
+
+functionDefinition: returnType Identifier '(' parameterList ')' block ;
+
+expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral | functionInvocation ;
+
+functionInvocation: Identifier '(' (variableAccessor (',' variableAccessor)*)? ')' ;
+
+functionInvocationStatement: functionInvocation ';' ;
+
+returnStatement: 'return' expression? ';' ;
+
+statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop | functionInvocationStatement | returnStatement ;
 
 program: functionDefinition+ EOF ;

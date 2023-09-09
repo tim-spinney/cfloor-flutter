@@ -4,11 +4,11 @@ import 'package:antlr4/antlr4.dart';
 
 import 'CFloor3Listener.dart';
 import 'CFloor3BaseListener.dart';
-const int RULE_type = 0, RULE_stringLengthExpression = 1, RULE_assignment = 2, 
-          RULE_mathOperand = 3, RULE_readFunctionExpression = 4, RULE_mathFunctionExpression = 5, 
-          RULE_program = 6, RULE_declAssignStatement = 7, RULE_assignStatement = 8, 
-          RULE_writeStatement = 9, RULE_variableAccessor = 10, RULE_mathExpression = 11, 
-          RULE_statement = 12;
+const int RULE_type = 0, RULE_stringLengthExpression = 1, RULE_expression = 2, 
+          RULE_assignment = 3, RULE_mathOperand = 4, RULE_readFunctionExpression = 5, 
+          RULE_mathFunctionExpression = 6, RULE_program = 7, RULE_declAssignStatement = 8, 
+          RULE_assignStatement = 9, RULE_writeStatement = 10, RULE_variableAccessor = 11, 
+          RULE_mathExpression = 12, RULE_statement = 13;
 class CFloor3Parser extends Parser {
   static final checkVersion = () => RuntimeMetaData.checkVersion('4.13.1', RuntimeMetaData.VERSION);
   static const int TOKEN_EOF = IntStream.EOF;
@@ -26,9 +26,10 @@ class CFloor3Parser extends Parser {
 
   @override
   final List<String> ruleNames = [
-    'type', 'stringLengthExpression', 'assignment', 'mathOperand', 'readFunctionExpression', 
-    'mathFunctionExpression', 'program', 'declAssignStatement', 'assignStatement', 
-    'writeStatement', 'variableAccessor', 'mathExpression', 'statement'
+    'type', 'stringLengthExpression', 'expression', 'assignment', 'mathOperand', 
+    'readFunctionExpression', 'mathFunctionExpression', 'program', 'declAssignStatement', 
+    'assignStatement', 'writeStatement', 'variableAccessor', 'mathExpression', 
+    'statement'
   ];
 
   static final List<String?> _LITERAL_NAMES = [
@@ -69,7 +70,7 @@ class CFloor3Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 26;
+      state = 28;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 14) != 0))) {
       errorHandler.recoverInline(this);
@@ -93,11 +94,11 @@ class CFloor3Parser extends Parser {
     enterRule(_localctx, 2, RULE_stringLengthExpression);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 28;
-      match(TOKEN_T__3);
-      state = 29;
-      variableAccessor();
       state = 30;
+      match(TOKEN_T__3);
+      state = 31;
+      variableAccessor();
+      state = 32;
       match(TOKEN_T__4);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -109,15 +110,10 @@ class CFloor3Parser extends Parser {
     return _localctx;
   }
 
-  AssignmentContext assignment() {
-    dynamic _localctx = AssignmentContext(context, state);
-    enterRule(_localctx, 4, RULE_assignment);
+  ExpressionContext expression() {
+    dynamic _localctx = ExpressionContext(context, state);
+    enterRule(_localctx, 4, RULE_expression);
     try {
-      enterOuterAlt(_localctx, 1);
-      state = 32;
-      match(TOKEN_Identifier);
-      state = 33;
-      match(TOKEN_T__5);
       state = 37;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
@@ -132,16 +128,19 @@ class CFloor3Parser extends Parser {
       case TOKEN_T__16:
       case TOKEN_Number:
       case TOKEN_Identifier:
+        enterOuterAlt(_localctx, 1);
         state = 34;
         mathExpression();
         break;
       case TOKEN_T__7:
       case TOKEN_T__8:
       case TOKEN_T__9:
+        enterOuterAlt(_localctx, 2);
         state = 35;
         readFunctionExpression();
         break;
       case TOKEN_StringLiteral:
+        enterOuterAlt(_localctx, 3);
         state = 36;
         match(TOKEN_StringLiteral);
         break;
@@ -158,30 +157,51 @@ class CFloor3Parser extends Parser {
     return _localctx;
   }
 
+  AssignmentContext assignment() {
+    dynamic _localctx = AssignmentContext(context, state);
+    enterRule(_localctx, 6, RULE_assignment);
+    try {
+      enterOuterAlt(_localctx, 1);
+      state = 39;
+      match(TOKEN_Identifier);
+      state = 40;
+      match(TOKEN_T__5);
+      state = 41;
+      expression();
+    } on RecognitionException catch (re) {
+      _localctx.exception = re;
+      errorHandler.reportError(this, re);
+      errorHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
+
   MathOperandContext mathOperand() {
     dynamic _localctx = MathOperandContext(context, state);
-    enterRule(_localctx, 6, RULE_mathOperand);
+    enterRule(_localctx, 8, RULE_mathOperand);
     try {
-      state = 47;
+      state = 51;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_Number:
         enterOuterAlt(_localctx, 1);
-        state = 39;
+        state = 43;
         match(TOKEN_Number);
         break;
       case TOKEN_Identifier:
         enterOuterAlt(_localctx, 2);
-        state = 40;
+        state = 44;
         variableAccessor();
         break;
       case TOKEN_T__6:
         enterOuterAlt(_localctx, 3);
-        state = 41;
+        state = 45;
         match(TOKEN_T__6);
-        state = 42;
+        state = 46;
         mathExpression();
-        state = 43;
+        state = 47;
         match(TOKEN_T__4);
         break;
       case TOKEN_T__10:
@@ -192,12 +212,12 @@ class CFloor3Parser extends Parser {
       case TOKEN_T__15:
       case TOKEN_T__16:
         enterOuterAlt(_localctx, 4);
-        state = 45;
+        state = 49;
         mathFunctionExpression();
         break;
       case TOKEN_T__3:
         enterOuterAlt(_localctx, 5);
-        state = 46;
+        state = 50;
         stringLengthExpression();
         break;
       default:
@@ -215,11 +235,11 @@ class CFloor3Parser extends Parser {
 
   ReadFunctionExpressionContext readFunctionExpression() {
     dynamic _localctx = ReadFunctionExpressionContext(context, state);
-    enterRule(_localctx, 8, RULE_readFunctionExpression);
+    enterRule(_localctx, 10, RULE_readFunctionExpression);
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 49;
+      state = 53;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 1792) != 0))) {
       errorHandler.recoverInline(this);
@@ -240,11 +260,11 @@ class CFloor3Parser extends Parser {
 
   MathFunctionExpressionContext mathFunctionExpression() {
     dynamic _localctx = MathFunctionExpressionContext(context, state);
-    enterRule(_localctx, 10, RULE_mathFunctionExpression);
+    enterRule(_localctx, 12, RULE_mathFunctionExpression);
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 51;
+      state = 55;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 260096) != 0))) {
       errorHandler.recoverInline(this);
@@ -253,11 +273,11 @@ class CFloor3Parser extends Parser {
         errorHandler.reportMatch(this);
         consume();
       }
-      state = 52;
+      state = 56;
       match(TOKEN_T__6);
-      state = 53;
+      state = 57;
       mathExpression();
-      state = 54;
+      state = 58;
       match(TOKEN_T__4);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -271,21 +291,21 @@ class CFloor3Parser extends Parser {
 
   ProgramContext program() {
     dynamic _localctx = ProgramContext(context, state);
-    enterRule(_localctx, 12, RULE_program);
+    enterRule(_localctx, 14, RULE_program);
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 57; 
+      state = 61; 
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
       do {
-        state = 56;
+        state = 60;
         statement();
-        state = 59; 
+        state = 63; 
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
       } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 17301518) != 0));
-      state = 61;
+      state = 65;
       match(TOKEN_EOF);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -299,14 +319,14 @@ class CFloor3Parser extends Parser {
 
   DeclAssignStatementContext declAssignStatement() {
     dynamic _localctx = DeclAssignStatementContext(context, state);
-    enterRule(_localctx, 14, RULE_declAssignStatement);
+    enterRule(_localctx, 16, RULE_declAssignStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 63;
+      state = 67;
       type();
-      state = 64;
+      state = 68;
       assignment();
-      state = 65;
+      state = 69;
       match(TOKEN_T__17);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -320,12 +340,12 @@ class CFloor3Parser extends Parser {
 
   AssignStatementContext assignStatement() {
     dynamic _localctx = AssignStatementContext(context, state);
-    enterRule(_localctx, 16, RULE_assignStatement);
+    enterRule(_localctx, 18, RULE_assignStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 67;
+      state = 71;
       assignment();
-      state = 68;
+      state = 72;
       match(TOKEN_T__17);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -339,34 +359,34 @@ class CFloor3Parser extends Parser {
 
   WriteStatementContext writeStatement() {
     dynamic _localctx = WriteStatementContext(context, state);
-    enterRule(_localctx, 18, RULE_writeStatement);
+    enterRule(_localctx, 20, RULE_writeStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 70;
+      state = 74;
       match(TOKEN_T__18);
-      state = 71;
-      match(TOKEN_T__6);
       state = 75;
+      match(TOKEN_T__6);
+      state = 79;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_Identifier:
-        state = 72;
+        state = 76;
         variableAccessor();
         break;
       case TOKEN_Number:
-        state = 73;
+        state = 77;
         match(TOKEN_Number);
         break;
       case TOKEN_StringLiteral:
-        state = 74;
+        state = 78;
         match(TOKEN_StringLiteral);
         break;
       default:
         throw NoViableAltException(this);
       }
-      state = 77;
+      state = 81;
       match(TOKEN_T__4);
-      state = 78;
+      state = 82;
       match(TOKEN_T__17);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -380,10 +400,10 @@ class CFloor3Parser extends Parser {
 
   VariableAccessorContext variableAccessor() {
     dynamic _localctx = VariableAccessorContext(context, state);
-    enterRule(_localctx, 20, RULE_variableAccessor);
+    enterRule(_localctx, 22, RULE_variableAccessor);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 80;
+      state = 84;
       match(TOKEN_Identifier);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -397,19 +417,19 @@ class CFloor3Parser extends Parser {
 
   MathExpressionContext mathExpression() {
     dynamic _localctx = MathExpressionContext(context, state);
-    enterRule(_localctx, 22, RULE_mathExpression);
+    enterRule(_localctx, 24, RULE_mathExpression);
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 82;
+      state = 86;
       mathOperand();
-      state = 85;
+      state = 89;
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
       if (_la == TOKEN_MathOperator) {
-        state = 83;
+        state = 87;
         match(TOKEN_MathOperator);
-        state = 84;
+        state = 88;
         mathOperand();
       }
 
@@ -425,26 +445,26 @@ class CFloor3Parser extends Parser {
 
   StatementContext statement() {
     dynamic _localctx = StatementContext(context, state);
-    enterRule(_localctx, 24, RULE_statement);
+    enterRule(_localctx, 26, RULE_statement);
     try {
-      state = 90;
+      state = 94;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_T__18:
         enterOuterAlt(_localctx, 1);
-        state = 87;
+        state = 91;
         writeStatement();
         break;
       case TOKEN_Identifier:
         enterOuterAlt(_localctx, 2);
-        state = 88;
+        state = 92;
         assignStatement();
         break;
       case TOKEN_T__0:
       case TOKEN_T__1:
       case TOKEN_T__2:
         enterOuterAlt(_localctx, 3);
-        state = 89;
+        state = 93;
         declAssignStatement();
         break;
       default:
@@ -461,34 +481,35 @@ class CFloor3Parser extends Parser {
   }
 
   static const List<int> _serializedATN = [
-      4,1,24,93,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
-      2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,1,0,1,0,1,1,
-      1,1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,3,2,38,8,2,1,3,1,3,1,3,1,3,1,3,1,3,
-      1,3,1,3,3,3,48,8,3,1,4,1,4,1,5,1,5,1,5,1,5,1,5,1,6,4,6,58,8,6,11,6,
-      12,6,59,1,6,1,6,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,3,
-      9,76,8,9,1,9,1,9,1,9,1,10,1,10,1,11,1,11,1,11,3,11,86,8,11,1,12,1,
-      12,1,12,3,12,91,8,12,1,12,0,0,13,0,2,4,6,8,10,12,14,16,18,20,22,24,
-      0,3,1,0,1,3,1,0,8,10,1,0,11,17,91,0,26,1,0,0,0,2,28,1,0,0,0,4,32,1,
-      0,0,0,6,47,1,0,0,0,8,49,1,0,0,0,10,51,1,0,0,0,12,57,1,0,0,0,14,63,
-      1,0,0,0,16,67,1,0,0,0,18,70,1,0,0,0,20,80,1,0,0,0,22,82,1,0,0,0,24,
-      90,1,0,0,0,26,27,7,0,0,0,27,1,1,0,0,0,28,29,5,4,0,0,29,30,3,20,10,
-      0,30,31,5,5,0,0,31,3,1,0,0,0,32,33,5,24,0,0,33,37,5,6,0,0,34,38,3,
-      22,11,0,35,38,3,8,4,0,36,38,5,22,0,0,37,34,1,0,0,0,37,35,1,0,0,0,37,
-      36,1,0,0,0,38,5,1,0,0,0,39,48,5,20,0,0,40,48,3,20,10,0,41,42,5,7,0,
-      0,42,43,3,22,11,0,43,44,5,5,0,0,44,48,1,0,0,0,45,48,3,10,5,0,46,48,
-      3,2,1,0,47,39,1,0,0,0,47,40,1,0,0,0,47,41,1,0,0,0,47,45,1,0,0,0,47,
-      46,1,0,0,0,48,7,1,0,0,0,49,50,7,1,0,0,50,9,1,0,0,0,51,52,7,2,0,0,52,
-      53,5,7,0,0,53,54,3,22,11,0,54,55,5,5,0,0,55,11,1,0,0,0,56,58,3,24,
-      12,0,57,56,1,0,0,0,58,59,1,0,0,0,59,57,1,0,0,0,59,60,1,0,0,0,60,61,
-      1,0,0,0,61,62,5,0,0,1,62,13,1,0,0,0,63,64,3,0,0,0,64,65,3,4,2,0,65,
-      66,5,18,0,0,66,15,1,0,0,0,67,68,3,4,2,0,68,69,5,18,0,0,69,17,1,0,0,
-      0,70,71,5,19,0,0,71,75,5,7,0,0,72,76,3,20,10,0,73,76,5,20,0,0,74,76,
-      5,22,0,0,75,72,1,0,0,0,75,73,1,0,0,0,75,74,1,0,0,0,76,77,1,0,0,0,77,
-      78,5,5,0,0,78,79,5,18,0,0,79,19,1,0,0,0,80,81,5,24,0,0,81,21,1,0,0,
-      0,82,85,3,6,3,0,83,84,5,21,0,0,84,86,3,6,3,0,85,83,1,0,0,0,85,86,1,
-      0,0,0,86,23,1,0,0,0,87,91,3,18,9,0,88,91,3,16,8,0,89,91,3,14,7,0,90,
-      87,1,0,0,0,90,88,1,0,0,0,90,89,1,0,0,0,91,25,1,0,0,0,6,37,47,59,75,
-      85,90
+      4,1,24,97,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
+      2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,1,
+      0,1,0,1,1,1,1,1,1,1,1,1,2,1,2,1,2,3,2,38,8,2,1,3,1,3,1,3,1,3,1,4,1,
+      4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,52,8,4,1,5,1,5,1,6,1,6,1,6,1,6,1,6,1,
+      7,4,7,62,8,7,11,7,12,7,63,1,7,1,7,1,8,1,8,1,8,1,8,1,9,1,9,1,9,1,10,
+      1,10,1,10,1,10,1,10,3,10,80,8,10,1,10,1,10,1,10,1,11,1,11,1,12,1,12,
+      1,12,3,12,90,8,12,1,13,1,13,1,13,3,13,95,8,13,1,13,0,0,14,0,2,4,6,
+      8,10,12,14,16,18,20,22,24,26,0,3,1,0,1,3,1,0,8,10,1,0,11,17,94,0,28,
+      1,0,0,0,2,30,1,0,0,0,4,37,1,0,0,0,6,39,1,0,0,0,8,51,1,0,0,0,10,53,
+      1,0,0,0,12,55,1,0,0,0,14,61,1,0,0,0,16,67,1,0,0,0,18,71,1,0,0,0,20,
+      74,1,0,0,0,22,84,1,0,0,0,24,86,1,0,0,0,26,94,1,0,0,0,28,29,7,0,0,0,
+      29,1,1,0,0,0,30,31,5,4,0,0,31,32,3,22,11,0,32,33,5,5,0,0,33,3,1,0,
+      0,0,34,38,3,24,12,0,35,38,3,10,5,0,36,38,5,22,0,0,37,34,1,0,0,0,37,
+      35,1,0,0,0,37,36,1,0,0,0,38,5,1,0,0,0,39,40,5,24,0,0,40,41,5,6,0,0,
+      41,42,3,4,2,0,42,7,1,0,0,0,43,52,5,20,0,0,44,52,3,22,11,0,45,46,5,
+      7,0,0,46,47,3,24,12,0,47,48,5,5,0,0,48,52,1,0,0,0,49,52,3,12,6,0,50,
+      52,3,2,1,0,51,43,1,0,0,0,51,44,1,0,0,0,51,45,1,0,0,0,51,49,1,0,0,0,
+      51,50,1,0,0,0,52,9,1,0,0,0,53,54,7,1,0,0,54,11,1,0,0,0,55,56,7,2,0,
+      0,56,57,5,7,0,0,57,58,3,24,12,0,58,59,5,5,0,0,59,13,1,0,0,0,60,62,
+      3,26,13,0,61,60,1,0,0,0,62,63,1,0,0,0,63,61,1,0,0,0,63,64,1,0,0,0,
+      64,65,1,0,0,0,65,66,5,0,0,1,66,15,1,0,0,0,67,68,3,0,0,0,68,69,3,6,
+      3,0,69,70,5,18,0,0,70,17,1,0,0,0,71,72,3,6,3,0,72,73,5,18,0,0,73,19,
+      1,0,0,0,74,75,5,19,0,0,75,79,5,7,0,0,76,80,3,22,11,0,77,80,5,20,0,
+      0,78,80,5,22,0,0,79,76,1,0,0,0,79,77,1,0,0,0,79,78,1,0,0,0,80,81,1,
+      0,0,0,81,82,5,5,0,0,82,83,5,18,0,0,83,21,1,0,0,0,84,85,5,24,0,0,85,
+      23,1,0,0,0,86,89,3,8,4,0,87,88,5,21,0,0,88,90,3,8,4,0,89,87,1,0,0,
+      0,89,90,1,0,0,0,90,25,1,0,0,0,91,95,3,20,10,0,92,95,3,18,9,0,93,95,
+      3,16,8,0,94,91,1,0,0,0,94,92,1,0,0,0,94,93,1,0,0,0,95,27,1,0,0,0,6,
+      37,51,63,79,89,94
   ];
 
   static final ATN _ATN =
@@ -523,11 +544,26 @@ class StringLengthExpressionContext extends ParserRuleContext {
   }
 }
 
-class AssignmentContext extends ParserRuleContext {
-  TerminalNode? Identifier() => getToken(CFloor3Parser.TOKEN_Identifier, 0);
+class ExpressionContext extends ParserRuleContext {
   MathExpressionContext? mathExpression() => getRuleContext<MathExpressionContext>(0);
   ReadFunctionExpressionContext? readFunctionExpression() => getRuleContext<ReadFunctionExpressionContext>(0);
   TerminalNode? StringLiteral() => getToken(CFloor3Parser.TOKEN_StringLiteral, 0);
+  ExpressionContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
+  @override
+  int get ruleIndex => RULE_expression;
+  @override
+  void enterRule(ParseTreeListener listener) {
+    if (listener is CFloor3Listener) listener.enterExpression(this);
+  }
+  @override
+  void exitRule(ParseTreeListener listener) {
+    if (listener is CFloor3Listener) listener.exitExpression(this);
+  }
+}
+
+class AssignmentContext extends ParserRuleContext {
+  TerminalNode? Identifier() => getToken(CFloor3Parser.TOKEN_Identifier, 0);
+  ExpressionContext? expression() => getRuleContext<ExpressionContext>(0);
   AssignmentContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_assignment;

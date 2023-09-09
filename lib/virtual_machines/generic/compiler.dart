@@ -1,3 +1,7 @@
+import 'package:cfloor_flutter/virtual_machines/wrappers/expression.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/function_invocation.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/return_statement.dart';
+
 import '../cfloor_array.dart';
 import '../math_operator.dart';
 import '../text_interval.dart';
@@ -5,6 +9,7 @@ import '../instruction_generating_tree_walker.dart';
 import '../data_type.dart';
 import '../wrappers/data_destination.dart';
 import '../wrappers/data_source.dart';
+import '../wrappers/function_definition.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
@@ -33,9 +38,11 @@ class GenericCompiler extends VariableDeclarationManager {
 
   List<Instruction> get _currentInstructionTarget => _codeBlocks.last.branches.last.body;
 
+  final List<FunctionDefinition>? _functionDefinitions;
+
   List<Instruction> get topLevelInstructions => _codeBlocks.first.branches.first.body;
 
-  GenericCompiler(super.semanticErrorCollector, super.builtInVariables);
+  GenericCompiler(super.semanticErrorCollector, super.builtInVariables, { List<FunctionDefinition>? functionDefinitions }) : _functionDefinitions = functionDefinitions;
 
   handleDeclAssignStatement(Assignment assignment, CompositeDataType destinationType) {
     if(assignment.destination.arrayIndexer != null) {
@@ -58,20 +65,7 @@ class GenericCompiler extends VariableDeclarationManager {
   }
 
   _handleAssignment(Assignment ctx, CompositeDataType destinationType) {
-    DataSource? dataSource;
-    if(ctx.readExpression != null) {
-      dataSource = _handleReadExpression(ctx.readExpression!);
-    } else if(ctx.mathExpression != null) {
-      dataSource = _handleMathExpression(ctx.mathExpression!);
-    } else if(ctx.stringLiteral != null) {
-      dataSource = _handleStringLiteral(ctx.stringLiteral!);
-    } else if(ctx.booleanExpression != null) {
-      dataSource = _handleBooleanExpression(ctx.booleanExpression!);
-    } else if(ctx.arrayInitializer != null) {
-      dataSource = _handleArrayInitializer(ctx.arrayInitializer!);
-    } else {
-      dataSource = _handleArrayLiteral(ctx.arrayLiteral!);
-    }
+    DataSource dataSource = _handleExpression(ctx.expression);
     final destinationAccessor = ctx.destination;
     DataSource? indexSource;
     if(destinationAccessor.arrayIndexer != null) {
@@ -192,6 +186,43 @@ class GenericCompiler extends VariableDeclarationManager {
     // remove and flatten initializer block after processing loop block
     final initializerBlock = _codeBlocks.removeLast();
     initializerBlock.branches.first.body.forEach(_addInstruction);
+  }
+
+  void handleFunctionInvocationStatement(FunctionInvocation ctx) {
+    _handleFunctionInvocation(ctx);
+  }
+
+  void endFunctionDefinition(FunctionDefinition ctx) {
+    if(ctx.returnType.dataType == DataType.voidType) {
+      _addInstruction(ReturnInstruction(ctx.textRange, null));
+    }
+  }
+
+  void handleReturnStatement(ReturnStatement ctx) {
+    final dataSource = ctx.expression == null ? null : _handleExpression(ctx.expression!);
+    _addInstruction(ReturnInstruction(ctx.textRange, dataSource));
+  }
+
+  DataSource _handleExpression(Expression ctx) {
+    if(ctx is ReadExpression) {
+      return _handleReadExpression(ctx);
+    } else if(ctx is MathExpression) {
+      return _handleMathExpression(ctx);
+    } else if(ctx is StringLiteral) {
+      return _handleStringLiteral(ctx);
+    } else if(ctx is BooleanExpression) {
+      return _handleBooleanExpression(ctx);
+    } else if(ctx is ArrayInitializer) {
+      return _handleArrayInitializer(ctx);
+    } else if(ctx is ArrayLiteral) {
+      return _handleArrayLiteral(ctx);
+    }
+    final returnDestination = _handleFunctionInvocation(ctx as FunctionInvocation);
+    if(returnDestination == null) {
+      semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: function "${ctx.functionName}" does not return a value.');
+      throw Exception('Function does not return a value.');
+    }
+    return returnDestination;
   }
 
   DataSource _handleReadExpression(ReadExpression readExpression) {
@@ -464,6 +495,34 @@ class GenericCompiler extends VariableDeclarationManager {
     } else {
       return _handleArrayInitializer(ctx.arrayInitializer!);
     }
+  }
+
+  DataSource? _handleFunctionInvocation(FunctionInvocation ctx) {
+    final functionDefinition = _functionDefinitions!.firstWhere((element) => element.name == ctx.functionName);
+    if(functionDefinition.parameters.length != ctx.arguments.length) {
+      semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: function "${ctx.functionName}" expects ${functionDefinition.parameters.length} arguments, but ${ctx.arguments.length} were provided.');
+      throw Exception('Incorrect number of arguments provided to function.');
+    }
+    final sourceDestinationPairs = <(DataSource, VariableDataDestination)>[];
+    for(int i = 0; i < ctx.arguments.length; i++) {
+      final argument = ctx.arguments[i];
+      final parameterName = functionDefinition.parameters.keys.elementAt(i);
+      final parameterType = functionDefinition.parameters[parameterName]!;
+      final argumentSource = _handleVariableAccessor(argument);
+      checkTypeConversion(argumentSource.dataType, parameterType, argument.textRange);
+      sourceDestinationPairs.add((argumentSource, VariableDataDestination(parameterType, parameterName, null)));
+    }
+    final returnRegister = functionDefinition.returnType.dataType == DataType.voidType ? null : _registerManager.allocateRegister(functionDefinition.returnType);
+    _addInstruction(
+        CallInstruction(
+          ctx.textRange,
+          ctx.functionName,
+          sourceDestinationPairs,
+          0,
+          returnRegister,
+        )
+    );
+    return returnRegister?.toSource();
   }
 
   _addInstruction(Instruction instruction) {

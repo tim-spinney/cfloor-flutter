@@ -1,7 +1,9 @@
+import 'expression.dart';
+
 import '../data_type.dart';
 import '../text_interval.dart';
 
-class ReadExpression {
+class ReadExpression implements Expression {
   static const _functionNamePattern = r"^read_([a-z]*)";
 
   final TextInterval textRange;

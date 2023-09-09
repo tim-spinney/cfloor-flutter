@@ -6,9 +6,18 @@ enum DataType {
   string,
   bool,
   array,
+  voidType,
   ;
 
-  static DataType byName(String name) => name.startsWith('array') ? DataType.array : DataType.values.firstWhere((type) => type.name == name);
+  static DataType byName(String name) {
+    if(name.startsWith('array')) {
+      return DataType.array;
+    }
+    if(name == 'void') {
+      return DataType.voidType;
+    }
+    return DataType.values.firstWhere((type) => type.name == name);
+  }
 
   CompositeDataType toCompositeType() => CompositeDataType.fromPrimitive(this);
 

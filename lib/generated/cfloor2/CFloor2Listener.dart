@@ -77,6 +77,13 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitMathExpression(MathExpressionContext ctx);
 
+  /// Enter a parse tree produced by [CFloor2Parser.expression].
+  /// [ctx] the parse tree
+  void enterExpression(ExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.expression].
+  /// [ctx] the parse tree
+  void exitExpression(ExpressionContext ctx);
+
   /// Enter a parse tree produced by [CFloor2Parser.assignment].
   /// [ctx] the parse tree
   void enterAssignment(AssignmentContext ctx);

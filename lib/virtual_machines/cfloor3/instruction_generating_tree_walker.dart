@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import '../math_function.dart';
 import '../math_operator.dart';
+import '../wrappers/expression.dart';
 import '../wrappers/instructions.dart';
 import '../wrappers/length_function_expression.dart';
 import '../wrappers/string_literal.dart';
@@ -84,10 +85,17 @@ class CFloor3TreeWalker extends CFloor3BaseListener implements InstructionGenera
   Assignment _toAssignment(AssignmentContext ctx) => Assignment(
     ctx.textRange,
     VariableAccessor(ctx.textRange, _toIdentifier(ctx.Identifier()!)),
-    ctx.readFunctionExpression() == null ? null : _toReadExpression(ctx.readFunctionExpression()!),
-    ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
-    stringLiteral: ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
+    _toExpression(ctx.expression()!),
   );
+
+  Expression _toExpression(ExpressionContext ctx) {
+    if(ctx.readFunctionExpression() != null) {
+      return _toReadExpression(ctx.readFunctionExpression()!);
+    } else if(ctx.mathExpression() != null) {
+      return _toMathExpression(ctx.mathExpression()!);
+    }
+    return _toStringLiteral(ctx.StringLiteral()!);
+  }
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(
     ctx.textRange,

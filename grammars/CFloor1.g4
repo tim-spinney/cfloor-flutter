@@ -26,7 +26,9 @@ mathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;
 
 mathExpression: mathOperand (MathOperator mathOperand)? ;
 
-assignment: Identifier '=' (mathExpression | readFunctionExpression) ;
+expression: mathExpression | readFunctionExpression ;
+
+assignment: Identifier '=' expression ;
 
 statement: writeStatement | assignStatement | declAssignStatement ;
 

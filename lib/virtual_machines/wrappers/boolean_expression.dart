@@ -2,9 +2,10 @@ import '../boolean_operator.dart';
 import '../comparison_operator.dart';
 import '../text_interval.dart';
 import 'boolean_operand.dart';
+import 'expression.dart';
 import 'math_operand.dart';
 
-class BooleanExpression {
+class BooleanExpression implements Expression {
   final TextInterval textRange;
   final bool isNegation;
   final BooleanOperator? binaryOperator;

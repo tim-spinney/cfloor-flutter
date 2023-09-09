@@ -13,6 +13,7 @@ import '../semantic_error_collector.dart';
 import '../wrappers/assignment.dart';
 import '../wrappers/boolean_expression.dart';
 import '../wrappers/boolean_operand.dart';
+import '../wrappers/expression.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
 import '../wrappers/instructions.dart';
@@ -143,13 +144,23 @@ class CFloor6TreeWalker extends CFloor6BaseListener implements InstructionGenera
   Assignment _toAssignment(AssignmentContext ctx) => Assignment(
     ctx.textRange,
     _toVariableAccessor(ctx.variableAccessor()!),
-    ctx.readFunctionExpression() == null ? null : _toReadExpression(ctx.readFunctionExpression()!),
-    ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
-    stringLiteral: ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
-    booleanExpression: ctx.booleanExpression() == null ? null : _toBooleanExpression(ctx.booleanExpression()!),
-    arrayInitializer: ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
-    arrayLiteral: ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
+    _toExpression(ctx.expression()!),
   );
+
+  Expression _toExpression(ExpressionContext ctx) {
+    if(ctx.readFunctionExpression() != null) {
+      return _toReadExpression(ctx.readFunctionExpression()!);
+    } else if(ctx.mathExpression() != null) {
+      return _toMathExpression(ctx.mathExpression()!);
+    } else if(ctx.StringLiteral() != null) {
+      return _toStringLiteral(ctx.StringLiteral()!);
+    } else if(ctx.booleanExpression() != null) {
+      return _toBooleanExpression(ctx.booleanExpression()!);
+    } else if(ctx.arrayInitializer() != null) {
+      return _toArrayInitializer(ctx.arrayInitializer()!);
+    }
+    return _toArrayLiteral(ctx.arrayLiteral()!);
+  }
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(
     ctx.textRange,

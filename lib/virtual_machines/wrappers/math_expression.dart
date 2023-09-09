@@ -1,8 +1,9 @@
 import '../math_operator.dart';
 import '../text_interval.dart';
+import 'expression.dart';
 import 'math_operand.dart';
 
-class MathExpression {
+class MathExpression implements Expression {
   final TextInterval textRange;
   final MathOperand? left;
   final MathOperand? right;

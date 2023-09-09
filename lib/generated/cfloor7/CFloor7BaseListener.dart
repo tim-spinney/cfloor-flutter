@@ -28,11 +28,59 @@ class CFloor7BaseListener implements CFloor7Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterReturnType(ReturnTypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitReturnType(ReturnTypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterFunctionDefinition(FunctionDefinitionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
   void exitFunctionDefinition(FunctionDefinitionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterFunctionInvocation(FunctionInvocationContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitFunctionInvocation(FunctionInvocationContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterFunctionInvocationStatement(FunctionInvocationStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitFunctionInvocationStatement(FunctionInvocationStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterReturnStatement(ReturnStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitReturnStatement(ReturnStatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitStatement(StatementContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -105,14 +153,6 @@ class CFloor7BaseListener implements CFloor7Listener {
   /// The default implementation does nothing.
   @override
   void exitForLoop(ForLoopContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterStatement(StatementContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitStatement(StatementContext ctx) {}
 
   /// The default implementation does nothing.
   @override

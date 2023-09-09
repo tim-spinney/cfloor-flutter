@@ -36,6 +36,14 @@ class CFloor4BaseListener implements CFloor4Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterAssignment(AssignmentContext ctx) {}
 
   /// The default implementation does nothing.

@@ -12,7 +12,9 @@ arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
 
 arrayInitializer: 'array<' Primitive '>' '[' Number ']' ;
 
-assignment: variableAccessor '=' (mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral) ;
+expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral ;
+
+assignment: variableAccessor '=' expression ;
 
 variableAccessor: Identifier ('[' mathExpression ']')?;
 

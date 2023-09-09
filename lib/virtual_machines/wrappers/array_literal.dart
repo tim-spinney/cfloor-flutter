@@ -1,5 +1,6 @@
 import '../text_interval.dart';
 import 'array_initializer.dart';
+import 'expression.dart';
 
 class ArrayLiteralElement {
   final String? numberText;
@@ -11,7 +12,7 @@ class ArrayLiteralElement {
   ArrayLiteralElement(this.numberText, this.stringText, this.booleanText, this.nestedArray, this.arrayInitializer);
 }
 
-class ArrayLiteral {
+class ArrayLiteral implements Expression {
   final TextInterval textRange;
   final List<ArrayLiteralElement> elements;
 

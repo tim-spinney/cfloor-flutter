@@ -21,12 +21,54 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitParameterList(ParameterListContext ctx);
 
+  /// Enter a parse tree produced by [CFloor7Parser.returnType].
+  /// [ctx] the parse tree
+  void enterReturnType(ReturnTypeContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.returnType].
+  /// [ctx] the parse tree
+  void exitReturnType(ReturnTypeContext ctx);
+
   /// Enter a parse tree produced by [CFloor7Parser.functionDefinition].
   /// [ctx] the parse tree
   void enterFunctionDefinition(FunctionDefinitionContext ctx);
   /// Exit a parse tree produced by [CFloor7Parser.functionDefinition].
   /// [ctx] the parse tree
   void exitFunctionDefinition(FunctionDefinitionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.expression].
+  /// [ctx] the parse tree
+  void enterExpression(ExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.expression].
+  /// [ctx] the parse tree
+  void exitExpression(ExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.functionInvocation].
+  /// [ctx] the parse tree
+  void enterFunctionInvocation(FunctionInvocationContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.functionInvocation].
+  /// [ctx] the parse tree
+  void exitFunctionInvocation(FunctionInvocationContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.functionInvocationStatement].
+  /// [ctx] the parse tree
+  void enterFunctionInvocationStatement(FunctionInvocationStatementContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.functionInvocationStatement].
+  /// [ctx] the parse tree
+  void exitFunctionInvocationStatement(FunctionInvocationStatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.returnStatement].
+  /// [ctx] the parse tree
+  void enterReturnStatement(ReturnStatementContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.returnStatement].
+  /// [ctx] the parse tree
+  void exitReturnStatement(ReturnStatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.statement].
+  /// [ctx] the parse tree
+  void enterStatement(StatementContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.statement].
+  /// [ctx] the parse tree
+  void exitStatement(StatementContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.program].
   /// [ctx] the parse tree
@@ -90,13 +132,6 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor7Parser.forLoop].
   /// [ctx] the parse tree
   void exitForLoop(ForLoopContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.statement].
-  /// [ctx] the parse tree
-  void enterStatement(StatementContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.statement].
-  /// [ctx] the parse tree
-  void exitStatement(StatementContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.whileLoop].
   /// [ctx] the parse tree

@@ -123,15 +123,16 @@ class ArrayDereferenceInstruction extends Instruction {
 }
 
 class CallInstruction extends Instruction {
-  final Map<DataSource, DataDestination> variablesToCopy;
+  final String targetFunctionName;
+  final List<(DataSource, VariableDataDestination)> variablesToCopy;
   final int destinationInstructionIndex;
+  final DataDestination? returnValueDestination;
 
-  CallInstruction(super.textRange, this.variablesToCopy, this.destinationInstructionIndex);
+  CallInstruction(super.textRange, this.targetFunctionName, this.variablesToCopy, this.destinationInstructionIndex, this.returnValueDestination);
 }
 
 class ReturnInstruction extends Instruction {
-  DataSource? returnValueSource;
-  DataDestination? returnValueDestination;
+  final DataSource? returnValueSource;
 
-  ReturnInstruction(super.textRange, this.returnValueSource, this.returnValueDestination);
+  ReturnInstruction(super.textRange, this.returnValueSource);
 }

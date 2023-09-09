@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor7/CFloor7BaseListener.dart';
 import 'package:cfloor_flutter/generated/cfloor7/CFloor7Parser.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/function_invocation.dart';
 import '../wrappers/array_literal.dart';
 import '../boolean_operator.dart';
 import '../built_in_globals.dart';
@@ -13,6 +14,8 @@ import '../semantic_error_collector.dart';
 import '../wrappers/assignment.dart';
 import '../wrappers/boolean_expression.dart';
 import '../wrappers/boolean_operand.dart';
+import '../wrappers/expression.dart';
+import '../wrappers/function_definition.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
 import '../wrappers/instructions.dart';
@@ -21,6 +24,7 @@ import '../wrappers/math_expression.dart';
 import '../wrappers/math_function_expression.dart';
 import '../wrappers/math_operand.dart';
 import '../wrappers/read_expression.dart';
+import '../wrappers/return_statement.dart';
 import '../wrappers/string_literal.dart';
 import '../wrappers/variable_accessor.dart';
 import '../wrappers/while_loop.dart';
@@ -33,6 +37,9 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
   late GenericCompiler _compiler;
   final Map<String, int> _functionStartIndices = {};
   final Map<int, String> _functionCallPlaceholderIndices = {};
+  final List<FunctionDefinition> _functionDefinitions;
+
+  CFloor7TreeWalker(this._functionDefinitions);
 
   @override
   final semanticErrorCollector = SemanticErrorCollector();
@@ -48,26 +55,59 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
 
   @override
   void enterFunctionDefinition(FunctionDefinitionContext ctx) {
-    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables);
+    final functionDefinition = _functionDefinitions.firstWhere((dfn) => dfn.name == ctx.Identifier()!.text!);
+    _compiler = GenericCompiler(semanticErrorCollector, builtInVariables, functionDefinitions: _functionDefinitions);
+    for(final MapEntry(key: name, value: type) in functionDefinition.parameters.entries) {
+      _compiler.addDeclaration(name, type, ctx.textRange);
+    }
   }
 
   @override
   void exitFunctionDefinition(FunctionDefinitionContext ctx) {
     _functionStartIndices[ctx.Identifier()!.text!] = instructions.length;
-    instructions.addAll(_compiler.topLevelInstructions);
+    _compiler.endFunctionDefinition(_toFunctionDefinition(ctx));
+    final functionInstructions = _compiler.topLevelInstructions;
+    for(var i = 0; i < functionInstructions.length - 1; i++) {
+      final instruction = functionInstructions[i];
+      // check if this is a return with more (unreachable) instructions after it
+      if(instruction is ReturnInstruction && functionInstructions[i + 1] is! PopScopeInstruction) {
+        semanticErrorCollector.add('Semantic error at ${functionInstructions[i + 1].textRange.startPosition}: unreachable code after return statement');
+      }
+    }
+    // TODO: ensure all paths result in a return
+    instructions.addAll(functionInstructions);
+  }
+
+  @override
+  void enterFunctionInvocationStatement(FunctionInvocationStatementContext ctx) {
+    _compiler.handleFunctionInvocationStatement(_toFunctionInvocation(ctx.functionInvocation()!));
+  }
+
+  @override
+  void enterReturnStatement(ReturnStatementContext ctx) {
+    _compiler.handleReturnStatement(
+      ReturnStatement(
+        ctx.textRange,
+        ctx.expression() == null ? null : _toExpression(ctx.expression()!),
+      )
+    );
   }
 
   @override
   void exitProgram(ProgramContext ctx) {
-    _functionCallPlaceholderIndices.forEach((placeholderIndex, functionName) {
-      final destinationIndex = _functionStartIndices[functionName]!;
-      final original = instructions[placeholderIndex] as CallInstruction;
-      instructions[placeholderIndex] = CallInstruction(
-        original.textRange,
-        original.variablesToCopy,
-        destinationIndex,
-      );
-    });
+    for(int i = 0; i < instructions.length; i++) {
+      if(instructions[i] is CallInstruction) {
+        final callInstruction = instructions[i] as CallInstruction;
+        final destinationIndex = _functionStartIndices[callInstruction.targetFunctionName]!;
+        instructions[i] = CallInstruction(
+          callInstruction.textRange,
+          callInstruction.targetFunctionName,
+          callInstruction.variablesToCopy,
+          destinationIndex,
+          callInstruction.returnValueDestination,
+        );
+      }
+    }
   }
 
   @override
@@ -168,12 +208,37 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
   Assignment _toAssignment(AssignmentContext ctx) => Assignment(
     ctx.textRange,
     _toVariableAccessor(ctx.variableAccessor()!),
-    ctx.readFunctionExpression() == null ? null : _toReadExpression(ctx.readFunctionExpression()!),
-    ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
-    stringLiteral: ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
-    booleanExpression: ctx.booleanExpression() == null ? null : _toBooleanExpression(ctx.booleanExpression()!),
-    arrayInitializer: ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
-    arrayLiteral: ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
+    _toExpression(ctx.expression()!),
+  );
+
+  Expression _toExpression(ExpressionContext ctx) {
+    if(ctx.readFunctionExpression() != null) {
+      return _toReadExpression(ctx.readFunctionExpression()!);
+    } else if(ctx.mathExpression() != null) {
+      return _toMathExpression(ctx.mathExpression()!);
+    } else if(ctx.StringLiteral() != null) {
+      return _toStringLiteral(ctx.StringLiteral()!);
+    } else if(ctx.booleanExpression() != null) {
+      return _toBooleanExpression(ctx.booleanExpression()!);
+    } else if(ctx.arrayInitializer() != null) {
+      return _toArrayInitializer(ctx.arrayInitializer()!);
+    } else if(ctx.arrayLiteral() != null) {
+      return _toArrayLiteral(ctx.arrayLiteral()!);
+    }
+    return _toFunctionInvocation(ctx.functionInvocation()!);
+  }
+
+  FunctionInvocation _toFunctionInvocation(FunctionInvocationContext ctx) => FunctionInvocation(
+    ctx.textRange,
+    ctx.Identifier()!.text!,
+    ctx.variableAccessors().map((accessor) => _toVariableAccessor(accessor)).toList(),
+  );
+
+  FunctionDefinition _toFunctionDefinition(FunctionDefinitionContext ctx) => FunctionDefinition(
+    ctx.textRange,
+    ctx.Identifier()!.text!,
+    { for (final parameter in ctx.parameterList()!.parameters()) parameter.Identifier()!.text! : CompositeDataType.fromString(parameter.type()!.text) },
+    CompositeDataType.fromString(ctx.returnType()!.text),
   );
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(

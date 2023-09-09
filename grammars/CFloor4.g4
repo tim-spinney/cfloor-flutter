@@ -19,7 +19,9 @@ booleanExpression:
     mathOperand Comparator mathOperand |
     booleanOperand (BinaryBooleanOperator booleanOperand)? ;
 
-assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLiteral | booleanExpression) ;
+expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression ;
+
+assignment: Identifier '=' expression ;
 
 block: '{' statement+ '}' ;
 ifStatement: 'if' '(' booleanExpression ')' block ;

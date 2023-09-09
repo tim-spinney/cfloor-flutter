@@ -6,7 +6,9 @@ type: 'int' | 'float' | 'string' ;
 
 stringLengthExpression: 'length(' variableAccessor ')' ;
 
-assignment: Identifier '=' (mathExpression | readFunctionExpression | StringLiteral) ;
+expression: mathExpression | readFunctionExpression | StringLiteral ;
+
+assignment: Identifier '=' expression ;
 
 mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
 

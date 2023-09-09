@@ -39,14 +39,19 @@ class VirtualMachine extends ChangeNotifier {
   }
 
   void jumpAndSetReturn(int destination) {
-    _returnIndices.add(_instructionIndex + 1);
+    _returnIndices.add(_instructionIndex);
     _instructionIndex = destination;
     notifyListeners();
   }
 
   void jumpToLastReturn() {
-    final destination = _returnIndices.removeLast();
-    _instructionIndex = destination;
+    if(_returnIndices.isEmpty) {
+      _isRunning = false;
+    } else {
+      final destination = _returnIndices.removeLast();
+      _instructionIndex = destination;
+    }
+    notifyListeners();
   }
 
   void jumpBy(int offset) {
@@ -78,6 +83,7 @@ class VirtualMachine extends ChangeNotifier {
     consoleState.clear();
     _instructionIndex = 0;
     _isRunning = false;
+    _returnIndices.clear();
     notifyListeners();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:antlr4/antlr4.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1Parser.dart';
 import 'package:cfloor_flutter/generated/cfloor1/CFloor1BaseListener.dart';
+import 'package:cfloor_flutter/virtual_machines/wrappers/expression.dart';
 import '../built_in_globals.dart';
 import '../semantic_error_collector.dart';
 import '../generic/compiler.dart';
@@ -77,9 +78,15 @@ class CFloor1TreeWalker extends CFloor1BaseListener implements InstructionGenera
   Assignment _toAssignment(AssignmentContext ctx) => Assignment(
     ctx.textRange,
     VariableAccessor(ctx.textRange, _toIdentifier(ctx.Identifier()!)),
-    ctx.readFunctionExpression() != null ? _toReadExpression(ctx.readFunctionExpression()!) : null,
-    ctx.mathExpression() != null ? _toMathExpression(ctx.mathExpression()!) : null,
+    _toExpression(ctx.expression()!),
   );
+
+  Expression _toExpression(ExpressionContext ctx) {
+    if(ctx.readFunctionExpression() != null) {
+      return _toReadExpression(ctx.readFunctionExpression()!);
+    }
+    return _toMathExpression(ctx.mathExpression()!);
+  }
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(
     ctx.textRange,

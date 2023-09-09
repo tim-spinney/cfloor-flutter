@@ -28,6 +28,14 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterAssignment(AssignmentContext ctx) {}
 
   /// The default implementation does nothing.

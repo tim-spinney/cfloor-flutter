@@ -129,18 +129,18 @@ sealed class VMInstruction {
         CallInstruction() =>
             VMCallInstruction(
               instruction.textRange,
-              instruction.variablesToCopy.map((source, destination) => MapEntry<VMDataSource, VMDataDestination>(
-                  VMDataSource.fromDataSource(source, virtualMachine.memory),
-                  VMDataDestination.fromDataDestination(destination, virtualMachine.memory)
-              )),
+              instruction.variablesToCopy.map((e) => (
+                  VMDataSource.fromDataSource(e.$1, virtualMachine.memory),
+                  VMDataDestination.fromDataDestination(e.$2, virtualMachine.memory)
+              )).toList(),
               virtualMachine,
               instruction.destinationInstructionIndex,
+              instruction.returnValueDestination == null ? null : VMDataDestination.fromDataDestination(instruction.returnValueDestination!, virtualMachine.memory),
             ),
         ReturnInstruction() =>
             VMReturnInstruction(
               instruction.textRange,
               instruction.returnValueSource == null ? null : VMDataSource.fromDataSource(instruction.returnValueSource!, virtualMachine.memory),
-              instruction.returnValueDestination == null ? null : VMDataDestination.fromDataDestination(instruction.returnValueDestination!, virtualMachine.memory),
               virtualMachine,
             ),
       };
@@ -398,15 +398,16 @@ class VMArrayDereferenceInstruction extends VMInstruction {
 }
 
 class VMCallInstruction extends VMInstruction {
-  final Map<VMDataSource, VMDataDestination> _variablesToCopy;
+  final List<(VMDataSource, VMDataDestination)> _variablesToCopy;
   final VirtualMachine _virtualMachine;
   final int _destinationInstructionIndex;
+  final VMDataDestination? returnValueDestination;
 
-  VMCallInstruction(super.textRange, this._variablesToCopy, this._virtualMachine, this._destinationInstructionIndex);
+  VMCallInstruction(super.textRange, this._variablesToCopy, this._virtualMachine, this._destinationInstructionIndex, this.returnValueDestination);
 
   @override
   void evaluate() {
-    final valuesWithDestinations = _variablesToCopy.entries.map((e) => (e.key.get(), e.value));
+    final valuesWithDestinations = _variablesToCopy.map((e) => (e.$1.get(), e.$2)).toList();
     _virtualMachine.memory.pushStack();
     for (final (value, destination) in valuesWithDestinations) {
       final valueCopy = value is CFloorArray ? CFloorArray.copy(value) : value;
@@ -421,19 +422,20 @@ class VMCallInstruction extends VMInstruction {
 
 class VMReturnInstruction extends VMInstruction {
   final VMDataSource? _returnValueSource;
-  final VMDataDestination? _returnValueDestination;
   final VirtualMachine _virtualMachine;
 
-  VMReturnInstruction(super.textRange, this._returnValueSource, this._returnValueDestination, this._virtualMachine);
+  VMReturnInstruction(super.textRange, this._returnValueSource,this._virtualMachine);
 
   @override
   void evaluate() {
-    if (_returnValueSource != null && _returnValueDestination != null) {
+    if (_returnValueSource == null) {
+      _virtualMachine.jumpToLastReturn();
+    } else {
       final returnValue = _returnValueSource!.get();
       _virtualMachine.memory.popStack();
       final valueCopy = returnValue is CFloorArray ? CFloorArray.copy(returnValue) : returnValue;
-      _returnValueDestination!.set(valueCopy);
       _virtualMachine.jumpToLastReturn();
+      (_virtualMachine.currentInstruction as VMCallInstruction).returnValueDestination!.set(valueCopy);
     }
   }
 }

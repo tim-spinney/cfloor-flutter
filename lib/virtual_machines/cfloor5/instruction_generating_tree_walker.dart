@@ -12,6 +12,7 @@ import '../semantic_error_collector.dart';
 import '../wrappers/assignment.dart';
 import '../wrappers/boolean_expression.dart';
 import '../wrappers/boolean_operand.dart';
+import '../wrappers/expression.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
 import '../wrappers/instructions.dart';
@@ -129,11 +130,19 @@ class CFloor5TreeWalker extends CFloor5BaseListener implements InstructionGenera
   Assignment _toAssignment(AssignmentContext ctx) => Assignment(
     ctx.textRange,
     VariableAccessor(ctx.textRange, _toIdentifier(ctx.Identifier()!)),
-    ctx.readFunctionExpression() == null ? null : _toReadExpression(ctx.readFunctionExpression()!),
-    ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
-    stringLiteral: ctx.StringLiteral() == null ? null : _toStringLiteral(ctx.StringLiteral()!),
-    booleanExpression: ctx.booleanExpression() == null ? null : _toBooleanExpression(ctx.booleanExpression()!),
+    _toExpression(ctx.expression()!),
   );
+
+  Expression _toExpression(ExpressionContext ctx) {
+    if(ctx.readFunctionExpression() != null) {
+      return _toReadExpression(ctx.readFunctionExpression()!);
+    } else if(ctx.mathExpression() != null) {
+      return _toMathExpression(ctx.mathExpression()!);
+    } else if(ctx.StringLiteral() != null) {
+      return _toStringLiteral(ctx.StringLiteral()!);
+    }
+    return _toBooleanExpression(ctx.booleanExpression()!);
+  }
 
   Identifier _toIdentifier(TerminalNode ctx) => Identifier(
     ctx.textRange,

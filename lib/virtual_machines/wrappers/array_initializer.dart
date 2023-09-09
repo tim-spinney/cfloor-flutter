@@ -1,8 +1,9 @@
 
 import '../data_type.dart';
 import '../text_interval.dart';
+import 'expression.dart';
 
-class ArrayInitializer {
+class ArrayInitializer implements Expression {
   final TextInterval textRange;
   final int length;
   final DataType innerType;
