@@ -378,6 +378,8 @@ class GenericCompiler extends VariableDeclarationManager {
       return _handleMathFunctionExpression(ctx.mathFunction!);
     } else if(ctx.lengthFunction != null) {
       return _handleLengthFunctionExpression(ctx.lengthFunction!);
+    } else if(ctx.functionInvocation != null) {
+      return _handleFunctionInvocation(ctx.functionInvocation!)!;
     } else {
       throw Exception('Unknown math operand type');
     }

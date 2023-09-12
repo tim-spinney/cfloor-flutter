@@ -49,6 +49,20 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitFunctionInvocation(FunctionInvocationContext ctx);
 
+  /// Enter a parse tree produced by [CFloor7Parser.mathOperand].
+  /// [ctx] the parse tree
+  void enterMathOperand(MathOperandContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.mathOperand].
+  /// [ctx] the parse tree
+  void exitMathOperand(MathOperandContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.booleanOperand].
+  /// [ctx] the parse tree
+  void enterBooleanOperand(BooleanOperandContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.booleanOperand].
+  /// [ctx] the parse tree
+  void exitBooleanOperand(BooleanOperandContext ctx);
+
   /// Enter a parse tree produced by [CFloor7Parser.functionInvocationStatement].
   /// [ctx] the parse tree
   void enterFunctionInvocationStatement(FunctionInvocationStatementContext ctx);
@@ -140,13 +154,6 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitWhileLoop(WhileLoopContext ctx);
 
-  /// Enter a parse tree produced by [CFloor7Parser.booleanOperand].
-  /// [ctx] the parse tree
-  void enterBooleanOperand(BooleanOperandContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.booleanOperand].
-  /// [ctx] the parse tree
-  void exitBooleanOperand(BooleanOperandContext ctx);
-
   /// Enter a parse tree produced by [CFloor7Parser.booleanExpression].
   /// [ctx] the parse tree
   void enterBooleanExpression(BooleanExpressionContext ctx);
@@ -188,13 +195,6 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor7Parser.stringLengthExpression].
   /// [ctx] the parse tree
   void exitStringLengthExpression(StringLengthExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.mathOperand].
-  /// [ctx] the parse tree
-  void enterMathOperand(MathOperandContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.mathOperand].
-  /// [ctx] the parse tree
-  void exitMathOperand(MathOperandContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.readFunctionExpression].
   /// [ctx] the parse tree

@@ -1,4 +1,5 @@
 import 'built_in_globals.dart';
+import 'instruction_generating_tree_walker.dart';
 import 'syntax_error_collector.dart';
 import 'cfloor1/compiler.dart';
 import 'cfloor2/compiler.dart';
@@ -26,7 +27,12 @@ class Compiler {
       LanguageLevel.cfloor6 => compileCFloor6(sourceText, errorCollector),
       LanguageLevel.cfloor7 => compileCFloor7(sourceText, errorCollector),
     };
-    return CompileResult(errorCollector.errors + instructionGenerator.semanticErrorCollector.errors, instructionGenerator.instructions, instructionGenerator.builtInVariables);
+    return CompileResult(
+      errorCollector.errors + instructionGenerator.semanticErrorCollector.errors,
+      instructionGenerator.instructions,
+      instructionGenerator.builtInVariables,
+      instructionGenerator is HasEntryPoint ? (instructionGenerator as HasEntryPoint).entryPoint : 0
+    );
   }
 }
 
@@ -34,6 +40,7 @@ class CompileResult {
   final List<String> errors;
   final List<Instruction> instructions;
   final Map<String, Constant> builtInVariables;
+  final int entryPoint;
 
-  CompileResult(this.errors, this.instructions, this.builtInVariables);
+  CompileResult(this.errors, this.instructions, this.builtInVariables, this.entryPoint);
 }

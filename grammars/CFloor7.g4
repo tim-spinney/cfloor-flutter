@@ -14,6 +14,10 @@ expression: mathExpression | readFunctionExpression | StringLiteral | booleanExp
 
 functionInvocation: Identifier '(' (variableAccessor (',' variableAccessor)*)? ')' ;
 
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression | functionInvocation ;
+
+booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' | functionInvocation ;
+
 functionInvocationStatement: functionInvocation ';' ;
 
 returnStatement: 'return' expression? ';' ;

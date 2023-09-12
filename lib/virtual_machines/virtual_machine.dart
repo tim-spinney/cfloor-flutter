@@ -59,9 +59,9 @@ class VirtualMachine extends ChangeNotifier {
     notifyListeners();
   }
 
-  void start() {
+  void start(int startingInstructionIndex) {
     _isRunning = true;
-    _instructionIndex = 0;
+    _instructionIndex = startingInstructionIndex;
     notifyListeners();
   }
 

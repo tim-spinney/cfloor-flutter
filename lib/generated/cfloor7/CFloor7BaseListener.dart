@@ -60,6 +60,22 @@ class CFloor7BaseListener implements CFloor7Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterBooleanOperand(BooleanOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitBooleanOperand(BooleanOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterFunctionInvocationStatement(FunctionInvocationStatementContext ctx) {}
 
   /// The default implementation does nothing.
@@ -164,14 +180,6 @@ class CFloor7BaseListener implements CFloor7Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterBooleanOperand(BooleanOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitBooleanOperand(BooleanOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterBooleanExpression(BooleanExpressionContext ctx) {}
 
   /// The default implementation does nothing.
@@ -217,14 +225,6 @@ class CFloor7BaseListener implements CFloor7Listener {
   /// The default implementation does nothing.
   @override
   void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterMathOperand(MathOperandContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.
   @override

@@ -3,6 +3,7 @@ import 'length_function_expression.dart';
 import 'math_expression.dart';
 import 'math_function_expression.dart';
 import 'variable_accessor.dart';
+import 'function_invocation.dart';
 
 class MathOperand {
   final TextInterval textRange;
@@ -11,6 +12,7 @@ class MathOperand {
   final String? numberText;
   final MathFunctionExpression? mathFunction;
   final LengthFunctionExpression? lengthFunction;
+  final FunctionInvocation? functionInvocation;
 
   MathOperand(
       this.textRange,
@@ -20,5 +22,6 @@ class MathOperand {
       {
         this.mathFunction,
         this.lengthFunction,
+        this.functionInvocation,
       });
 }

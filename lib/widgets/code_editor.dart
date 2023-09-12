@@ -75,7 +75,7 @@ class _CodeEditorState extends State<CodeEditor> {
           for (var instruction in compileResult.instructions) {
             _virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, _virtualMachine));
           }
-          _virtualMachine.start();
+          _virtualMachine.start(compileResult.entryPoint);
         }
       });
     }

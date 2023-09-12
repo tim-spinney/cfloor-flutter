@@ -36,7 +36,6 @@ import '../generic/compiler.dart';
 class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implements InstructionGenerator {
   late GenericCompiler _compiler;
   final Map<String, int> _functionStartIndices = {};
-  final Map<int, String> _functionCallPlaceholderIndices = {};
   final List<FunctionDefinition> _functionDefinitions;
 
   CFloor7TreeWalker(this._functionDefinitions);
@@ -183,6 +182,7 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     ctx.Number()?.text,
     mathFunction: ctx.mathFunctionExpression() != null ? _toMathFunctionExpression(ctx.mathFunctionExpression()!) : null,
     lengthFunction: ctx.stringLengthExpression() != null ? _toLengthFunctionExpression(ctx.stringLengthExpression()!) : null,
+    functionInvocation: ctx.functionInvocation() != null ? _toFunctionInvocation(ctx.functionInvocation()!) : null,
   );
 
   MathExpression _toMathExpression(MathExpressionContext ctx) => MathExpression(
