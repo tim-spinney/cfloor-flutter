@@ -1,52 +1,19 @@
+import 'package:cfloor_flutter/widgets/registers_view.dart';
 import 'package:flutter/material.dart';
 import '../virtual_machines/virtual_memory.dart';
 
-class MemoryView extends StatefulWidget {
+class MemoryView extends StatelessWidget {
   final VirtualMemory memory;
 
   const MemoryView({super.key, required this.memory});
 
   @override
-  State<MemoryView> createState() => _MemoryViewState();
-}
-
-
-class _MemoryViewState extends State<MemoryView> {
-  bool _showRegisters = false;
-
-  _setShowRegisters(bool showRegisters) {
-    setState(() {
-      _showRegisters = showRegisters;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final registers = widget.memory.registers.entries.toList();
     // TODO: make separate panel for each scope
-    final namedVariables = widget.memory.currentScope.expand((scope) => scope.entries).toList();
+    final namedVariables = memory.currentScope.expand((scope) => scope.entries).toList();
     return Column(
       children: [
-        Row(
-          children: [
-            const Text('Show Registers'),
-            const SizedBox(width: 8,),
-            Switch(
-              value: _showRegisters,
-              onChanged: _setShowRegisters,
-            ),
-          ],
-        ),
-        if(_showRegisters) Wrap(
-          spacing: 4,
-          runAlignment: WrapAlignment.start,
-          children: [
-            for (var i = 0; i < registers.length; i++)
-              Card(
-                child: Text('r${registers[i].key}: ${registers[i].value}'),
-              ),
-          ],
-        ),
+        RegistersView(memory: memory),
         ListView.builder(
           shrinkWrap: true,
           itemCount: namedVariables.length,

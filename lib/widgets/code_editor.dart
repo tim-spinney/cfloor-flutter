@@ -1,12 +1,12 @@
 import '../virtual_machines/instructions.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'execution_code_view.dart';
 import 'execution_controls.dart';
+import 'language_level_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import '../virtual_machines/virtual_machine.dart';
-import '../virtual_machines/text_interval.dart';
 import '../virtual_machines/compiler.dart';
 import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
@@ -23,16 +23,6 @@ int a = 4;
 a = a * a;
 write(a);
 ''';
-
-const _levelDescriptions = {
-  LanguageLevel.cfloor1: 'Level 1: reading, writing, and arithmetic',
-  LanguageLevel.cfloor2: 'Level 2: floats vs. ints',
-  LanguageLevel.cfloor3: 'Level 3: strings',
-  LanguageLevel.cfloor4: 'Level 4: booleans and conditionals',
-  LanguageLevel.cfloor5: 'Level 5: while loops',
-  LanguageLevel.cfloor6: 'Level 6: for loops',
-  LanguageLevel.cfloor7: 'Level 7: functions',
-};
 
 const _skippableInstructionTypes = [
   VMNoOpInstruction,
@@ -72,7 +62,7 @@ class _CodeEditorState extends State<CodeEditor> {
         _compileErrors = compileResult.errors;
         if(_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {
           compileResult.builtInVariables.forEach((name, constant) { _virtualMachine.memory.addGlobalVariable(name, constant.value); });
-          for (var instruction in compileResult.instructions) {
+          for (final instruction in compileResult.instructions) {
             _virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, _virtualMachine));
           }
           _virtualMachine.start(compileResult.entryPoint);
@@ -95,10 +85,6 @@ class _CodeEditorState extends State<CodeEditor> {
   }
 
   _isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);
-
-  void _submitInput(dynamic value) {
-    _virtualMachine.submitInput(value);
-  }
 
   Widget _buildCodeView() {
     if(_virtualMachine.isRunning) {
@@ -131,23 +117,7 @@ class _CodeEditorState extends State<CodeEditor> {
             flex: 1,
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    DropdownButton<LanguageLevel>(
-                      items: LanguageLevel.values.map((level) => DropdownMenuItem(value: level, child: Text(_levelDescriptions[level] ?? '???'))).toList(),
-                      onChanged: _virtualMachine.isRunning ? null : _changeLanguageLevel,
-                      value: _languageLevel,
-                    ),
-                    IconButton(
-                      tooltip: 'Click to read more about language levels and features!',
-                      onPressed: () {
-                        context.push('/help/language-levels/${_languageLevel.index}');
-                      },
-                      icon: const Icon(Icons.help_outline),
-                    )
-                  ],
-                ),
+                LanguageLevelControls(languageLevel: _languageLevel, changeLanguageLevel: _changeLanguageLevel),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(8),
@@ -174,7 +144,7 @@ class _CodeEditorState extends State<CodeEditor> {
                 _compileErrors.isEmpty
                   ? ExecutionConsole(
                     consoleState: _virtualMachine.consoleState,
-                    submitInput: _submitInput,
+                    submitInput: _virtualMachine.submitInput,
                   )
                   : Expanded(
                     child: ListView.builder(
@@ -192,41 +162,6 @@ class _CodeEditorState extends State<CodeEditor> {
           ),
         ],
       )
-    );
-  }
-}
-
-class ExecutionCodeView extends StatelessWidget {
-  final String codeText;
-  final TextInterval currentExpressionRange;
-
-  const ExecutionCodeView({super.key, required this.codeText, required this.currentExpressionRange});
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        children:[
-          TextSpan(
-              text: codeText.substring(0, currentExpressionRange.start),
-              style: GoogleFonts.robotoMono(
-                color: Theme.of(context).colorScheme.onSurface,
-              )
-          ),
-          TextSpan(
-            text: codeText.substring(currentExpressionRange.start, currentExpressionRange.end + 1),
-            style: GoogleFonts.robotoMono(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          TextSpan(
-              text: codeText.substring(currentExpressionRange.end + 1),
-              style: GoogleFonts.robotoMono(
-                color: Theme.of(context).colorScheme.onSurface,
-              )
-          ),
-        ],
-      ),
     );
   }
 }
