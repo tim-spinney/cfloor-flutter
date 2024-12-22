@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor6.g4 by ANTLR 4.13.1
+// Generated from grammars/CFloor6.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -7,6 +7,20 @@ import 'CFloor6Parser.dart';
 /// This abstract class defines a complete listener for a parse tree produced by
 /// [CFloor6Parser].
 abstract class CFloor6Listener extends ParseTreeListener {
+  /// Enter a parse tree produced by [CFloor6Parser.statement].
+  /// [ctx] the parse tree
+  void enterStatement(StatementContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.statement].
+  /// [ctx] the parse tree
+  void exitStatement(StatementContext ctx);
+
+  /// Enter a parse tree produced by [CFloor6Parser.forLoop].
+  /// [ctx] the parse tree
+  void enterForLoop(ForLoopContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.forLoop].
+  /// [ctx] the parse tree
+  void exitForLoop(ForLoopContext ctx);
+
   /// Enter a parse tree produced by [CFloor6Parser.type].
   /// [ctx] the parse tree
   void enterType(TypeContext ctx);
@@ -14,19 +28,12 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitType(TypeContext ctx);
 
-  /// Enter a parse tree produced by [CFloor6Parser.arrayLiteralElement].
+  /// Enter a parse tree produced by [CFloor6Parser.expression].
   /// [ctx] the parse tree
-  void enterArrayLiteralElement(ArrayLiteralElementContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.arrayLiteralElement].
+  void enterExpression(ExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.expression].
   /// [ctx] the parse tree
-  void exitArrayLiteralElement(ArrayLiteralElementContext ctx);
-
-  /// Enter a parse tree produced by [CFloor6Parser.arrayLiteral].
-  /// [ctx] the parse tree
-  void enterArrayLiteral(ArrayLiteralContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.arrayLiteral].
-  /// [ctx] the parse tree
-  void exitArrayLiteral(ArrayLiteralContext ctx);
+  void exitExpression(ExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.arrayInitializer].
   /// [ctx] the parse tree
@@ -35,12 +42,19 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitArrayInitializer(ArrayInitializerContext ctx);
 
-  /// Enter a parse tree produced by [CFloor6Parser.expression].
+  /// Enter a parse tree produced by [CFloor6Parser.arrayLiteral].
   /// [ctx] the parse tree
-  void enterExpression(ExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.expression].
+  void enterArrayLiteral(ArrayLiteralContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.arrayLiteral].
   /// [ctx] the parse tree
-  void exitExpression(ExpressionContext ctx);
+  void exitArrayLiteral(ArrayLiteralContext ctx);
+
+  /// Enter a parse tree produced by [CFloor6Parser.arrayLiteralElement].
+  /// [ctx] the parse tree
+  void enterArrayLiteralElement(ArrayLiteralElementContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.arrayLiteralElement].
+  /// [ctx] the parse tree
+  void exitArrayLiteralElement(ArrayLiteralElementContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.assignment].
   /// [ctx] the parse tree
@@ -62,20 +76,6 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor6Parser.typedAssignment].
   /// [ctx] the parse tree
   void exitTypedAssignment(TypedAssignmentContext ctx);
-
-  /// Enter a parse tree produced by [CFloor6Parser.forLoop].
-  /// [ctx] the parse tree
-  void enterForLoop(ForLoopContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.forLoop].
-  /// [ctx] the parse tree
-  void exitForLoop(ForLoopContext ctx);
-
-  /// Enter a parse tree produced by [CFloor6Parser.statement].
-  /// [ctx] the parse tree
-  void enterStatement(StatementContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.statement].
-  /// [ctx] the parse tree
-  void exitStatement(StatementContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.whileLoop].
   /// [ctx] the parse tree
@@ -126,12 +126,12 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitIfBlock(IfBlockContext ctx);
 
-  /// Enter a parse tree produced by [CFloor6Parser.program].
+  /// Enter a parse tree produced by [CFloor6Parser.mathOperand].
   /// [ctx] the parse tree
-  void enterProgram(ProgramContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.program].
+  void enterMathOperand(MathOperandContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.mathOperand].
   /// [ctx] the parse tree
-  void exitProgram(ProgramContext ctx);
+  void exitMathOperand(MathOperandContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.stringLengthExpression].
   /// [ctx] the parse tree
@@ -139,13 +139,6 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor6Parser.stringLengthExpression].
   /// [ctx] the parse tree
   void exitStringLengthExpression(StringLengthExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor6Parser.mathOperand].
-  /// [ctx] the parse tree
-  void enterMathOperand(MathOperandContext ctx);
-  /// Exit a parse tree produced by [CFloor6Parser.mathOperand].
-  /// [ctx] the parse tree
-  void exitMathOperand(MathOperandContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.readFunctionExpression].
   /// [ctx] the parse tree
@@ -160,6 +153,13 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor6Parser.mathFunctionExpression].
   /// [ctx] the parse tree
   void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor6Parser.program].
+  /// [ctx] the parse tree
+  void enterProgram(ProgramContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.program].
+  /// [ctx] the parse tree
+  void exitProgram(ProgramContext ctx);
 
   /// Enter a parse tree produced by [CFloor6Parser.declAssignStatement].
   /// [ctx] the parse tree

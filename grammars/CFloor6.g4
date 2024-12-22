@@ -1,25 +1,24 @@
+/* Introduces arrays and for loops as a way to iterate over arrays. */
 grammar CFloor6 ;
 
 import CFloor5 ;
 
-Primitive: 'int' | 'float' | 'string' | 'bool' ;
+statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop ;
+
+forLoop: 'for' '(' typedAssignment ';' booleanExpression ';' assignment ')' block ;
 
 type: Primitive | 'array<' Primitive '>' ;
 
-arrayLiteralElement: Number | StringLiteral | BooleanLiteral | arrayLiteral | arrayInitializer;
-
-arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
+expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral ;
 
 arrayInitializer: 'array<' Primitive '>' '[' Number ']' ;
 
-expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral ;
+arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
+
+arrayLiteralElement: Number | StringLiteral | BooleanLiteral | arrayLiteral | arrayInitializer;
 
 assignment: variableAccessor '=' expression ;
 
 variableAccessor: Identifier ('[' mathExpression ']')?;
 
 typedAssignment: type assignment ;
-
-forLoop: 'for' '(' typedAssignment ';' booleanExpression ';' assignment ')' block ;
-
-statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop ;

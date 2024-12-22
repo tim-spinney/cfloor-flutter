@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor2.g4 by ANTLR 4.13.1
+// Generated from grammars/CFloor2.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -7,13 +7,6 @@ import 'CFloor2Parser.dart';
 /// This abstract class defines a complete listener for a parse tree produced by
 /// [CFloor2Parser].
 abstract class CFloor2Listener extends ParseTreeListener {
-  /// Enter a parse tree produced by [CFloor2Parser.type].
-  /// [ctx] the parse tree
-  void enterType(TypeContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.type].
-  /// [ctx] the parse tree
-  void exitType(TypeContext ctx);
-
   /// Enter a parse tree produced by [CFloor2Parser.mathOperand].
   /// [ctx] the parse tree
   void enterMathOperand(MathOperandContext ctx);
@@ -42,6 +35,13 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitProgram(ProgramContext ctx);
 
+  /// Enter a parse tree produced by [CFloor2Parser.statement].
+  /// [ctx] the parse tree
+  void enterStatement(StatementContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.statement].
+  /// [ctx] the parse tree
+  void exitStatement(StatementContext ctx);
+
   /// Enter a parse tree produced by [CFloor2Parser.declAssignStatement].
   /// [ctx] the parse tree
   void enterDeclAssignStatement(DeclAssignStatementContext ctx);
@@ -63,26 +63,12 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
 
-  /// Enter a parse tree produced by [CFloor2Parser.variableAccessor].
+  /// Enter a parse tree produced by [CFloor2Parser.type].
   /// [ctx] the parse tree
-  void enterVariableAccessor(VariableAccessorContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.variableAccessor].
+  void enterType(TypeContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.type].
   /// [ctx] the parse tree
-  void exitVariableAccessor(VariableAccessorContext ctx);
-
-  /// Enter a parse tree produced by [CFloor2Parser.mathExpression].
-  /// [ctx] the parse tree
-  void enterMathExpression(MathExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.mathExpression].
-  /// [ctx] the parse tree
-  void exitMathExpression(MathExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor2Parser.expression].
-  /// [ctx] the parse tree
-  void enterExpression(ExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.expression].
-  /// [ctx] the parse tree
-  void exitExpression(ExpressionContext ctx);
+  void exitType(TypeContext ctx);
 
   /// Enter a parse tree produced by [CFloor2Parser.assignment].
   /// [ctx] the parse tree
@@ -91,10 +77,24 @@ abstract class CFloor2Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitAssignment(AssignmentContext ctx);
 
-  /// Enter a parse tree produced by [CFloor2Parser.statement].
+  /// Enter a parse tree produced by [CFloor2Parser.expression].
   /// [ctx] the parse tree
-  void enterStatement(StatementContext ctx);
-  /// Exit a parse tree produced by [CFloor2Parser.statement].
+  void enterExpression(ExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.expression].
   /// [ctx] the parse tree
-  void exitStatement(StatementContext ctx);
+  void exitExpression(ExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor2Parser.mathExpression].
+  /// [ctx] the parse tree
+  void enterMathExpression(MathExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.mathExpression].
+  /// [ctx] the parse tree
+  void exitMathExpression(MathExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor2Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void enterVariableAccessor(VariableAccessorContext ctx);
+  /// Exit a parse tree produced by [CFloor2Parser.variableAccessor].
+  /// [ctx] the parse tree
+  void exitVariableAccessor(VariableAccessorContext ctx);
 }

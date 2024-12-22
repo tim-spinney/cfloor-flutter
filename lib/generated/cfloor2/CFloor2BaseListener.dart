@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor2.g4 by ANTLR 4.13.1
+// Generated from grammars/CFloor2.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -10,14 +10,6 @@ import 'CFloor2Listener.dart';
 /// which can be extended to create a listener which only needs to handle
 /// a subset of the available methods.
 class CFloor2BaseListener implements CFloor2Listener {
-  /// The default implementation does nothing.
-  @override
-  void enterType(TypeContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitType(TypeContext ctx) {}
-
   /// The default implementation does nothing.
   @override
   void enterMathOperand(MathOperandContext ctx) {}
@@ -52,6 +44,14 @@ class CFloor2BaseListener implements CFloor2Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterDeclAssignStatement(DeclAssignStatementContext ctx) {}
 
   /// The default implementation does nothing.
@@ -76,27 +76,11 @@ class CFloor2BaseListener implements CFloor2Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterVariableAccessor(VariableAccessorContext ctx) {}
+  void enterType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitVariableAccessor(VariableAccessorContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterMathExpression(MathExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathExpression(MathExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterExpression(ExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitExpression(ExpressionContext ctx) {}
+  void exitType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -108,11 +92,27 @@ class CFloor2BaseListener implements CFloor2Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterStatement(StatementContext ctx) {}
+  void enterExpression(ExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitStatement(StatementContext ctx) {}
+  void exitExpression(ExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterMathExpression(MathExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathExpression(MathExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterVariableAccessor(VariableAccessorContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
   @override

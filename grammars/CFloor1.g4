@@ -2,8 +2,6 @@ grammar CFloor1 ;
 
 MathOperator: '+' | '-' | '*' | '/' | '%' ;
 
-type: 'int' ;
-
 StringLiteral: '"' .*? '"' ;
 
 WS: [ \t\r\n]+ -> skip ;
@@ -14,23 +12,28 @@ Identifier: [a-z][a-z_]* ;
 
 program: statement+ EOF;
 
+statement: declAssignStatement | assignStatement | writeStatement ;
+
 declAssignStatement: type assignment ';' ;
 
 assignStatement: assignment ';' ;
 
 writeStatement: 'write' '(' (variableAccessor | Number | StringLiteral) ')' ';' ;
 
-variableAccessor: Identifier ;
+Primitive: 'int' ;
 
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;
-
-mathExpression: mathOperand (MathOperator mathOperand)? ;
-
-expression: mathExpression | readFunctionExpression ;
+/* non-terminal to support overriding with arrays in later levels */
+type: Primitive ;
 
 assignment: Identifier '=' expression ;
 
-statement: writeStatement | assignStatement | declAssignStatement ;
+expression: mathExpression | readFunctionExpression ;
+
+mathExpression: mathOperand (MathOperator mathOperand)? ;
+
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;
+
+variableAccessor: Identifier ;
 
 readFunctionExpression: 'read_int()' ;
 

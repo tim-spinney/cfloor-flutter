@@ -2,26 +2,27 @@ grammar CFloor7 ;
 
 import CFloor6 ;
 
-parameter: type Identifier ;
+program: functionDefinition+ EOF ;
 
-parameterList: (parameter (',' parameter)*)? ;
+functionDefinition: returnType Identifier '(' parameterList ')' block ;
 
 returnType: type | 'void' ;
 
-functionDefinition: returnType Identifier '(' parameterList ')' block ;
+parameterList: (parameter (',' parameter)*)? ;
+
+parameter: type Identifier ;
 
 expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral | functionInvocation ;
 
 functionInvocation: Identifier '(' (variableAccessor (',' variableAccessor)*)? ')' ;
 
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression | functionInvocation ;
-
-booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' | functionInvocation ;
+statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop | functionInvocationStatement | returnStatement ;
 
 functionInvocationStatement: functionInvocation ';' ;
 
 returnStatement: 'return' expression? ';' ;
 
-statement: writeStatement | assignStatement | declAssignStatement | ifBlock | whileLoop | forLoop | functionInvocationStatement | returnStatement ;
+/* TODO: ditch mathFunctionExpression and stringLengthExpression at this level, treat as built-in functions */
+mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression | functionInvocation ;
 
-program: functionDefinition+ EOF ;
+booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' | functionInvocation ;

@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor3.g4 by ANTLR 4.13.1
+// Generated from grammars/CFloor3.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -12,22 +12,6 @@ import 'CFloor3Listener.dart';
 class CFloor3BaseListener implements CFloor3Listener {
   /// The default implementation does nothing.
   @override
-  void enterType(TypeContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitType(TypeContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterStringLengthExpression(StringLengthExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterExpression(ExpressionContext ctx) {}
 
   /// The default implementation does nothing.
@@ -36,19 +20,19 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterAssignment(AssignmentContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitAssignment(AssignmentContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
   void enterMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.
   @override
   void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterStringLengthExpression(StringLengthExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -76,6 +60,14 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitStatement(StatementContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterDeclAssignStatement(DeclAssignStatementContext ctx) {}
 
   /// The default implementation does nothing.
@@ -100,11 +92,19 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterVariableAccessor(VariableAccessorContext ctx) {}
+  void enterType(TypeContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitVariableAccessor(VariableAccessorContext ctx) {}
+  void exitType(TypeContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterAssignment(AssignmentContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitAssignment(AssignmentContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -116,11 +116,11 @@ class CFloor3BaseListener implements CFloor3Listener {
 
   /// The default implementation does nothing.
   @override
-  void enterStatement(StatementContext ctx) {}
+  void enterVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
   @override
-  void exitStatement(StatementContext ctx) {}
+  void exitVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
   @override
