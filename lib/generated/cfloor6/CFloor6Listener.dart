@@ -84,6 +84,13 @@ abstract class CFloor6Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitWhileLoop(WhileLoopContext ctx);
 
+  /// Enter a parse tree produced by [CFloor6Parser.primitive].
+  /// [ctx] the parse tree
+  void enterPrimitive(PrimitiveContext ctx);
+  /// Exit a parse tree produced by [CFloor6Parser.primitive].
+  /// [ctx] the parse tree
+  void exitPrimitive(PrimitiveContext ctx);
+
   /// Enter a parse tree produced by [CFloor6Parser.booleanOperand].
   /// [ctx] the parse tree
   void enterBooleanOperand(BooleanOperandContext ctx);

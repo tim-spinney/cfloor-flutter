@@ -7,11 +7,11 @@ statement: writeStatement | assignStatement | declAssignStatement | ifBlock | wh
 
 forLoop: 'for' '(' typedAssignment ';' booleanExpression ';' assignment ')' block ;
 
-type: Primitive | 'array<' Primitive '>' ;
+type: primitive | 'array<' primitive '>' ;
 
 expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral ;
 
-arrayInitializer: 'array<' Primitive '>' '[' Number ']' ;
+arrayInitializer: 'array<' primitive '>' '[' Number ']' ;
 
 arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
 

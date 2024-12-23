@@ -226,7 +226,7 @@ class CFloor6TreeWalker extends CFloor6BaseListener implements InstructionGenera
   ArrayInitializer _toArrayInitializer(ArrayInitializerContext ctx) => ArrayInitializer(
       ctx.textRange,
       int.parse(ctx.Number()!.text!),
-      DataType.byName(ctx.Primitive()!.text!)
+      DataType.byName(ctx.primitive()!.text)
   );
 
   ArrayLiteral _toArrayLiteral(ArrayLiteralContext ctx) => ArrayLiteral(

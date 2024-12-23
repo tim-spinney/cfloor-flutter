@@ -14,7 +14,7 @@ Comparator: '==' | '!=' | '<' | '<=' | '>' | '>=' ;
 
 expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression ;
 
-Primitive: 'int' | 'float' | 'string' | 'bool' ;
+primitive: 'int' | 'float' | 'string' | 'bool' ;
 
 booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' ;
 

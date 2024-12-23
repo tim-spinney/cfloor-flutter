@@ -100,6 +100,14 @@ class CFloor6BaseListener implements CFloor6Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterPrimitive(PrimitiveContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitPrimitive(PrimitiveContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterBooleanOperand(BooleanOperandContext ctx) {}
 
   /// The default implementation does nothing.

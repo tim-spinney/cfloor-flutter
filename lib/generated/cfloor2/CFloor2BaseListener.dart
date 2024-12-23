@@ -12,6 +12,14 @@ import 'CFloor2Listener.dart';
 class CFloor2BaseListener implements CFloor2Listener {
   /// The default implementation does nothing.
   @override
+  void enterPrimitive(PrimitiveContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitPrimitive(PrimitiveContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterMathOperand(MathOperandContext ctx) {}
 
   /// The default implementation does nothing.

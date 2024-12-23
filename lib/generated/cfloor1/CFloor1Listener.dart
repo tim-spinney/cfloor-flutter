@@ -42,6 +42,13 @@ abstract class CFloor1Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitWriteStatement(WriteStatementContext ctx);
 
+  /// Enter a parse tree produced by [CFloor1Parser.primitive].
+  /// [ctx] the parse tree
+  void enterPrimitive(PrimitiveContext ctx);
+  /// Exit a parse tree produced by [CFloor1Parser.primitive].
+  /// [ctx] the parse tree
+  void exitPrimitive(PrimitiveContext ctx);
+
   /// Enter a parse tree produced by [CFloor1Parser.type].
   /// [ctx] the parse tree
   void enterType(TypeContext ctx);

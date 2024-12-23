@@ -14,6 +14,13 @@ abstract class CFloor3Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitExpression(ExpressionContext ctx);
 
+  /// Enter a parse tree produced by [CFloor3Parser.primitive].
+  /// [ctx] the parse tree
+  void enterPrimitive(PrimitiveContext ctx);
+  /// Exit a parse tree produced by [CFloor3Parser.primitive].
+  /// [ctx] the parse tree
+  void exitPrimitive(PrimitiveContext ctx);
+
   /// Enter a parse tree produced by [CFloor3Parser.mathOperand].
   /// [ctx] the parse tree
   void enterMathOperand(MathOperandContext ctx);

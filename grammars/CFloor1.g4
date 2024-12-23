@@ -20,10 +20,10 @@ assignStatement: assignment ';' ;
 
 writeStatement: 'write' '(' (variableAccessor | Number | StringLiteral) ')' ';' ;
 
-Primitive: 'int' ;
+primitive: 'int' ;
 
-/* non-terminal to support overriding with arrays in later levels */
-type: Primitive ;
+/* distinct from 'primitive' to support overriding with arrays in later levels */
+type: primitive ;
 
 assignment: Identifier '=' expression ;
 

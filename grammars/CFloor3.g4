@@ -6,7 +6,7 @@ import CFloor2 ;
 
 expression: mathExpression | readFunctionExpression | StringLiteral ;
 
-Primitive: 'int' | 'float' | 'string' ;
+primitive: 'int' | 'float' | 'string' ;
 
 mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
 

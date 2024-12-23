@@ -89,9 +89,12 @@ import 'package:cfloor_flutter/virtual_machines/wrappers/variable_accessor.dart'
 import 'package:cfloor_flutter/virtual_machines/wrappers/while_loop.dart';
 import 'package:cfloor_flutter/virtual_machines/wrappers/write_statement.dart';
 import 'package:cfloor_flutter/widgets/code_editor.dart';
+import 'package:cfloor_flutter/widgets/execution_code_view.dart';
 import 'package:cfloor_flutter/widgets/execution_console.dart';
 import 'package:cfloor_flutter/widgets/execution_controls.dart';
 import 'package:cfloor_flutter/widgets/help_page.dart';
+import 'package:cfloor_flutter/widgets/language_level_controls.dart';
 import 'package:cfloor_flutter/widgets/memory_view.dart';
+import 'package:cfloor_flutter/widgets/registers_view.dart';
 
 void main() {}

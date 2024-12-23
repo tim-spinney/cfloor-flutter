@@ -3,9 +3,9 @@ grammar CFloor2 ;
 
 import CFloor1 ;
 
-Number: [-]?[0-9]+ | [-]?[0-9]* '.' [0-9]+? ;
+Number: [-]?[0-9]+ | [-]?[0-9]* '.' [0-9]+ ;
 
-Primitive: 'int' | 'float' ;
+primitive: 'int' | 'float' ;
 
 /* TODO: Find a way to reduce copy/paste of production rules when later levels need to add more
    options to a rule from a previous level. The current way makes it easier to omit previous

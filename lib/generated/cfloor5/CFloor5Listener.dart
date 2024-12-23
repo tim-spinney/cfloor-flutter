@@ -28,6 +28,13 @@ abstract class CFloor5Listener extends ParseTreeListener {
   /// [ctx] the parse tree
   void exitExpression(ExpressionContext ctx);
 
+  /// Enter a parse tree produced by [CFloor5Parser.primitive].
+  /// [ctx] the parse tree
+  void enterPrimitive(PrimitiveContext ctx);
+  /// Exit a parse tree produced by [CFloor5Parser.primitive].
+  /// [ctx] the parse tree
+  void exitPrimitive(PrimitiveContext ctx);
+
   /// Enter a parse tree produced by [CFloor5Parser.booleanOperand].
   /// [ctx] the parse tree
   void enterBooleanOperand(BooleanOperandContext ctx);
