@@ -8,7 +8,8 @@ main() {
     int r = read_int();
     float area = 0;
     area = r * 3.1415926535;
-    write(area);
+    int areaish = floor(area);
+    write(areaish);
     ''';
 
     final errorCollector = SyntaxErrorCollector();
