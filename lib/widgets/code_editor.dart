@@ -57,7 +57,7 @@ class _CodeEditorState extends State<CodeEditor> {
       _virtualMachine.stop();
     } else {
       _virtualMachine.clear();
-      final compileResult = Compiler(_languageLevel).compile(_sourceCodeController.text);
+      final compileResult = compileCFloor(_sourceCodeController.text, _languageLevel);
       setState(() {
         _compileErrors = compileResult.errors;
         if(_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {

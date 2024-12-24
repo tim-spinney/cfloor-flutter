@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 main() {
   test('compiles a program that uses strings', () {
     const source = '''
-    string s = "test";
+    string s = read_string();
     int l = length(s);
     write("your string is \$l characters long");
     ''';

@@ -11,29 +11,25 @@ import 'cfloor7/compiler.dart';
 import 'language_level.dart';
 import 'wrappers/instructions.dart';
 
-class Compiler {
-  final LanguageLevel languageLevel;
+const _compilersByLanguage = {
+  LanguageLevel.cfloor1: compileCFloor1,
+  LanguageLevel.cfloor2: compileCFloor2,
+  LanguageLevel.cfloor3: compileCFloor3,
+  LanguageLevel.cfloor4: compileCFloor4,
+  LanguageLevel.cfloor5: compileCFloor5,
+  LanguageLevel.cfloor6: compileCFloor6,
+  LanguageLevel.cfloor7: compileCFloor7,
+};
 
-  Compiler(this.languageLevel);
-
-  CompileResult compile(String sourceText) {
-    final SyntaxErrorCollector errorCollector = SyntaxErrorCollector();
-    final instructionGenerator = switch(languageLevel) {
-      LanguageLevel.cfloor1 => compileCFloor1(sourceText, errorCollector),
-      LanguageLevel.cfloor2 => compileCFloor2(sourceText, errorCollector),
-      LanguageLevel.cfloor3 => compileCFloor3(sourceText, errorCollector),
-      LanguageLevel.cfloor4 => compileCFloor4(sourceText, errorCollector),
-      LanguageLevel.cfloor5 => compileCFloor5(sourceText, errorCollector),
-      LanguageLevel.cfloor6 => compileCFloor6(sourceText, errorCollector),
-      LanguageLevel.cfloor7 => compileCFloor7(sourceText, errorCollector),
-    };
-    return CompileResult(
-      errorCollector.errors + instructionGenerator.semanticErrorCollector.errors,
-      instructionGenerator.instructions,
-      instructionGenerator.builtInVariables,
-      instructionGenerator is HasEntryPoint ? (instructionGenerator as HasEntryPoint).entryPoint : 0
-    );
-  }
+CompileResult compileCFloor(String sourceText, LanguageLevel languageLevel) {
+  final SyntaxErrorCollector errorCollector = SyntaxErrorCollector();
+  final instructionGenerator = _compilersByLanguage[languageLevel]!(sourceText, errorCollector);
+  return CompileResult(
+    errorCollector.errors + instructionGenerator.semanticErrorCollector.errors,
+    instructionGenerator.instructions,
+    instructionGenerator.builtInVariables,
+    instructionGenerator is HasEntryPoint ? (instructionGenerator as HasEntryPoint).entryPoint : 0
+  );
 }
 
 class CompileResult {
