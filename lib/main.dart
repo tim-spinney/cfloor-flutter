@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'widgets/help_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
 final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const MyHomePage(),
+      builder: (context, state) => const EditorPage(),
     ),
     GoRoute(
       path: '/help',
@@ -31,8 +31,8 @@ final _router = GoRouter(
   ]
 );
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   // This widget is the root of your application.
   @override
@@ -49,8 +49,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class EditorPage extends StatelessWidget {
+  const EditorPage({super.key});
 
   @override
   Widget build(BuildContext context) {
