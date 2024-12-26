@@ -18,20 +18,6 @@ class CodeEditor extends StatefulWidget {
   State<CodeEditor> createState() => _CodeEditorState();
 }
 
-const _sampleProgram = '''
-int a = 4;
-a = a * a;
-write(a);
-''';
-
-const _skippableInstructionTypes = [
-  VMNoOpInstruction,
-  VMJumpInstruction,
-  VMJumpIfFalseInstruction,
-  VMPushScopeInstruction,
-  VMPopScopeInstruction,
-];
-
 class _CodeEditorState extends State<CodeEditor> {
   final TextEditingController _sourceCodeController = TextEditingController(text: _sampleProgram);
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
@@ -83,8 +69,6 @@ class _CodeEditorState extends State<CodeEditor> {
       _virtualMachine.consoleState.addConsoleOutput(ConsoleMessage('Program crash: $e', isError: true));
     }
   }
-
-  _isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);
 
   Widget _buildCodeView() {
     if(_virtualMachine.isRunning) {
@@ -165,3 +149,19 @@ class _CodeEditorState extends State<CodeEditor> {
     );
   }
 }
+
+const _sampleProgram = '''
+int a = 4;
+a = a * a;
+write(a);
+''';
+
+const _skippableInstructionTypes = [
+  VMNoOpInstruction,
+  VMJumpInstruction,
+  VMJumpIfFalseInstruction,
+  VMPushScopeInstruction,
+  VMPopScopeInstruction,
+];
+
+_isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);

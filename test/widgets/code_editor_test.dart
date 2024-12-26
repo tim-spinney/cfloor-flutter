@@ -1,5 +1,6 @@
 
 
+import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import 'package:cfloor_flutter/widgets/code_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,5 +84,41 @@ main() {
 
     expect(formFieldFinder, findsOneWidget);
     expect(find.textContaining('Syntax error'), findsAtLeast(1));
+  });
+
+  testWidgets('reports an uncaught exception in program execution to the user', (tester) async {
+    configureViewSize(tester);
+
+    await tester.pumpWidgetWithMaterial(const CodeEditor());
+
+    const program = '''
+    array<int> a = { 1 };
+    int i = a[1];
+    write(i);
+    ''';
+
+    final formFieldFinder = find.byType(TextFormField);
+    tester.widget<TextFormField>(formFieldFinder).controller!.clear();
+    await tester.enterText(find.byType(TextFormField), program);
+
+
+    await tester.tap(find.byType(DropdownButton<LanguageLevel>));
+    await tester.pump();
+
+    await tester.tap(find.textContaining('Level 6:'));
+    await tester.pump();
+
+
+    await tester.tap(find.byIcon(Icons.play_arrow));
+    await tester.pumpAndSettle();
+
+    final stepFinder = find.byIcon(Icons.arrow_forward);
+    for(int i = 0; i < 2; i++) {
+      await tester.tap(stepFinder);
+      await tester.pumpAndSettle();
+    }
+
+    expect(stepFinder, findsNothing);
+    expect(find.textContaining('Program crash: '), findsOneWidget);
   });
 }
