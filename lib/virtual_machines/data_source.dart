@@ -1,5 +1,6 @@
-import 'wrappers/data_source.dart';
-import 'data_type.dart';
+import 'package:cfloor_flutter/compilers/wrappers/data_source.dart';
+
+import '../language_core/data_type.dart';
 import 'virtual_memory.dart';
 
 sealed class VMDataSource {

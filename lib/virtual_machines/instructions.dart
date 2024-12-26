@@ -1,17 +1,18 @@
 import 'dart:math';
 
-import 'cfloor_array.dart';
-import 'boolean_operator.dart';
-import 'comparison_operator.dart';
-import 'math_function.dart';
-import 'math_operator.dart';
-import 'wrappers/instructions.dart';
+import 'package:cfloor_flutter/compilers/wrappers/instructions.dart';
+
+import '../language_core/cfloor_array.dart';
+import '../language_core/boolean_operator.dart';
+import '../compilers/comparison_operator.dart';
+import '../compilers/math_function.dart';
+import '../compilers/math_operator.dart';
 import '../console_state.dart';
 import 'data_destination.dart';
 import 'data_source.dart';
-import 'data_type.dart';
+import '../language_core/data_type.dart';
 import 'execution_exception.dart';
-import 'text_interval.dart';
+import '../compilers/text_interval.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 

@@ -7,7 +7,7 @@ import 'language_level_controls.dart';
 import 'memory_view.dart';
 import 'execution_console.dart';
 import '../virtual_machines/virtual_machine.dart';
-import '../virtual_machines/compiler.dart';
+import '../compilers/compiler.dart';
 import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
 

@@ -1,7 +1,7 @@
+import 'package:cfloor_flutter/compilers/wrappers/data_destination.dart';
 import 'data_source.dart';
-import 'data_type.dart';
+import '../language_core/data_type.dart';
 import 'virtual_memory.dart';
-import 'wrappers/data_destination.dart';
 
 sealed class VMDataDestination {
   final CompositeDataType dataType;

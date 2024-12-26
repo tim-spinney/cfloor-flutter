@@ -1,4 +1,4 @@
-import 'package:cfloor_flutter/virtual_machines/data_type.dart';
+import 'package:cfloor_flutter/language_core/data_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cfloor_flutter/console_state.dart';

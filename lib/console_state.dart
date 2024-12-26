@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'virtual_machines/data_type.dart';
+import 'language_core/data_type.dart';
 
 class ConsoleState extends ChangeNotifier {
   final List<ConsoleMessage> consoleOutput = [];

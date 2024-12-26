@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../virtual_machines/text_interval.dart';
+import '../compilers/text_interval.dart';
 
 class ExecutionCodeView extends StatelessWidget {
   final String codeText;
