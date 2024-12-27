@@ -1,16 +1,16 @@
-# cfloor_flutter
+# CFloor
 
-A new Flutter project.
+This project exists primarily as a practice/example application for both cross-platform app development and implementing programming languages. 
 
-## Getting Started
+# The Language
 
-This project is a starting point for a Flutter application.
+CFloor uses [ANTLR](https://www.antlr.org/) to translate grammars into parsers. CFloor consists of an additive feature set - rather than being one language that lets programmers do everything, it consists of multiple levels/feature sets that provide an increasing number of tools for problem-solving as the programmer advances in skill. The definitions of each language level are in the /grammars folder.
 
-A few resources to get you started if this is your first Flutter project:
+# The App
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+In the spirit of streamlining the learning experience for new programmers, CFloor is paired with a simple Integrated Development Environment (IDE). As opposed to a text editor an a CLI, this IDE allows users to:
+* Write and run code in a browser, on their desktop/laptop, or a tablet.
+* Observe the flow of execution in their program by following which parts of the source code are highlighted as the program runs.
+* Inspect the values of variables at each step of their program.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The application currently consists of a code sandbox and a help section, but will eventually include tutorials and exercises that guide users through the capabilities and different levels of CFloor.
