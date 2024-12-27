@@ -14,3 +14,7 @@ In the spirit of streamlining the learning experience for new programmers, CFloo
 * Inspect the values of variables at each step of their program.
 
 The application currently consists of a code sandbox and a help section, but will eventually include tutorials and exercises that guide users through the capabilities and different levels of CFloor.
+
+# How to Run
+
+Try it out on GitHub Pages! https://tim-spinney.github.io/cfloor-flutter/
