@@ -23,7 +23,7 @@ jobs:
       run: flutter pub get
 
     - name: Build
-      run: flutter build web --release
+      run: flutter build web --release --base-href=/cfloor-flutter/
 
     - name: Upload
       uses: actions/upload-pages-artifact@v3
