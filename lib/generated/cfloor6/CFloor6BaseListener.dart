@@ -76,6 +76,14 @@ class CFloor6BaseListener implements CFloor6Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterArrayAccessExpression(ArrayAccessExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayAccessExpression(ArrayAccessExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.

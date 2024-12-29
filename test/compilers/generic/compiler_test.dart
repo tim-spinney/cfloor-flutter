@@ -259,8 +259,8 @@ void main() {
       final arrayLiteral = ArrayLiteral(
         _SimpleTextInterval(),
         [
-          ArrayLiteralElement('1.23', null, null, null, null),
-          ArrayLiteralElement(null, 'abc', null, null, null),
+          ArrayLiteralElement('1.23', null, null),
+          ArrayLiteralElement(null, 'abc', null),
         ],
       );
       final assignment = Assignment(
@@ -284,8 +284,8 @@ void main() {
       final arrayLiteral = ArrayLiteral(
         _SimpleTextInterval(),
         [
-          ArrayLiteralElement('1.23', null, null, null, null),
-          ArrayLiteralElement('4.56', null, null, null, null),
+          ArrayLiteralElement('1.23', null, null),
+          ArrayLiteralElement('4.56', null, null),
         ],
       );
       final assignment = Assignment(
@@ -308,8 +308,8 @@ void main() {
       final arrayLiteral = ArrayLiteral(
         _SimpleTextInterval(),
         [
-          ArrayLiteralElement(null, null, 'true', null, null),
-          ArrayLiteralElement(null, null, 'false', null, null),
+          ArrayLiteralElement(null, null, 'true'),
+          ArrayLiteralElement(null, null, 'false'),
         ],
       );
       final assignment = Assignment(

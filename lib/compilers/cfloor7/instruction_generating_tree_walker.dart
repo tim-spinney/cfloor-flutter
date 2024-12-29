@@ -192,10 +192,11 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     ctx.MathOperator() != null ? MathOperator.bySymbol[ctx.MathOperator()!.text]! : null,
   );
 
+
   VariableAccessor _toVariableAccessor(VariableAccessorContext ctx) => VariableAccessor(
     ctx.textRange,
     _toIdentifier(ctx.Identifier()!),
-    arrayIndexer: ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
+    arrayIndexer: ctx.arrayAccessExpression() == null ? null : _toMathExpression(ctx.arrayAccessExpression()!.mathExpression()!),
   );
 
   WriteStatement _toWriteStatement(WriteStatementContext ctx) => WriteStatement(
@@ -317,7 +318,5 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     ctx.Number()?.text,
     ctx.StringLiteral()?.text,
     ctx.BooleanLiteral()?.text,
-    ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
-    ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
   );
 }

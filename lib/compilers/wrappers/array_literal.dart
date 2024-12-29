@@ -6,10 +6,8 @@ class ArrayLiteralElement {
   final String? numberText;
   final String? stringText;
   final String? booleanText;
-  final ArrayLiteral? nestedArray;
-  final ArrayInitializer? arrayInitializer;
 
-  ArrayLiteralElement(this.numberText, this.stringText, this.booleanText, this.nestedArray, this.arrayInitializer);
+  ArrayLiteralElement(this.numberText, this.stringText, this.booleanText);
 }
 
 class ArrayLiteral implements Expression {

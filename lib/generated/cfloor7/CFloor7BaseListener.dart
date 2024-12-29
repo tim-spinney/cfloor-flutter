@@ -156,6 +156,14 @@ class CFloor7BaseListener implements CFloor7Listener {
 
   /// The default implementation does nothing.
   @override
+  void enterArrayAccessExpression(ArrayAccessExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitArrayAccessExpression(ArrayAccessExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
   void enterVariableAccessor(VariableAccessorContext ctx) {}
 
   /// The default implementation does nothing.
