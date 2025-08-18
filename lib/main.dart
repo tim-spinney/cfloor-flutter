@@ -1,3 +1,4 @@
+import 'package:cfloor_flutter/widgets/lesson_view.dart';
 import 'package:go_router/go_router.dart';
 
 import 'virtual_machines/language_level.dart';
@@ -11,6 +12,7 @@ void main() {
 }
 
 final _router = GoRouter(
+  initialLocation: '/lessons',
   routes: [
     GoRoute(
       path: '/',
@@ -27,7 +29,11 @@ final _router = GoRouter(
           ),
         )
       ],
-    )
+    ),
+    GoRoute(
+      path: '/lessons',
+      builder: (context, state) => const LessonViewPage(),
+    ),
   ]
 );
 

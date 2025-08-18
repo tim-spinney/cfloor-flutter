@@ -4,8 +4,9 @@ import '../virtual_machines/virtual_memory.dart';
 
 class MemoryView extends StatelessWidget {
   final VirtualMemory memory;
+  final bool showRegisters;
 
-  const MemoryView({super.key, required this.memory});
+  const MemoryView({super.key, required this.memory, this.showRegisters = true});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class MemoryView extends StatelessWidget {
     final namedVariables = memory.currentScope.expand((scope) => scope.entries).toList();
     return Column(
       children: [
-        RegistersView(memory: memory),
+        if(showRegisters) RegistersView(memory: memory),
         ListView.builder(
           shrinkWrap: true,
           itemCount: namedVariables.length,
