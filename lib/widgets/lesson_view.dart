@@ -154,10 +154,6 @@ class _Lesson1ViewState extends State<_Lesson1View> {
     }
     try {
       _virtualMachine.advanceStep();
-      if (_virtualMachine.isRunning &&
-          _isSkippableInstruction(_virtualMachine.currentInstruction)) {
-        _advanceStep();
-      }
       if (!_virtualMachine.isRunning) {
         setState(() {
           _lessonResult = LessonResult.success;

@@ -60,10 +60,6 @@ class _CodeEditorState extends State<CodeEditor> {
   _advanceStep() {
     try {
       _virtualMachine.advanceStep();
-      if (_virtualMachine.isRunning &&
-          _isSkippableInstruction(_virtualMachine.currentInstruction)) {
-        _advanceStep();
-      }
     } catch(e) {
       _virtualMachine.stop();
       _virtualMachine.consoleState.addConsoleOutput(ConsoleMessage('Program crash: $e', isError: true));
@@ -155,13 +151,3 @@ int a = 4;
 a = a * a;
 write(a);
 ''';
-
-const _skippableInstructionTypes = [
-  VMNoOpInstruction,
-  VMJumpInstruction,
-  VMJumpIfFalseInstruction,
-  VMPushScopeInstruction,
-  VMPopScopeInstruction,
-];
-
-_isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);

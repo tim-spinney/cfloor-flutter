@@ -1,5 +1,7 @@
 // Generated from grammars/CFloor7.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
+import 'dart:math';
+
 import 'package:antlr4/antlr4.dart';
 
 import 'CFloor7Listener.dart';
@@ -413,7 +415,7 @@ class CFloor7Parser extends Parser {
       state = 139;
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
-      if ((((_la) & ~0x3f) == 0 && ((1 << _la) & 5884101005570) != 0)) {
+      if ((((_la) & ~0x3f) == 0 && ((BigInt.one << _la) & BigInt.from(5884101005570)) != BigInt.zero)) {
         state = 138;
         expression();
       }
@@ -897,7 +899,7 @@ class CFloor7Parser extends Parser {
         state = 244; 
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
-      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 4406638510528) != 0));
+      } while ((((_la) & ~0x3f) == 0 && ((BigInt.one << _la) & BigInt.from(4406638510528)) != BigInt.zero));
       state = 246;
       match(TOKEN_T__12);
     } on RecognitionException catch (re) {

@@ -24,17 +24,19 @@ class VirtualMachine extends ChangeNotifier {
     _instructions.add(instruction);
   }
 
-  void advanceStep() {
-    final instruction = currentInstruction;
-    instruction.evaluate();
-    if(!consoleState.isWaitingForInput) {
-      if(instruction.shouldIncrementProgramCounter) {
-        _instructionIndex++;
+  void advanceStep({ bool autoAdvance = true }) {
+    do {
+      final instruction = currentInstruction;
+      instruction.evaluate();
+      if (!consoleState.isWaitingForInput) {
+        if (instruction.shouldIncrementProgramCounter) {
+          _instructionIndex++;
+        }
+        if (_instructionIndex == _instructions.length) {
+          _isRunning = false;
+        }
       }
-      if(_instructionIndex == _instructions.length) {
-        _isRunning = false;
-      }
-    }
+    } while(_isRunning && !consoleState.isWaitingForInput && _canAutoAdvance(currentInstruction));
     notifyListeners();
   }
 
@@ -87,3 +89,14 @@ class VirtualMachine extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+const _autoAdvanceInstructionTypes = [
+  VMNoOpInstruction,
+  VMJumpInstruction,
+  VMJumpIfFalseInstruction,
+  VMPushScopeInstruction,
+  VMPopScopeInstruction,
+];
+
+_canAutoAdvance(VMInstruction i) =>
+    _autoAdvanceInstructionTypes.contains(i.runtimeType);
