@@ -101,14 +101,14 @@ class _Lesson1ViewState extends State<_Lesson1View> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        ShowCaseWidget.of(context).startShowCase([
-          _introText,
-          _code,
-          _objectiveText,
-          _run,
-          _step,
-        ]));
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => ShowCaseWidget.of(context).startShowCase([
+              _introText,
+              _code,
+              _objectiveText,
+              _run,
+              _step,
+            ]));
   }
 
   @override
@@ -144,14 +144,12 @@ class _Lesson1ViewState extends State<_Lesson1View> {
   }
 
   _advanceStep() {
-    if(!_hasPressedStepButton) {
+    if (!_hasPressedStepButton) {
       setState(() {
         _hasPressedStepButton = true;
         WidgetsBinding.instance.addPostFrameCallback((_) =>
-            ShowCaseWidget.of(context).startShowCase([
-              _output,
-              _nextLessonKey
-            ]));
+            ShowCaseWidget.of(context)
+                .startShowCase([_output, _nextLessonKey]));
       });
     }
     try {
@@ -256,7 +254,10 @@ class _Lesson1ViewState extends State<_Lesson1View> {
                         'Anything your program needs or produces while it\'s running - input prompts, variables, messages, errors - appear here.',
                     child: Column(
                       children: [
-                        MemoryView(memory: _virtualMachine.memory, showRegisters: false,),
+                        MemoryView(
+                          memory: _virtualMachine.memory,
+                          showRegisters: false,
+                        ),
                         const Divider(),
                         _compileErrors.isEmpty
                             ? ExecutionConsole(

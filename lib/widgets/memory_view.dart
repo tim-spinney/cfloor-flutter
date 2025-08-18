@@ -13,8 +13,10 @@ class MemoryView extends StatelessWidget {
     // TODO: make separate panel for each scope
     final namedVariables = memory.currentScope.expand((scope) => scope.entries).toList();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if(showRegisters) RegistersView(memory: memory),
+        Text('Variables', style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.start,),
         ListView.builder(
           shrinkWrap: true,
           itemCount: namedVariables.length,

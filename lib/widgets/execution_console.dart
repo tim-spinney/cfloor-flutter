@@ -63,7 +63,9 @@ class _ExecutionConsoleState extends State<ExecutionConsole> {
     return AnimatedBuilder(
       animation:  widget.consoleState,
       builder: (context, value) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('Output', style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.start,),
             ListView.builder(
               shrinkWrap: true,
               itemCount: widget.consoleState.consoleOutput.length,
