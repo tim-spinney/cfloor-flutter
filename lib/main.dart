@@ -12,7 +12,7 @@ void main() {
 }
 
 final _router = GoRouter(
-  initialLocation: '/lessons',
+  initialLocation: '/lessons/1',
   routes: [
     GoRoute(
       path: '/',
@@ -31,8 +31,8 @@ final _router = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/lessons',
-      builder: (context, state) => const LessonViewPage(),
+      path: '/lessons/:lessonId',
+      builder: (context, state) => LessonViewPage(int.parse(state.pathParameters['lessonId']!)),
     ),
   ]
 );
