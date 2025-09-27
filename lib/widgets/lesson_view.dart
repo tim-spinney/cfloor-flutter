@@ -4,6 +4,7 @@ import 'package:cfloor_flutter/widgets/widget_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -35,8 +36,9 @@ enum LessonResult {
 final _nextLessonKey = GlobalKey();
 
 final _lessons = {
-  1: () => const _Lesson1View(),
-  2: () => const _Lesson2View(),
+  1: () => const _TutorialLessonView(),
+  2: () => _LessonView(_lesson2),
+  3: () => _LessonView(_lesson3),
 };
 
 class LessonViewPage extends StatelessWidget {
@@ -86,14 +88,14 @@ class LessonViewPage extends StatelessWidget {
   }
 }
 
-class _Lesson1View extends StatefulWidget {
-  const _Lesson1View({super.key});
+class _TutorialLessonView extends StatefulWidget {
+  const _TutorialLessonView({super.key});
 
   @override
-  createState() => _Lesson1ViewState();
+  createState() => _TutorialLessonViewState();
 }
 
-class _Lesson1ViewState extends State<_Lesson1View> {
+class _TutorialLessonViewState extends State<_TutorialLessonView> {
   final TextEditingController _sourceCodeController =
       TextEditingController(text: 'int x = 2;');
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
@@ -294,24 +296,106 @@ class _Lesson1ViewState extends State<_Lesson1View> {
 }
 
 
-class _Lesson2View extends StatefulWidget {
-  const _Lesson2View({super.key});
+class Lesson {
+  final int id;
+  final String explanation;
+  final String initialCode;
+  final bool isEditable;
+  final String objectiveDescription;
 
-  @override
-  createState() => _Lesson2ViewState();
+  const Lesson({
+    required this.id,
+    required this.explanation,
+    required this.initialCode,
+    this.isEditable = false,
+    required this.objectiveDescription,
+  });
 }
 
-class _Lesson2ViewState extends State<_Lesson2View> {
-  final TextEditingController _sourceCodeController =
-  TextEditingController(text: '''
+const _lesson2 = Lesson(
+  id: 2,
+  explanation: '''
+# Lesson 2: Variables
+**Variables** are used to store information in a program. Consider how you use a calculator: you type in numbers and an operator and it gives you a result. You can use the result in your next calculation, but what if you want to save it for later? This problem comes up all the time in programming, which is why variables are one of the most basic building blocks of any program.
+
+To make a variable in CFloor, you would write something like this:
+```
+int x = 2;
+``` 
+More generally, the pattern is:
+```
+<what kind of thing you're storing> <the name of your variable> = <what to put in the variable>;
+```
+Notice that we end the line with a semicolon (`;`). Think of this like ending a sentence with a period in English.
+
+Below are several examples of creating variables. The first two show how to store a simple (or "literal" in programming terms) value in a variable. The next two show how to use variables in calculations. For now, we'll keep things simple - all our variables will be `int`s, i.e. whole numbers.
+
+Try running the code to see how it works!
+''',
+  initialCode: '''
   int x = 2;
   int y = 4;
   int z = x + y;
-  int w = x * y;
-''');
+  int bob = x * y;
+''',
+  objectiveDescription: 'Run the code and see the result.',
+);
+
+const _lesson3 = Lesson(
+  id: 3,
+  explanation: '''
+# Lesson 3: Your First Program
+The previous two lessons demonstrated how to run existing code. Now it's your turn to write some code of your own!
+
+Remember the pattern for creating a variable:
+```
+<what kind of thing you're storing> <the name of your variable> = <what to put in the variable>;
+```
+As a reminder, here's what the last line of the previous lesson's code looked like:
+```
+int bob = x * y;
+```
+In this lesson, you'll write a program that calculates the area of a rectangle. The formula for the area of a rectangle is:
+```
+area = width * height
+```
+To complete this lesson, you'll need to create three variables in the code editor below named "width", "height", and "area". You can assign any whole number to width and height, but area must be equal to width multiplied by height.
+''',
+  initialCode: '''
+
+''',
+  isEditable: true,
+  objectiveDescription: 'Create variables for width, height, and area, then run the code to see the result.',
+);
+
+class _LessonView extends StatefulWidget {
+  final Lesson lesson;
+  _LessonView(this.lesson) : super(key: ValueKey('lesson_${lesson.id}'));
+
+  @override
+  createState() => _LessonViewState();
+}
+
+class _LessonViewState extends State<_LessonView> {
+  final TextEditingController _sourceCodeController = TextEditingController();
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
   LessonResult _lessonResult = LessonResult.pending;
+
+  @override
+  void initState() {
+    super.initState();
+    _sourceCodeController.text = _lesson2.initialCode;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _sourceCodeController.text = widget.lesson.initialCode;
+    _virtualMachine.clear();
+    _compileErrors = [];
+    _lessonResult = LessonResult.pending;
+  }
 
   @override
   dispose() {
@@ -371,34 +455,24 @@ class _Lesson2ViewState extends State<_Lesson2View> {
           Expanded(
             flex: 1,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Markdown(
-                  data: '''
-# Lesson 2: Variables
-**Variables** are used to store information in a program. Consider how you use a calculator: you type in numbers and an operator and it gives you a result. You can use the result in your next calculation, but what if you want to save it for later? This problem comes up all the time in programming, which is why variables are one of the most basic building blocks of any program.
-
-To make a variable in CFloor, you would write something like this:
-```
-int x = 2;
-``` 
-More generally, the pattern is:
-```
-<what kind of thing you're storing> <the name of your variable> = <what to put in the variable>;
-```
-Notice that we end the line with a semicolon (`;`). Think of this like ending a sentence with a period in English.
-
-Below are several examples of creating variables. The first two show how to store a simple (or "literal" in programming terms) value in a variable. The next two show how to use variables in calculations. For now, we'll keep things simple - all our variables will be `int`s, i.e. whole numbers.
-
-Try running the code to see how it works!
-''',
+                Markdown(
+                  data: widget.lesson.explanation,
                   shrinkWrap: true,
                 ),
-                _virtualMachine.isRunning ? ExecutionCodeView(codeText: _sourceCodeController.text, currentExpressionRange: _virtualMachine.currentInstruction.textRange) : TextField(
-                  readOnly: true,
-                  controller: _sourceCodeController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                ),
+                _virtualMachine.isRunning
+                    ? ExecutionCodeView(
+                        codeText: _sourceCodeController.text,
+                        currentExpressionRange: _virtualMachine.currentInstruction.textRange
+                      )
+                    : TextField(
+                        readOnly: !widget.lesson.isEditable,
+                        controller: _sourceCodeController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        style: GoogleFonts.robotoMono(),
+                      ),
               ],
             ),
           ),
@@ -410,7 +484,7 @@ Try running the code to see how it works!
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Objective: Run the code and see the result.'),
+                    Text(widget.lesson.objectiveDescription),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Icon(
@@ -437,31 +511,30 @@ Try running the code to see how it works!
                   toggleRunning: _toggleRunning,
                   advanceStep: _advanceStep,
                 ),
-                Column(
-                  children: [
-                    MemoryView(
-                      memory: _virtualMachine.memory,
-                      showRegisters: false,
-                    ),
-                    const Divider(),
-                    _compileErrors.isEmpty
-                        ? ExecutionConsole(
-                      consoleState: _virtualMachine.consoleState,
-                      submitInput: _virtualMachine.submitInput,
+                MemoryView(
+                  memory: _virtualMachine.memory,
+                  showRegisters: false,
+                ),
+                const Divider(),
+                _compileErrors.isEmpty
+                    ? Expanded(
+                      child: ExecutionConsole(
+                        consoleState: _virtualMachine.consoleState,
+                        submitInput: _virtualMachine.submitInput,
+                      )
                     )
-                        : Expanded(
-                      child: ListView.builder(
-                        itemCount: _compileErrors.length,
-                        itemBuilder: (context, index) => Text(
-                          _compileErrors[index],
-                          style: TextStyle(
-                            color:
-                            Theme.of(context).colorScheme.error,
-                          ),
-                        ),
+                    : Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _compileErrors.length,
+                    itemBuilder: (context, index) => Text(
+                      _compileErrors[index],
+                      style: TextStyle(
+                        color:
+                        Theme.of(context).colorScheme.error,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
