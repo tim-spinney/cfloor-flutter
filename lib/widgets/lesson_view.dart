@@ -1,3 +1,4 @@
+import 'package:cfloor_flutter/lesson_progression_store.dart';
 import 'package:collection/collection.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import 'package:cfloor_flutter/widgets/execution_code_view.dart';
@@ -17,8 +18,7 @@ import 'execution_console.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
 
-
-class LessonProvider with ChangeNotifier {
+class CurrentLessonStore with ChangeNotifier {
   /* This currently only exists to let the lesson view communicate to the
      lesson page that it should enable the "next lesson" button in the app bar.
      TBD whether it should store the lesson itself, completion progress, etc.
@@ -60,7 +60,7 @@ class LessonViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => LessonProvider(),
+      create: (_) => CurrentLessonStore(),
       builder: (context, _) => ShowCaseWidget(
         builder: (_) => Scaffold(
           appBar: AppBar(
@@ -73,7 +73,7 @@ class LessonViewPage extends StatelessWidget {
             actions: [
               Builder(
                 builder: (context) {
-                  final lessonProvider = context.watch<LessonProvider>();
+                  final lessonProvider = context.watch<CurrentLessonStore>();
                   if (lessonProvider.isCurrentLessonComplete) {
                     return Showcase(
                       key: _nextLessonKey,
@@ -183,7 +183,8 @@ class _TutorialLessonViewState extends State<_TutorialLessonView> {
         setState(() {
           _lessonResult = LessonResult.success;
         });
-        context.read<LessonProvider>().completeCurrentLesson();
+        context.read<CurrentLessonStore>().completeCurrentLesson();
+        context.read<LessonProgressionStore>().markComplete(1);
       }
     } catch (e) {
       _virtualMachine.stop();
@@ -498,7 +499,8 @@ class _LessonViewState extends State<_LessonView> {
             }
           }
           if(_lessonResults.every((result) => result == LessonResult.success)) {
-            context.read<LessonProvider>().completeCurrentLesson();
+            context.read<CurrentLessonStore>().completeCurrentLesson();
+            context.read<LessonProgressionStore>().markComplete(widget.lesson.id);
           }
         });
       }

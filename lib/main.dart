@@ -1,5 +1,7 @@
+import 'package:cfloor_flutter/lesson_progression_store.dart';
 import 'package:cfloor_flutter/widgets/lesson_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'virtual_machines/language_level.dart';
 import 'widgets/code_editor.dart';
@@ -7,12 +9,19 @@ import 'package:flutter/material.dart';
 
 import 'widgets/help_page.dart';
 
-void main() {
-  runApp(const App());
+void main() async {
+  final lessonProgressionStore = LessonProgressionStore();
+  await lessonProgressionStore.load();
+  runApp(
+    ChangeNotifierProvider.value(
+      value: lessonProgressionStore,
+      child: const App(),
+    ),
+  );
 }
 
-final _router = GoRouter(
-  initialLocation: '/lessons/1',
+_makeRouter(int initialLessonId) => GoRouter(
+  initialLocation: '/lessons/$initialLessonId',
   routes: [
     GoRoute(
       path: '/',
@@ -43,33 +52,16 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final initialLessonId = context.select<LessonProgressionStore, int>((store) => store.calculateFirstIncompleteLesson());
     return MaterialApp.router(
-      title: 'CFloor Editor',
+      title: 'CFloor',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      routerConfig: _router,
+      routerConfig: _makeRouter(initialLessonId),
     );
   }
 }
 
-class EditorPage extends StatelessWidget {
-  const EditorPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'CFloor Editor',
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      body: const CodeEditor(),
-    );
-  }
-}

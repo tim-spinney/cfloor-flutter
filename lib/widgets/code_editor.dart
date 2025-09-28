@@ -11,6 +11,25 @@ import '../compilers/compiler.dart';
 import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
 
+class EditorPage extends StatelessWidget {
+  const EditorPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'CFloor Editor',
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      body: const CodeEditor(),
+    );
+  }
+}
+
 class CodeEditor extends StatefulWidget {
   const CodeEditor({super.key});
 
