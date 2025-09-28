@@ -36,6 +36,7 @@ dependencies:
   go_router:
   provider: ^6.1.5
   showcaseview: ^4.0.1
+  collection: ^1.19.1
 
 dev_dependencies:
   test:

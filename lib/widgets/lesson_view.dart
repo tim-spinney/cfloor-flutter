@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import 'package:cfloor_flutter/widgets/execution_code_view.dart';
 import 'package:cfloor_flutter/widgets/widget_wrapper.dart';
@@ -16,13 +17,24 @@ import 'execution_console.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
 
+
 class LessonProvider with ChangeNotifier {
+  /* This currently only exists to let the lesson view communicate to the
+     lesson page that it should enable the "next lesson" button in the app bar.
+     TBD whether it should store the lesson itself, completion progress, etc.
+     or if that can be kept lower in the tree.
+   */
   bool _isCurrentLessonComplete = false;
 
   bool get isCurrentLessonComplete => _isCurrentLessonComplete;
 
   completeCurrentLesson() {
     _isCurrentLessonComplete = true;
+    notifyListeners();
+  }
+
+  advanceLesson() {
+    _isCurrentLessonComplete = false;
     notifyListeners();
   }
 }
@@ -54,7 +66,7 @@ class LessonViewPage extends StatelessWidget {
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-              'CFloor Lesson 1',
+              'CFloor Lessons',
               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -69,6 +81,7 @@ class LessonViewPage extends StatelessWidget {
                           'You did it! Press this button to continue to the next lesson.',
                       child: IconButton(
                         onPressed: () {
+                          lessonProvider.advanceLesson();
                           context.go('/lessons/${lessonId + 1}');
                         },
                         icon: const Icon(Icons.forward),
@@ -295,24 +308,35 @@ class _TutorialLessonViewState extends State<_TutorialLessonView> {
   }
 }
 
+typedef LessonValidator = bool Function(VirtualMachine vm);
+
+class LessonObjective {
+  final String description;
+  final LessonValidator validator;
+
+  LessonObjective({
+    required this.description,
+    required this.validator,
+  });
+}
 
 class Lesson {
   final int id;
   final String explanation;
   final String initialCode;
   final bool isEditable;
-  final String objectiveDescription;
+  final List<LessonObjective> objectives;
 
-  const Lesson({
+  Lesson({
     required this.id,
     required this.explanation,
     required this.initialCode,
     this.isEditable = false,
-    required this.objectiveDescription,
+    required this.objectives,
   });
 }
 
-const _lesson2 = Lesson(
+final _lesson2 = Lesson(
   id: 2,
   explanation: '''
 # Lesson 2: Variables
@@ -338,10 +362,15 @@ Try running the code to see how it works!
   int z = x + y;
   int bob = x * y;
 ''',
-  objectiveDescription: 'Run the code and see the result.',
+  objectives: [
+    LessonObjective(
+      description: 'Run the code and see the result.',
+      validator: (_) => true,
+    ),
+  ],
 );
 
-const _lesson3 = Lesson(
+final _lesson3 = Lesson(
   id: 3,
   explanation: '''
 # Lesson 3: Your First Program
@@ -365,7 +394,32 @@ To complete this lesson, you'll need to create three variables in the code edito
 
 ''',
   isEditable: true,
-  objectiveDescription: 'Create variables for width, height, and area, then run the code to see the result.',
+  objectives: [
+    LessonObjective(
+      description: 'Create a variable named "width".',
+      validator: (vm) => vm.memory.isDefined('width'),
+    ),
+    LessonObjective(
+      description: 'Create a variable named "height".',
+      validator: (vm) => vm.memory.isDefined('height'),
+    ),
+    LessonObjective(
+      description: 'Create a variable named "area".',
+      validator: (vm) => vm.memory.isDefined('area'),
+    ),
+    LessonObjective(
+      description: 'Set "area" equal to "width" multiplied by "height".',
+      validator: (vm) {
+        final width = vm.memory.getVariableValue('width');
+        final height = vm.memory.getVariableValue('height');
+        final area = vm.memory.getVariableValue('area');
+        if (width is int && height is int && area is int) {
+          return area == width * height;
+        }
+        return false;
+      },
+    ),
+  ],
 );
 
 class _LessonView extends StatefulWidget {
@@ -380,7 +434,7 @@ class _LessonViewState extends State<_LessonView> {
   final TextEditingController _sourceCodeController = TextEditingController();
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
   List<String> _compileErrors = [];
-  LessonResult _lessonResult = LessonResult.pending;
+  List<LessonResult> _lessonResults = [];
 
   @override
   void initState() {
@@ -394,7 +448,7 @@ class _LessonViewState extends State<_LessonView> {
     _sourceCodeController.text = widget.lesson.initialCode;
     _virtualMachine.clear();
     _compileErrors = [];
-    _lessonResult = LessonResult.pending;
+    _lessonResults = List.filled(widget.lesson.objectives.length, LessonResult.pending);
   }
 
   @override
@@ -407,7 +461,7 @@ class _LessonViewState extends State<_LessonView> {
     if (_virtualMachine.isRunning) {
       _virtualMachine.stop();
       setState(() {
-        _lessonResult = LessonResult.pending;
+        _lessonResults = List.filled(widget.lesson.objectives.length, LessonResult.pending);
       });
     } else {
       _virtualMachine.clear();
@@ -434,9 +488,19 @@ class _LessonViewState extends State<_LessonView> {
       _virtualMachine.advanceStep();
       if (!_virtualMachine.isRunning) {
         setState(() {
-          _lessonResult = LessonResult.success;
+          for(final (index, objective) in widget.lesson.objectives.indexed) {
+            try {
+              bool passed = objective.validator(_virtualMachine);
+              _lessonResults[index] =
+              passed ? LessonResult.success : LessonResult.failure;
+            } catch (e) {
+              _lessonResults[index] = LessonResult.failure;
+            }
+          }
+          if(_lessonResults.every((result) => result == LessonResult.success)) {
+            context.read<LessonProvider>().completeCurrentLesson();
+          }
         });
-        context.read<LessonProvider>().completeCurrentLesson();
       }
     } catch (e) {
       _virtualMachine.stop();
@@ -481,29 +545,17 @@ class _LessonViewState extends State<_LessonView> {
             flex: 1,
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(widget.lesson.objectiveDescription),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        switch (_lessonResult) {
-                          LessonResult.pending => Icons.pending_actions,
-                          LessonResult.success => Icons.check_circle,
-                          LessonResult.failure => Icons.error,
-                        },
-                        color: _lessonResult == LessonResult.success
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.onSurface,
-                        semanticLabel: switch (_lessonResult) {
-                          LessonResult.pending => 'Pending',
-                          LessonResult.success => 'Success',
-                          LessonResult.failure => 'Failure',
-                        },
+                ...widget.lesson.objectives.mapIndexed((index, objective) =>
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(objective.description),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _makeResultIcon(_lessonResults[index]),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 ExecutionControls(
                   isRunning: _virtualMachine.isRunning,
@@ -541,6 +593,24 @@ class _LessonViewState extends State<_LessonView> {
           ),
         ],
       ),
+    );
+  }
+
+  Icon _makeResultIcon(LessonResult result) {
+    return Icon(
+      switch (result) {
+        LessonResult.pending => Icons.pending_actions,
+        LessonResult.success => Icons.check_circle,
+        LessonResult.failure => Icons.error,
+      },
+      color: result == LessonResult.success
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.onSurface,
+      semanticLabel: switch (result) {
+        LessonResult.pending => 'Pending',
+        LessonResult.success => 'Success',
+        LessonResult.failure => 'Failure',
+      },
     );
   }
 }

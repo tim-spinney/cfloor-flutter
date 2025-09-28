@@ -9,15 +9,24 @@ class VirtualMemory {
   Map<int, dynamic> get registers => _registers.last;
 
   dynamic getVariableValue(String name) {
+    final value = _getVariableValueOrNull(name);
+    if(value != null) {
+      return value;
+    }
+    throw Exception('Variable $name not found');
+  }
+
+  bool isDefined(String variableName) {
+    return _getVariableValueOrNull(variableName) != null;
+  }
+
+  dynamic _getVariableValueOrNull(String name) {
     for(int i = currentScope.length - 1; i >= 0; i--) {
       if(currentScope[i].containsKey(name)) {
         return currentScope[i][name];
       }
     }
-    if(_globalVariables.containsKey(name)) {
-      return _globalVariables[name];
-    }
-    throw Exception('Variable $name not found');
+    return _globalVariables[name];
   }
 
   void setVariableValue(String name, dynamic value, int? index) {
