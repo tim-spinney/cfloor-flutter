@@ -15,7 +15,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider.value(
       value: lessonProgressionStore,
-      child: const App(),
+      child: App(startingLessonId: lessonProgressionStore.calculateFirstIncompleteLesson(),),
     ),
   );
 }
@@ -47,12 +47,12 @@ _makeRouter(int initialLessonId) => GoRouter(
 );
 
 class App extends StatelessWidget {
-  const App({super.key});
+  final int startingLessonId;
+  const App({super.key, required this.startingLessonId});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final initialLessonId = context.select<LessonProgressionStore, int>((store) => store.calculateFirstIncompleteLesson());
     return MaterialApp.router(
       title: 'CFloor',
       debugShowCheckedModeBanner: false,
@@ -60,7 +60,7 @@ class App extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      routerConfig: _makeRouter(initialLessonId),
+      routerConfig: _makeRouter(startingLessonId),
     );
   }
 }

@@ -16,9 +16,10 @@ class ExecutionControls extends StatelessWidget {
     required this.interpreterState,
     required this.toggleRunning,
     required this.advanceStep,
-    this.runWrapper = defaultWidgetWrapper,
-    this.stepWrapper = defaultWidgetWrapper,
-  });
+    WidgetWrapper? runWrapper,
+    WidgetWrapper? stepWrapper
+  }) : runWrapper = runWrapper ?? defaultWidgetWrapper,
+       stepWrapper = stepWrapper ?? defaultWidgetWrapper;
 
   _makePlayButton() {
     if (isRunning) {
