@@ -10,6 +10,7 @@ import '../virtual_machines/virtual_machine.dart';
 import '../compilers/compiler.dart';
 import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
+import 'navigation_drawer.dart';
 
 class EditorPage extends StatelessWidget {
   const EditorPage({super.key});
@@ -26,6 +27,7 @@ class EditorPage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: const CodeEditor(),
+      drawer: const CFloorNavigationDrawer(),
     );
   }
 }

@@ -19,6 +19,7 @@ class Lesson {
   final bool isEditable;
   final bool showTutorial;
   final List<LessonObjective> objectives;
+  final int? prerequisiteLessonId;
 
   Lesson({
     required this.id,
@@ -27,6 +28,7 @@ class Lesson {
     this.isEditable = false,
     this.showTutorial = false,
     required this.objectives,
+    this.prerequisiteLessonId,
   });
 }
 
@@ -81,6 +83,7 @@ Try running the code to see how it works!
       validator: (_) => true,
     ),
   ],
+  prerequisiteLessonId: 1,
 );
 
 final lesson3 = Lesson(
@@ -133,4 +136,5 @@ To complete this lesson, you'll need to create three variables in the code edito
       },
     ),
   ],
+  prerequisiteLessonId: 2,
 );

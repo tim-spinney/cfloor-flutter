@@ -1,10 +1,16 @@
+import 'package:cfloor_flutter/lessons/lessons.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key});
+import '../lesson_progression_store.dart';
+
+class CFloorNavigationDrawer extends StatelessWidget {
+  const CFloorNavigationDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final lessonProgressionStore = context.watch<LessonProgressionStore>();
     return Drawer(
       child: Column(
         children: [
@@ -26,11 +32,24 @@ class NavigationDrawer extends StatelessWidget {
             leading: const Icon(Icons.code),
             title: const Text('Sandbox'),
             onTap: () {
-              Navigator.pushNamed(context, '/');
+              context.go('/');
             },
           ),
           // add a tile for each lesson, only enable if previous lesson is completed
-
+          ...allLessons.values.map((lesson) => ListTile(
+            leading: lessonProgressionStore.hasCompletedLesson(lesson.id)
+                ? const Icon(Icons.check, color: Colors.green)
+                : lesson.prerequisiteLessonId == null || lessonProgressionStore.hasCompletedLesson(lesson.prerequisiteLessonId!)
+                  ? const Icon(Icons.lock_open, color: Colors.orange)
+                  : const Icon(Icons.lock, color: Colors.grey),
+            title: Text('Lesson ${lesson.id}'),
+            onTap: lesson.prerequisiteLessonId == null || lessonProgressionStore.hasCompletedLesson(lesson.prerequisiteLessonId!)
+                ? () {
+                    Scaffold.of(context).closeDrawer();
+                    context.go('/lessons/${lesson.id}');
+                  }
+                : null,
+          )).toList(),
         ],
       ),
     );

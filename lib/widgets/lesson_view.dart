@@ -18,6 +18,7 @@ import '../virtual_machines/virtual_machine.dart';
 import 'execution_console.dart';
 import 'execution_controls.dart';
 import 'memory_view.dart';
+import 'navigation_drawer.dart';
 
 class CurrentLessonStore with ChangeNotifier {
   /* This currently only exists to let the lesson view communicate to the
@@ -90,6 +91,7 @@ class LessonViewPage extends StatelessWidget {
             ],
           ),
           body: _LessonView(allLessons[lessonId]!),
+          drawer: const CFloorNavigationDrawer(),
         ),
       ),
     );
