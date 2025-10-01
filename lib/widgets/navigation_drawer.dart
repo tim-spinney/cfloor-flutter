@@ -35,12 +35,19 @@ class CFloorNavigationDrawer extends StatelessWidget {
               context.go('/');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.school),
+            title: const Text('Lessons Overview'),
+            onTap: () {
+              context.go('/lessons');
+            },
+          ),
           // add a tile for each lesson, only enable if previous lesson is completed
           ...allLessons.values.map((lesson) => ListTile(
             leading: lessonProgressionStore.hasCompletedLesson(lesson.id)
-                ? const Icon(Icons.check, color: Colors.green)
+                ? Icon(Icons.check, color: Theme.of(context).colorScheme.secondary)
                 : lesson.prerequisiteLessonId == null || lessonProgressionStore.hasCompletedLesson(lesson.prerequisiteLessonId!)
-                  ? const Icon(Icons.lock_open, color: Colors.orange)
+                  ? Icon(Icons.lock_open, color: Theme.of(context).primaryColor)
                   : const Icon(Icons.lock, color: Colors.grey),
             title: Text('Lesson ${lesson.id}'),
             onTap: lesson.prerequisiteLessonId == null || lessonProgressionStore.hasCompletedLesson(lesson.prerequisiteLessonId!)

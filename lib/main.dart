@@ -8,6 +8,7 @@ import 'widgets/code_editor.dart';
 import 'package:flutter/material.dart';
 
 import 'widgets/help_page.dart';
+import 'widgets/lesson_progression_view.dart';
 
 void main() async {
   final lessonProgressionStore = LessonProgressionStore();
@@ -21,7 +22,7 @@ void main() async {
 }
 
 _makeRouter(int initialLessonId) => GoRouter(
-  initialLocation: '/lessons/$initialLessonId',
+  initialLocation: '/lessons',
   routes: [
     GoRoute(
       path: '/',
@@ -38,6 +39,10 @@ _makeRouter(int initialLessonId) => GoRouter(
           ),
         )
       ],
+    ),
+    GoRoute(
+      path: '/lessons',
+      builder: (context, state) => const LessonProgressionView(),
     ),
     GoRoute(
       path: '/lessons/:lessonId',
