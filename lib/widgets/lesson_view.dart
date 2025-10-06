@@ -80,7 +80,7 @@ class LessonViewPage extends StatelessWidget {
                           lessonProvider.advanceLesson();
                           context.go('/lessons/${lessonId + 1}');
                         },
-                        icon: const Icon(Icons.forward),
+                        icon: Icon(Icons.forward, color: Theme.of(context).colorScheme.onPrimary,),
                         tooltip: 'Next lesson',
                       ),
                     );
@@ -221,36 +221,38 @@ class _LessonViewState extends State<_LessonView> {
         children: [
           Expanded(
             flex: 1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _maybeShowcase(
-                  key: _introText,
-                  description:
-                      'Each lesson starts out with an explanation of what you\'ll be doing in the lesson.',
-                  child: Markdown(
-                    data: widget.lesson.explanation,
-                    shrinkWrap: true,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _maybeShowcase(
+                    key: _introText,
+                    description:
+                        'Each lesson starts out with an explanation of what you\'ll be doing in the lesson.',
+                    child: Markdown(
+                      data: widget.lesson.explanation,
+                      shrinkWrap: true,
+                    ),
                   ),
-                ),
-                _maybeShowcase(
-                  key: _code,
-                  description:
-                      'Each lesson will contain one or more blocks of code. In this lesson you are not allowed to edit the code, but in future ones you will be able to modify existing code or fill in your own.',
-                  child: _virtualMachine.isRunning
-                      ? ExecutionCodeView(
-                      codeText: _sourceCodeController.text,
-                      currentExpressionRange: _virtualMachine.currentInstruction.textRange
-                  )
-                      : TextField(
-                    readOnly: !widget.lesson.isEditable,
-                    controller: _sourceCodeController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    style: GoogleFonts.robotoMono(),
+                  _maybeShowcase(
+                    key: _code,
+                    description:
+                        'Each lesson will contain one or more blocks of code. In this lesson you are not allowed to edit the code, but in future ones you will be able to modify existing code or fill in your own.',
+                    child: _virtualMachine.isRunning
+                        ? ExecutionCodeView(
+                        codeText: _sourceCodeController.text,
+                        currentExpressionRange: _virtualMachine.currentInstruction.textRange
+                    )
+                        : TextField(
+                      readOnly: !widget.lesson.isEditable,
+                      controller: _sourceCodeController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      style: GoogleFonts.robotoMono(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const VerticalDivider(),
