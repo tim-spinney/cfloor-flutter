@@ -15,10 +15,12 @@ arrayInitializer: 'array<' primitive '>' '[' Number ']' ;
 
 arrayLiteral: '{' '}' | '{' arrayLiteralElement (',' arrayLiteralElement)* '}' ;
 
-arrayLiteralElement: Number | StringLiteral | BooleanLiteral | arrayLiteral | arrayInitializer;
+arrayLiteralElement: Number | StringLiteral | BooleanLiteral ;
 
 assignment: variableAccessor '=' expression ;
 
-variableAccessor: Identifier ('[' mathExpression ']')?;
+arrayAccessExpression: '[' mathExpression ']' ;
+
+variableAccessor: Identifier (arrayAccessExpression)?;
 
 typedAssignment: type assignment ;

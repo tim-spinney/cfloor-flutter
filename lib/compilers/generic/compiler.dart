@@ -493,11 +493,8 @@ class GenericCompiler extends VariableDeclarationManager {
       return ConstantDataSource(DataType.string.toCompositeType(), ctx.stringText!);
     } else if(ctx.booleanText != null) {
       return ConstantDataSource(DataType.bool.toCompositeType(), bool.parse(ctx.booleanText!));
-    } else if(ctx.nestedArray != null) {
-      return _handleArrayLiteral(ctx.nestedArray!);
-    } else {
-      return _handleArrayInitializer(ctx.arrayInitializer!);
     }
+    throw Exception('Unrecognized array literal element type.');
   }
 
   DataSource? _handleFunctionInvocation(FunctionInvocation ctx) {

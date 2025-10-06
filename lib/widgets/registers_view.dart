@@ -27,7 +27,7 @@ class _RegistersViewState extends State<RegistersView> {
         children: [
           Row(
             children: [
-              const Text('Show Registers'),
+              const Text('Show temporary variables'),
               const SizedBox(width: 8,),
               Switch(
                 value: _showRegisters,

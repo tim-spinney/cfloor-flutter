@@ -10,6 +10,27 @@ import '../virtual_machines/virtual_machine.dart';
 import '../compilers/compiler.dart';
 import '../virtual_machines/language_level.dart';
 import '../console_state.dart';
+import 'navigation_drawer.dart';
+
+class EditorPage extends StatelessWidget {
+  const EditorPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'CFloor Editor',
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      body: const CodeEditor(),
+      drawer: const CFloorNavigationDrawer(),
+    );
+  }
+}
 
 class CodeEditor extends StatefulWidget {
   const CodeEditor({super.key});
@@ -60,10 +81,6 @@ class _CodeEditorState extends State<CodeEditor> {
   _advanceStep() {
     try {
       _virtualMachine.advanceStep();
-      if (_virtualMachine.isRunning &&
-          _isSkippableInstruction(_virtualMachine.currentInstruction)) {
-        _advanceStep();
-      }
     } catch(e) {
       _virtualMachine.stop();
       _virtualMachine.consoleState.addConsoleOutput(ConsoleMessage('Program crash: $e', isError: true));
@@ -155,13 +172,3 @@ int a = 4;
 a = a * a;
 write(a);
 ''';
-
-const _skippableInstructionTypes = [
-  VMNoOpInstruction,
-  VMJumpInstruction,
-  VMJumpIfFalseInstruction,
-  VMPushScopeInstruction,
-  VMPopScopeInstruction,
-];
-
-_isSkippableInstruction(VMInstruction i) => _skippableInstructionTypes.contains(i.runtimeType);

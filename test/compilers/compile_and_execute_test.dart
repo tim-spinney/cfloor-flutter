@@ -46,6 +46,12 @@ main() {
     }
 
     test('language level 7 with all features', () {
+      const _la = 42;
+      final x = (_la) & ~0x3f;
+      final y = (1 << _la);
+      final z = (1 << _la) & 5884101005570;
+      print('$x $y $z');
+
       final instructionGenerator = compile();
       final consoleState = ConsoleState();
       final virtualMachine = VirtualMachine(consoleState);
@@ -60,7 +66,7 @@ main() {
         if(consoleState.isWaitingForInput) {
           virtualMachine.submitInput(4);
         }
-        virtualMachine.advanceStep();
+        virtualMachine.advanceStep(autoAdvance: false);
       }
       expect(consoleState.consoleOutput.length, 11);
       expect(consoleState.consoleOutput[0].message, 'Enter a starting number.');

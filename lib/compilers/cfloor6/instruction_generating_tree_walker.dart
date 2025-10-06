@@ -131,7 +131,7 @@ class CFloor6TreeWalker extends CFloor6BaseListener implements InstructionGenera
   VariableAccessor _toVariableAccessor(VariableAccessorContext ctx) => VariableAccessor(
     ctx.textRange,
     _toIdentifier(ctx.Identifier()!),
-    arrayIndexer: ctx.mathExpression() == null ? null : _toMathExpression(ctx.mathExpression()!),
+    arrayIndexer: ctx.arrayAccessExpression() == null ? null : _toMathExpression(ctx.arrayAccessExpression()!.mathExpression()!),
   );
 
   WriteStatement _toWriteStatement(WriteStatementContext ctx) => WriteStatement(
@@ -238,7 +238,5 @@ class CFloor6TreeWalker extends CFloor6BaseListener implements InstructionGenera
     ctx.Number()?.text,
     ctx.StringLiteral()?.text,
     ctx.BooleanLiteral()?.text,
-    ctx.arrayLiteral() == null ? null : _toArrayLiteral(ctx.arrayLiteral()!),
-    ctx.arrayInitializer() == null ? null : _toArrayInitializer(ctx.arrayInitializer()!),
   );
 }
