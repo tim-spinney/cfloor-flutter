@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cfloor_flutter/compilers/built_in_globals.dart';
 import 'package:cfloor_flutter/language_core/cfloor_array.dart';
 import 'package:cfloor_flutter/language_core/data_type.dart';
@@ -29,6 +31,9 @@ class _SimpleTextInterval implements TextInterval {
   @override
   // TODO: implement startPosition
   final startPosition = '0:0';
+
+  @override
+  TextRange toRange() => TextRange(start: start, end: end);
 }
 
 void main() {

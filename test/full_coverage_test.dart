@@ -80,6 +80,8 @@ import 'package:cfloor_flutter/generated/cfloor7/CFloor7Parser.dart';
 import 'package:cfloor_flutter/language_core/boolean_operator.dart';
 import 'package:cfloor_flutter/language_core/cfloor_array.dart';
 import 'package:cfloor_flutter/language_core/data_type.dart';
+import 'package:cfloor_flutter/lesson_progression_store.dart';
+import 'package:cfloor_flutter/lessons/lessons.dart';
 import 'package:cfloor_flutter/main.dart';
 import 'package:cfloor_flutter/virtual_machines/data_destination.dart';
 import 'package:cfloor_flutter/virtual_machines/data_source.dart';
@@ -94,7 +96,11 @@ import 'package:cfloor_flutter/widgets/execution_console.dart';
 import 'package:cfloor_flutter/widgets/execution_controls.dart';
 import 'package:cfloor_flutter/widgets/help_page.dart';
 import 'package:cfloor_flutter/widgets/language_level_controls.dart';
+import 'package:cfloor_flutter/widgets/lesson_progression_view.dart';
+import 'package:cfloor_flutter/widgets/lesson_view.dart';
 import 'package:cfloor_flutter/widgets/memory_view.dart';
+import 'package:cfloor_flutter/widgets/navigation_drawer.dart';
 import 'package:cfloor_flutter/widgets/registers_view.dart';
+import 'package:cfloor_flutter/widgets/widget_wrapper.dart';
 
 void main() {}

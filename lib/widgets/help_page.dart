@@ -1,6 +1,6 @@
 import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 
 const aboutCfloor = """

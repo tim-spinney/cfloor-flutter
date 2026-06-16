@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:antlr4/antlr4.dart';
 
 class TextInterval {
@@ -8,5 +10,8 @@ class TextInterval {
   String get startPosition => '${_startToken.line}:${_startToken.charPositionInLine}';
 
   TextInterval(this._startToken, this._endToken);
+
+  TextRange toRange() =>
+      TextRange(start: start, end: end);
 }
 

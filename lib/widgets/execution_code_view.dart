@@ -5,7 +5,7 @@ import '../compilers/text_interval.dart';
 
 class ExecutionCodeView extends StatelessWidget {
   final String codeText;
-  final TextInterval currentExpressionRange;
+  final TextRange currentExpressionRange;
 
   const ExecutionCodeView({super.key, required this.codeText, required this.currentExpressionRange});
 

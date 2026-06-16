@@ -6,10 +6,12 @@ import 'package:cfloor_flutter/widgets/execution_console.dart';
 import 'widget_tester_helpers.dart';
 
 main() {
-  testWidgets('Shows no text when there is no console output', (WidgetTester tester) async {
+  testWidgets('Only shows "Output" when there is no console output', (WidgetTester tester) async {
     await tester.pumpWidgetWithMaterial(ExecutionConsole(consoleState: ConsoleState(), submitInput: (_) {}));
 
-    expect(find.byType(Text), findsNothing);
+    expect(find.byType(Text), findsOneWidget);
+
+    expect(tester.firstWidget<Text>(find.byType(Text)).data, equals("Output"));
   });
 
   testWidgets('Shows console output when there is console output', (WidgetTester tester) async {

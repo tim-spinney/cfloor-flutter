@@ -31,13 +31,13 @@ dependencies:
   flutter:
     sdk: flutter
   antlr4:
-  google_fonts:
-  flutter_markdown:
-  go_router:
+  google_fonts: ^8.1.0
+  flutter_markdown_plus: ^1.0.7
+  go_router: ^17.3.0
   provider: ^6.1.5
-  showcaseview: ^4.0.1
+  showcaseview: ^5.0.2
   collection: ^1.19.1
-  shared_preferences: ^2.5.3
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   test:

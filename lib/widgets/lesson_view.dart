@@ -4,7 +4,7 @@ import 'package:cfloor_flutter/virtual_machines/language_level.dart';
 import 'package:cfloor_flutter/widgets/execution_code_view.dart';
 import 'package:cfloor_flutter/widgets/widget_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -167,10 +167,11 @@ class _LessonViewState extends State<_LessonView> {
           compileResult.builtInVariables.forEach((name, constant) {
             _virtualMachine.memory.addGlobalVariable(name, constant.value);
           });
-          for (final instruction in compileResult.instructions) {
-            _virtualMachine.addInstruction(
-                VMInstruction.fromInstruction(instruction, _virtualMachine));
-          }
+          _virtualMachine.addInstructions(
+            compileResult.instructions.map(
+              (instruction) => VMInstruction.fromInstruction(instruction, _virtualMachine)
+            )
+          );
           _virtualMachine.start(compileResult.entryPoint);
         }
       });

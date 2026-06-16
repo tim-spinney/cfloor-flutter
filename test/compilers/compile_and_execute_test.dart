@@ -56,9 +56,9 @@ main() {
       final consoleState = ConsoleState();
       final virtualMachine = VirtualMachine(consoleState);
       instructionGenerator.builtInVariables.forEach((name, constant) { virtualMachine.memory.addGlobalVariable(name, constant.value); });
-      for (var instruction in instructionGenerator.instructions) {
-        virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, virtualMachine));
-      }
+      virtualMachine.addInstructions(
+        instructionGenerator.instructions.map((instruction) => VMInstruction.fromInstruction(instruction, virtualMachine),),
+      );
       final entryPoint = instructionGenerator is HasEntryPoint ? (instructionGenerator as HasEntryPoint).entryPoint : 0;
       virtualMachine.start(entryPoint);
 
@@ -66,7 +66,7 @@ main() {
         if(consoleState.isWaitingForInput) {
           virtualMachine.submitInput(4);
         }
-        virtualMachine.advanceStep(autoAdvance: false);
+        virtualMachine.advanceStep();
       }
       expect(consoleState.consoleOutput.length, 11);
       expect(consoleState.consoleOutput[0].message, 'Enter a starting number.');

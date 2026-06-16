@@ -70,7 +70,7 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
       final instruction = functionInstructions[i];
       // check if this is a return with more (unreachable) instructions after it
       if(instruction is ReturnInstruction && functionInstructions[i + 1] is! PopScopeInstruction) {
-        semanticErrorCollector.add('Semantic error at ${functionInstructions[i + 1].textRange.startPosition}: unreachable code after return statement');
+        semanticErrorCollector.add('Semantic error at ${functionInstructions[i + 1].textInterval.startPosition}: unreachable code after return statement');
       }
     }
     // TODO: ensure all paths result in a return
@@ -99,7 +99,7 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
         final callInstruction = instructions[i] as CallInstruction;
         final destinationIndex = _functionStartIndices[callInstruction.targetFunctionName]!;
         instructions[i] = CallInstruction(
-          callInstruction.textRange,
+          callInstruction.textInterval,
           callInstruction.targetFunctionName,
           callInstruction.variablesToCopy,
           destinationIndex,

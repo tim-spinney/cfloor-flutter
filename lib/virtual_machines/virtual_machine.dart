@@ -20,11 +20,11 @@ class VirtualMachine extends ChangeNotifier {
 
   int get instructionCount => _instructions.length;
 
-  void addInstruction(VMInstruction instruction) {
-    _instructions.add(instruction);
+  void addInstructions(Iterable<VMInstruction> instructions) {
+    _instructions.addAll(instructions);
   }
 
-  void advanceStep({ bool autoAdvance = true }) {
+  void advanceStep() {
     do {
       final instruction = currentInstruction;
       instruction.evaluate();

@@ -8,8 +8,8 @@ import 'data_destination.dart';
 import 'data_source.dart';
 
 sealed class Instruction {
-  final TextInterval textRange;
-  Instruction(this.textRange);
+  final TextInterval textInterval;
+  Instruction(this.textInterval);
 }
 
 class MathInstruction extends Instruction {

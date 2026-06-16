@@ -69,9 +69,11 @@ class _CodeEditorState extends State<CodeEditor> {
         _compileErrors = compileResult.errors;
         if(_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {
           compileResult.builtInVariables.forEach((name, constant) { _virtualMachine.memory.addGlobalVariable(name, constant.value); });
-          for (final instruction in compileResult.instructions) {
-            _virtualMachine.addInstruction(VMInstruction.fromInstruction(instruction, _virtualMachine));
-          }
+          _virtualMachine.addInstructions(
+              compileResult.instructions.map(
+                      (instruction) => VMInstruction.fromInstruction(instruction, _virtualMachine)
+              )
+          );
           _virtualMachine.start(compileResult.entryPoint);
         }
       });

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:cfloor_flutter/compilers/wrappers/instructions.dart';
 
@@ -12,12 +13,11 @@ import 'data_destination.dart';
 import 'data_source.dart';
 import '../language_core/data_type.dart';
 import 'execution_exception.dart';
-import '../compilers/text_interval.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 
 sealed class VMInstruction {
-  final TextInterval textRange;
+  final TextRange textRange;
   VMInstruction(this.textRange);
   void evaluate();
   bool get shouldIncrementProgramCounter => true;
@@ -26,7 +26,7 @@ sealed class VMInstruction {
       switch(instruction) {
         MathInstruction() =>
             VMMathInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 instruction.operator,
                 VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
@@ -34,52 +34,52 @@ sealed class VMInstruction {
             ),
         AssignmentInstruction() =>
             VMAssignmentInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.source, virtualMachine.memory)
             ),
         WriteInstruction() =>
             VMWriteInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 virtualMachine.consoleState,
                 VMDataSource.fromDataSource(instruction.source, virtualMachine.memory)
             ),
         MathFunctionInstruction() =>
             VMMathFunctionInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 instruction.function,
                 VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
             ),
         ReadInstruction() =>
             VMReadInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 virtualMachine.consoleState,
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory),
                 instruction.dataType
             ),
         StringConcatenationInstruction() =>
             VMStringConcatenationInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
             ),
         StringLengthInstruction() =>
             VMStringLengthInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
             ),
         BooleanNegationInstruction() =>
             VMBooleanNegationInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataSource.fromDataSource(instruction.source, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
             ),
         BinaryBooleanInstruction() =>
             VMBinaryBooleanInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 instruction.operator,
                 VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
@@ -87,7 +87,7 @@ sealed class VMInstruction {
             ),
         ComparisonInstruction() =>
             VMComparisonInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 instruction.operator,
                 VMDataSource.fromDataSource(instruction.left, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.right, virtualMachine.memory),
@@ -95,41 +95,41 @@ sealed class VMInstruction {
             ),
         JumpInstruction() =>
             VMJumpInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 instruction.offset,
                 virtualMachine
             ),
         JumpIfFalseInstruction() =>
             VMJumpIfFalseInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataSource.fromDataSource(instruction.condition, virtualMachine.memory),
                 instruction.offset,
                 virtualMachine
             ),
         NoOpInstruction() =>
             VMNoOpInstruction(
-                instruction.textRange
+                instruction.textInterval.toRange()
             ),
         PushScopeInstruction() =>
             VMPushScopeInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 virtualMachine.memory
             ),
         PopScopeInstruction() =>
             VMPopScopeInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 virtualMachine.memory
             ),
         ArrayDereferenceInstruction() =>
             VMArrayDereferenceInstruction(
-                instruction.textRange,
+                instruction.textInterval.toRange(),
                 VMDataSource.fromDataSource(instruction.arraySource, virtualMachine.memory),
                 VMDataSource.fromDataSource(instruction.indexSource, virtualMachine.memory),
                 VMDataDestination.fromDataDestination(instruction.destination, virtualMachine.memory)
             ),
         CallInstruction() =>
             VMCallInstruction(
-              instruction.textRange,
+              instruction.textInterval.toRange(),
               instruction.variablesToCopy.map((e) => (
                   VMDataSource.fromDataSource(e.$1, virtualMachine.memory),
                   VMDataDestination.fromDataDestination(e.$2, virtualMachine.memory)
@@ -140,7 +140,7 @@ sealed class VMInstruction {
             ),
         ReturnInstruction() =>
             VMReturnInstruction(
-              instruction.textRange,
+              instruction.textInterval.toRange(),
               instruction.returnValueSource == null ? null : VMDataSource.fromDataSource(instruction.returnValueSource!, virtualMachine.memory),
               virtualMachine,
             ),

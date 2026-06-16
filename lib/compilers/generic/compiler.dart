@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cfloor_flutter/language_core/cfloor_array.dart';
 
 import '../wrappers/expression.dart';
@@ -543,6 +545,9 @@ class _StringInterpolationTextRange implements TextInterval {
   final String startPosition;
 
   _StringInterpolationTextRange(this.start, this.end, this.startPosition);
+
+  @override
+  TextRange toRange() => TextRange(start: start, end: end);
 }
 
 class _CodeSequence {
