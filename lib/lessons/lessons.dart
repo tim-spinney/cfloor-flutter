@@ -32,7 +32,7 @@ class Lesson {
   });
 }
 
-final allLessons = { for (final lesson in [lesson1, lesson2, lesson3]) lesson.id : lesson };
+final allLessons = { for (final lesson in [lesson1, lesson2, lesson3, lesson4]) lesson.id : lesson };
 
 final lesson1 = Lesson(
   id: 1,
@@ -137,4 +137,28 @@ To complete this lesson, you'll need to create three variables in the code edito
     ),
   ],
   prerequisiteLessonId: 2,
+);
+
+final lesson4 = Lesson(
+  id: 4,
+  explanation: '''
+# Lesson 4: variable names
+The previous lessons included variables with simple names like "width", "x", or "bob". However, there are times when we want to use multiple words in a variable name.
+
+As you'll see in later exercises, good variable names are valuable. The most important question to ask yourself when naming a variable is, "How am I going to remember what this is for a month from now?" As a professional programmer you'll be expected to add features or fix bugs in code that was written months or years ago, and names of things will be your first touchpoint for figuring out what does what.
+
+Different programming languages have different rules and conventions about what counts as a valid variable name, but most don't allow spaces. For now, we're going to keep things simple; you can only use lower-case letters plus the underscore (_, shift+minus sign) in CFloor variable names. All names in CFloor must start with a letter, but you can use the underscore where you would normally use spaces to separate words. This pattern is known as snake_case for the shape the names take (as opposed to the common alternative, CamelCase).
+
+Give it a try by creating one or more variables with snake_case names. You have a blank canvas, but if you're looking for inspiration you might calculate the area of a square based on the length of its sides.   
+''',
+  initialCode: '''
+
+''',
+  isEditable: true,
+  objectives: [
+    LessonObjective(
+      description: 'Create a variable with an underscore (_) in its name.',
+      validator: (vm) => vm.memory.currentScope.any((scope) => scope.keys.any((varName) => varName.contains('_')))
+    )
+  ],
 );
