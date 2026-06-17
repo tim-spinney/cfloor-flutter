@@ -1,6 +1,9 @@
+import 'package:cfloor_flutter/compilers/compiler.dart';
+import 'package:cfloor_flutter/compilers/wrappers/instructions.dart';
+
 import '../virtual_machines/virtual_machine.dart';
 
-typedef LessonValidator = bool Function(VirtualMachine vm);
+typedef LessonValidator = bool Function(VirtualMachine vm, CompileResult compileResult);
 
 class LessonObjective {
   final String description;
@@ -32,7 +35,7 @@ class Lesson {
   });
 }
 
-final allLessons = { for (final lesson in [lesson1, lesson2, lesson3, lesson4]) lesson.id : lesson };
+final allLessons = { for (final lesson in [lesson1, lesson2, lesson3, lesson4, lesson5]) lesson.id : lesson };
 
 final lesson1 = Lesson(
   id: 1,
@@ -46,7 +49,7 @@ In this first lesson, we'll learn the fundamentals of how CFloor code works.
   objectives: [
     LessonObjective(
       description: 'Run the code and see the result.',
-      validator: (_) => true,
+      validator: (_, __) => true,
     ),
   ],
 );
@@ -80,7 +83,7 @@ Try running the code to see how it works!
   objectives: [
     LessonObjective(
       description: 'Run the code and see the result.',
-      validator: (_) => true,
+      validator: (_, __) => true,
     ),
   ],
   prerequisiteLessonId: 1,
@@ -113,19 +116,19 @@ To complete this lesson, you'll need to create three variables in the code edito
   objectives: [
     LessonObjective(
       description: 'Create a variable named "width".',
-      validator: (vm) => vm.memory.isDefined('width'),
+      validator: (vm, _) => vm.memory.isDefined('width'),
     ),
     LessonObjective(
       description: 'Create a variable named "height".',
-      validator: (vm) => vm.memory.isDefined('height'),
+      validator: (vm, _) => vm.memory.isDefined('height'),
     ),
     LessonObjective(
       description: 'Create a variable named "area".',
-      validator: (vm) => vm.memory.isDefined('area'),
+      validator: (vm, _) => vm.memory.isDefined('area'),
     ),
     LessonObjective(
       description: 'Set "area" equal to "width" multiplied by "height".',
-      validator: (vm) {
+      validator: (vm, _) {
         final width = vm.memory.getVariableValue('width');
         final height = vm.memory.getVariableValue('height');
         final area = vm.memory.getVariableValue('area');
@@ -158,7 +161,46 @@ Give it a try by creating one or more variables with snake_case names. You have 
   objectives: [
     LessonObjective(
       description: 'Create a variable with an underscore (_) in its name.',
-      validator: (vm) => vm.memory.currentScope.any((scope) => scope.keys.any((varName) => varName.contains('_')))
+      validator: (vm, _) => vm.memory.currentScope.any((scope) => scope.keys.any((varName) => varName.contains('_')))
     )
   ],
+  prerequisiteLessonId: 3
+);
+
+final lesson5 = Lesson(
+  id: 5,
+  explanation: '''
+# Lesson 5: user input
+So far we've learned how to set variables to literal values (e.g. `x = 2`) and to the result of math operations (e.g. `z = y + x`). Revisiting previous programs
+you've written, you can calculate the area of any rectangle by updating the literals in your program. This is easy because 1. you're now a programmer and 2.
+you know exactly where to update your code.
+
+Neither of those are true in most situations. Consider the fact that you're using a program right now to read this text. Now imagine that instead of having a
+text box to write your code in you had to edit a variable in the [source code](https://github.com/tim-spinney/cfloor-flutter). Can you find where that variable
+is? The text box is a lot easier to use, right?
+
+Writing your own Graphical User Interface (GUI) will require a lot more practice and learning, but the good news is that CFloor gives you simple and easy ways
+to get input from and show messages to the user of your programs. We'll call those "reading" and "writing", respectively.
+
+The starter code below demonstrates how to get a value from the user: we write `read_int()` in place of a literal or math operation. Try running the
+starter code and you'll see a text box appear below the controls when you try to advance past that line. The program will then pause until you enter a valid number,
+after which it will store the number you entered into the variable on the other side of the =.
+
+You'll notice that while `read_int` follows the naming convention we covered in the last lesson, it has to be followed by a set of parentheses `()`. This is CFloor's
+way of expressing that `read_int` _does_ something, in this case getting a value from the user. We call these "functions", similar to the functions you might be
+used to from math classes - f(x), sin(), cos(), etc. - except that these functions can do more than just math.
+
+Try using this to build a reusable calculator for the area of a rectangle. Instead of coding in literal values, get the user to enter in values for width and height. 
+''',
+  initialCode: '''
+int width = read_int();
+''',
+  isEditable: true,
+  objectives: [
+    LessonObjective(
+        description: 'Read in two values.',
+        validator: (vm, compileResult) => compileResult.instructions.whereType<ReadInstruction>().length >= 2
+    )
+  ],
+  prerequisiteLessonId: 4,
 );

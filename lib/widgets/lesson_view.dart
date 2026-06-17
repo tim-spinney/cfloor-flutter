@@ -109,7 +109,7 @@ class _LessonView extends StatefulWidget {
 class _LessonViewState extends State<_LessonView> {
   final TextEditingController _sourceCodeController = TextEditingController();
   final VirtualMachine _virtualMachine = VirtualMachine(ConsoleState());
-  List<String> _compileErrors = [];
+  CompileResult? _latestCompileResult;
   List<LessonResult> _lessonResults = [];
   bool _hasPressedStepButton = false;
 
@@ -141,7 +141,7 @@ class _LessonViewState extends State<_LessonView> {
     super.didChangeDependencies();
     _sourceCodeController.text = widget.lesson.initialCode;
     _virtualMachine.clear();
-    _compileErrors = [];
+    _latestCompileResult = null;
     _lessonResults = List.filled(widget.lesson.objectives.length, LessonResult.pending);
   }
 
@@ -159,23 +159,26 @@ class _LessonViewState extends State<_LessonView> {
       _virtualMachine.stop();
     } else {
       _virtualMachine.clear();
-      final compileResult =
-          compileCFloor(_sourceCodeController.text, LanguageLevel.cfloor1);
-      setState(() {
-        _compileErrors = compileResult.errors;
-        if (_compileErrors.isEmpty && compileResult.instructions.isNotEmpty) {
-          compileResult.builtInVariables.forEach((name, constant) {
-            _virtualMachine.memory.addGlobalVariable(name, constant.value);
-          });
-          _virtualMachine.addInstructions(
-            compileResult.instructions.map(
-              (instruction) => VMInstruction.fromInstruction(instruction, _virtualMachine)
-            )
-          );
-          _virtualMachine.start(compileResult.entryPoint);
-        }
-      });
+      _compileAndStart();
     }
+  }
+
+  _compileAndStart() {
+    final compileResult = compileCFloor(_sourceCodeController.text, LanguageLevel.cfloor1);
+    setState(() {
+      _latestCompileResult = compileResult;
+      if (compileResult.errors.isEmpty && compileResult.instructions.isNotEmpty) {
+        compileResult.builtInVariables.forEach((name, constant) {
+          _virtualMachine.memory.addGlobalVariable(name, constant.value);
+        });
+        _virtualMachine.addInstructions(
+            compileResult.instructions.map(
+                    (instruction) => VMInstruction.fromInstruction(instruction, _virtualMachine)
+            )
+        );
+        _virtualMachine.start(compileResult.entryPoint);
+      }
+    });
   }
 
   _advanceStep() {
@@ -193,7 +196,7 @@ class _LessonViewState extends State<_LessonView> {
         setState(() {
           for(final (index, objective) in widget.lesson.objectives.indexed) {
             try {
-              bool passed = objective.validator(_virtualMachine);
+              bool passed = objective.validator(_virtualMachine, _latestCompileResult!);
               _lessonResults[index] =
               passed ? LessonResult.success : LessonResult.failure;
             } catch (e) {
@@ -300,16 +303,16 @@ class _LessonViewState extends State<_LessonView> {
                         ),
                 ),
                 const Divider(),
-                Expanded(child: _compileErrors.isEmpty
+                Expanded(child: (_latestCompileResult?.errors.isEmpty ?? true)
                   ? ExecutionConsole(
                       consoleState: _virtualMachine.consoleState,
                       submitInput: _virtualMachine.submitInput,
                     )
                   : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: _compileErrors.length,
+                      itemCount: _latestCompileResult!.errors.length,
                       itemBuilder: (context, index) => Text(
-                        _compileErrors[index],
+                        _latestCompileResult!.errors[index],
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.error,
                         ),
