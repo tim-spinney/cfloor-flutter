@@ -204,11 +204,9 @@ void main() {
       final destination = VariableAccessor(
         _SimpleTextInterval(),
         Identifier(_SimpleTextInterval(), 'a'),
-        arrayIndexer: MathExpression(
+        arrayIndexer: MathExpressionBaseCase(
           _SimpleTextInterval(),
-          MathOperand(_SimpleTextInterval(), null, null, '0'),
-          null,
-          null,
+          MathOperand(_SimpleTextInterval(), null, '0'),
         ),
       );
       final assignment = Assignment(

@@ -22,7 +22,7 @@ primitive: 'int' | 'float' ;
    non-terminals that add no useful information to the parse tree while requiring distinct code
    to traverse them.
 */
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression ;
+mathOperand: Number | variableAccessor | mathFunctionExpression ;
 
 /* TODO: Consider replacing enumeration of math function names here with generic "function name" terminal.
    May want to do either fully generic function invocation or only replace the names part. Fully generic

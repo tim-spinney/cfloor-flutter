@@ -8,7 +8,7 @@ expression: mathExpression | readFunctionExpression | StringLiteral ;
 
 primitive: 'int' | 'float' | 'string' ;
 
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression ;
+mathOperand: Number | variableAccessor | mathFunctionExpression | stringLengthExpression ;
 
 stringLengthExpression: 'length(' variableAccessor ')' ;
 

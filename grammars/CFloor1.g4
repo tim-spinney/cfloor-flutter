@@ -1,6 +1,7 @@
 grammar CFloor1 ;
 
-MathOperator: '+' | '-' | '*' | '/' | '%' ;
+MathOperatorPrioMult: '*' | '/' | '%' ;
+MathOperatorPrioAdd: '+' | '-' ;
 
 StringLiteral: '"' .*? '"' ;
 
@@ -29,9 +30,12 @@ assignment: Identifier '=' expression ;
 
 expression: mathExpression | readFunctionExpression ;
 
-mathExpression: mathOperand (MathOperator mathOperand)? ;
+mathExpression: '(' mathExpression ')'
+ | mathExpression MathOperatorPrioMult mathExpression
+ | mathExpression MathOperatorPrioAdd mathExpression
+ | mathOperand ;
 
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;
+mathOperand: Number | variableAccessor ;
 
 variableAccessor: Identifier ;
 

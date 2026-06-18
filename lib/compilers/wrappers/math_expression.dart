@@ -3,11 +3,22 @@ import '../text_interval.dart';
 import 'expression.dart';
 import 'math_operand.dart';
 
-class MathExpression implements Expression {
+abstract class MathExpression implements Expression {
   final TextInterval textRange;
-  final MathOperand? left;
-  final MathOperand? right;
-  final MathOperator? operator;
 
-  MathExpression(this.textRange, this.left, this.right, this.operator);
+  MathExpression(this.textRange);
+}
+
+class MathExpressionRecursive extends MathExpression {
+  final MathExpression left;
+  final MathExpression right;
+  final MathOperator operator;
+
+  MathExpressionRecursive(super.textRange, this.left, this.right, this.operator);
+}
+
+class MathExpressionBaseCase extends MathExpression {
+  final MathOperand operand;
+
+  MathExpressionBaseCase(super.textRange, this.operand);
 }

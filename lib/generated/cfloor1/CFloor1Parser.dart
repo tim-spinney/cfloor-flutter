@@ -16,9 +16,9 @@ class CFloor1Parser extends Parser {
       _ATN.numberOfDecisions, (i) => DFA(_ATN.getDecisionState(i), i));
   static final PredictionContextCache _sharedContextCache = PredictionContextCache();
   static const int TOKEN_T__0 = 1, TOKEN_T__1 = 2, TOKEN_T__2 = 3, TOKEN_T__3 = 4, 
-                   TOKEN_T__4 = 5, TOKEN_T__5 = 6, TOKEN_T__6 = 7, TOKEN_MathOperator = 8, 
-                   TOKEN_StringLiteral = 9, TOKEN_WS = 10, TOKEN_Number = 11, 
-                   TOKEN_Identifier = 12;
+                   TOKEN_T__4 = 5, TOKEN_T__5 = 6, TOKEN_T__6 = 7, TOKEN_MathOperatorPrioMult = 8, 
+                   TOKEN_MathOperatorPrioAdd = 9, TOKEN_StringLiteral = 10, 
+                   TOKEN_WS = 11, TOKEN_Number = 12, TOKEN_Identifier = 13;
 
   @override
   final List<String> ruleNames = [
@@ -31,8 +31,8 @@ class CFloor1Parser extends Parser {
       null, "';'", "'write'", "'('", "')'", "'int'", "'='", "'read_int()'"
   ];
   static final List<String?> _SYMBOLIC_NAMES = [
-      null, null, null, null, null, null, null, null, "MathOperator", "StringLiteral", 
-      "WS", "Number", "Identifier"
+      null, null, null, null, null, null, null, null, "MathOperatorPrioMult", 
+      "MathOperatorPrioAdd", "StringLiteral", "WS", "Number", "Identifier"
   ];
   static final Vocabulary VOCABULARY = VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -71,7 +71,7 @@ class CFloor1Parser extends Parser {
         state = 29; 
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
-      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 4132) != 0));
+      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 8228) != 0));
       state = 31;
       match(TOKEN_EOF);
     } on RecognitionException catch (re) {
@@ -267,7 +267,7 @@ class CFloor1Parser extends Parser {
       case TOKEN_Identifier:
         enterOuterAlt(_localctx, 1);
         state = 63;
-        mathExpression();
+        mathExpression(0);
         break;
       case TOKEN_T__6:
         enterOuterAlt(_localctx, 2);
@@ -287,30 +287,82 @@ class CFloor1Parser extends Parser {
     return _localctx;
   }
 
-  MathExpressionContext mathExpression() {
-    dynamic _localctx = MathExpressionContext(context, state);
-    enterRule(_localctx, 18, RULE_mathExpression);
-    int _la;
+  MathExpressionContext mathExpression([int _p = 0]) {
+    final _parentctx = context;
+    final _parentState = state;
+    dynamic _localctx = MathExpressionContext(context, _parentState);
+    var _prevctx = _localctx;
+    var _startState = 18;
+    enterRecursionRule(_localctx, 18, RULE_mathExpression, _p);
     try {
+      int _alt;
       enterOuterAlt(_localctx, 1);
-      state = 67;
-      mathOperand();
-      state = 70;
+      state = 73;
       errorHandler.sync(this);
-      _la = tokenStream.LA(1)!;
-      if (_la == TOKEN_MathOperator) {
+      switch (tokenStream.LA(1)!) {
+      case TOKEN_T__2:
         state = 68;
-        match(TOKEN_MathOperator);
+        match(TOKEN_T__2);
         state = 69;
+        mathExpression(0);
+        state = 70;
+        match(TOKEN_T__3);
+        break;
+      case TOKEN_Number:
+      case TOKEN_Identifier:
+        state = 72;
         mathOperand();
+        break;
+      default:
+        throw NoViableAltException(this);
       }
-
+      context!.stop = tokenStream.LT(-1);
+      state = 83;
+      errorHandler.sync(this);
+      _alt = interpreter!.adaptivePredict(tokenStream, 6, context);
+      while (_alt != 2 && _alt != ATN.INVALID_ALT_NUMBER) {
+        if (_alt == 1) {
+          if (parseListeners != null) triggerExitRuleEvent();
+          _prevctx = _localctx;
+          state = 81;
+          errorHandler.sync(this);
+          switch (interpreter!.adaptivePredict(tokenStream, 5, context)) {
+          case 1:
+            _localctx = MathExpressionContext(_parentctx, _parentState);
+            pushNewRecursionContext(_localctx, _startState, RULE_mathExpression);
+            state = 75;
+            if (!(precpred(context, 3))) {
+              throw FailedPredicateException(this, "precpred(context, 3)");
+            }
+            state = 76;
+            match(TOKEN_MathOperatorPrioMult);
+            state = 77;
+            mathExpression(4);
+            break;
+          case 2:
+            _localctx = MathExpressionContext(_parentctx, _parentState);
+            pushNewRecursionContext(_localctx, _startState, RULE_mathExpression);
+            state = 78;
+            if (!(precpred(context, 2))) {
+              throw FailedPredicateException(this, "precpred(context, 2)");
+            }
+            state = 79;
+            match(TOKEN_MathOperatorPrioAdd);
+            state = 80;
+            mathExpression(3);
+            break;
+          } 
+        }
+        state = 85;
+        errorHandler.sync(this);
+        _alt = interpreter!.adaptivePredict(tokenStream, 6, context);
+      }
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
       errorHandler.recover(this, re);
     } finally {
-      exitRule();
+      unrollRecursionContexts(_parentctx);
     }
     return _localctx;
   }
@@ -319,27 +371,18 @@ class CFloor1Parser extends Parser {
     dynamic _localctx = MathOperandContext(context, state);
     enterRule(_localctx, 20, RULE_mathOperand);
     try {
-      state = 78;
+      state = 88;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_Number:
         enterOuterAlt(_localctx, 1);
-        state = 72;
+        state = 86;
         match(TOKEN_Number);
         break;
       case TOKEN_Identifier:
         enterOuterAlt(_localctx, 2);
-        state = 73;
+        state = 87;
         variableAccessor();
-        break;
-      case TOKEN_T__2:
-        enterOuterAlt(_localctx, 3);
-        state = 74;
-        match(TOKEN_T__2);
-        state = 75;
-        mathExpression();
-        state = 76;
-        match(TOKEN_T__3);
         break;
       default:
         throw NoViableAltException(this);
@@ -359,7 +402,7 @@ class CFloor1Parser extends Parser {
     enterRule(_localctx, 22, RULE_variableAccessor);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 80;
+      state = 90;
       match(TOKEN_Identifier);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -376,7 +419,7 @@ class CFloor1Parser extends Parser {
     enterRule(_localctx, 24, RULE_readFunctionExpression);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 82;
+      state = 92;
       match(TOKEN_T__6);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -388,31 +431,50 @@ class CFloor1Parser extends Parser {
     return _localctx;
   }
 
+  @override
+  bool sempred(RuleContext? _localctx, int ruleIndex, int predIndex) {
+    switch (ruleIndex) {
+    case 9:
+      return _mathExpression_sempred(_localctx as MathExpressionContext?, predIndex);
+    }
+    return true;
+  }
+  bool _mathExpression_sempred(dynamic _localctx, int predIndex) {
+    switch (predIndex) {
+      case 0: return precpred(context, 3);
+      case 1: return precpred(context, 2);
+    }
+    return true;
+  }
+
   static const List<int> _serializedATN = [
-      4,1,12,85,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
+      4,1,13,95,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
       2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,1,0,4,0,28,8,
       0,11,0,12,0,29,1,0,1,0,1,1,1,1,1,1,3,1,37,8,1,1,2,1,2,1,2,1,2,1,3,
       1,3,1,3,1,4,1,4,1,4,1,4,1,4,3,4,51,8,4,1,4,1,4,1,4,1,5,1,5,1,6,1,6,
-      1,7,1,7,1,7,1,7,1,8,1,8,3,8,66,8,8,1,9,1,9,1,9,3,9,71,8,9,1,10,1,10,
-      1,10,1,10,1,10,1,10,3,10,79,8,10,1,11,1,11,1,12,1,12,1,12,0,0,13,0,
-      2,4,6,8,10,12,14,16,18,20,22,24,0,0,80,0,27,1,0,0,0,2,36,1,0,0,0,4,
-      38,1,0,0,0,6,42,1,0,0,0,8,45,1,0,0,0,10,55,1,0,0,0,12,57,1,0,0,0,14,
-      59,1,0,0,0,16,65,1,0,0,0,18,67,1,0,0,0,20,78,1,0,0,0,22,80,1,0,0,0,
-      24,82,1,0,0,0,26,28,3,2,1,0,27,26,1,0,0,0,28,29,1,0,0,0,29,27,1,0,
-      0,0,29,30,1,0,0,0,30,31,1,0,0,0,31,32,5,0,0,1,32,1,1,0,0,0,33,37,3,
-      4,2,0,34,37,3,6,3,0,35,37,3,8,4,0,36,33,1,0,0,0,36,34,1,0,0,0,36,35,
-      1,0,0,0,37,3,1,0,0,0,38,39,3,12,6,0,39,40,3,14,7,0,40,41,5,1,0,0,41,
-      5,1,0,0,0,42,43,3,14,7,0,43,44,5,1,0,0,44,7,1,0,0,0,45,46,5,2,0,0,
-      46,50,5,3,0,0,47,51,3,22,11,0,48,51,5,11,0,0,49,51,5,9,0,0,50,47,1,
-      0,0,0,50,48,1,0,0,0,50,49,1,0,0,0,51,52,1,0,0,0,52,53,5,4,0,0,53,54,
-      5,1,0,0,54,9,1,0,0,0,55,56,5,5,0,0,56,11,1,0,0,0,57,58,3,10,5,0,58,
-      13,1,0,0,0,59,60,5,12,0,0,60,61,5,6,0,0,61,62,3,16,8,0,62,15,1,0,0,
-      0,63,66,3,18,9,0,64,66,3,24,12,0,65,63,1,0,0,0,65,64,1,0,0,0,66,17,
-      1,0,0,0,67,70,3,20,10,0,68,69,5,8,0,0,69,71,3,20,10,0,70,68,1,0,0,
-      0,70,71,1,0,0,0,71,19,1,0,0,0,72,79,5,11,0,0,73,79,3,22,11,0,74,75,
-      5,3,0,0,75,76,3,18,9,0,76,77,5,4,0,0,77,79,1,0,0,0,78,72,1,0,0,0,78,
-      73,1,0,0,0,78,74,1,0,0,0,79,21,1,0,0,0,80,81,5,12,0,0,81,23,1,0,0,
-      0,82,83,5,7,0,0,83,25,1,0,0,0,6,29,36,50,65,70,78
+      1,7,1,7,1,7,1,7,1,8,1,8,3,8,66,8,8,1,9,1,9,1,9,1,9,1,9,1,9,3,9,74,
+      8,9,1,9,1,9,1,9,1,9,1,9,1,9,5,9,82,8,9,10,9,12,9,85,9,9,1,10,1,10,
+      3,10,89,8,10,1,11,1,11,1,12,1,12,1,12,0,1,18,13,0,2,4,6,8,10,12,14,
+      16,18,20,22,24,0,0,91,0,27,1,0,0,0,2,36,1,0,0,0,4,38,1,0,0,0,6,42,
+      1,0,0,0,8,45,1,0,0,0,10,55,1,0,0,0,12,57,1,0,0,0,14,59,1,0,0,0,16,
+      65,1,0,0,0,18,73,1,0,0,0,20,88,1,0,0,0,22,90,1,0,0,0,24,92,1,0,0,0,
+      26,28,3,2,1,0,27,26,1,0,0,0,28,29,1,0,0,0,29,27,1,0,0,0,29,30,1,0,
+      0,0,30,31,1,0,0,0,31,32,5,0,0,1,32,1,1,0,0,0,33,37,3,4,2,0,34,37,3,
+      6,3,0,35,37,3,8,4,0,36,33,1,0,0,0,36,34,1,0,0,0,36,35,1,0,0,0,37,3,
+      1,0,0,0,38,39,3,12,6,0,39,40,3,14,7,0,40,41,5,1,0,0,41,5,1,0,0,0,42,
+      43,3,14,7,0,43,44,5,1,0,0,44,7,1,0,0,0,45,46,5,2,0,0,46,50,5,3,0,0,
+      47,51,3,22,11,0,48,51,5,12,0,0,49,51,5,10,0,0,50,47,1,0,0,0,50,48,
+      1,0,0,0,50,49,1,0,0,0,51,52,1,0,0,0,52,53,5,4,0,0,53,54,5,1,0,0,54,
+      9,1,0,0,0,55,56,5,5,0,0,56,11,1,0,0,0,57,58,3,10,5,0,58,13,1,0,0,0,
+      59,60,5,13,0,0,60,61,5,6,0,0,61,62,3,16,8,0,62,15,1,0,0,0,63,66,3,
+      18,9,0,64,66,3,24,12,0,65,63,1,0,0,0,65,64,1,0,0,0,66,17,1,0,0,0,67,
+      68,6,9,-1,0,68,69,5,3,0,0,69,70,3,18,9,0,70,71,5,4,0,0,71,74,1,0,0,
+      0,72,74,3,20,10,0,73,67,1,0,0,0,73,72,1,0,0,0,74,83,1,0,0,0,75,76,
+      10,3,0,0,76,77,5,8,0,0,77,82,3,18,9,4,78,79,10,2,0,0,79,80,5,9,0,0,
+      80,82,3,18,9,3,81,75,1,0,0,0,81,78,1,0,0,0,82,85,1,0,0,0,83,81,1,0,
+      0,0,83,84,1,0,0,0,84,19,1,0,0,0,85,83,1,0,0,0,86,89,5,12,0,0,87,89,
+      3,22,11,0,88,86,1,0,0,0,88,87,1,0,0,0,89,21,1,0,0,0,90,91,5,13,0,0,
+      91,23,1,0,0,0,92,93,5,7,0,0,93,25,1,0,0,0,8,29,36,50,65,73,81,83,88
   ];
 
   static final ATN _ATN =
@@ -562,9 +624,11 @@ class ExpressionContext extends ParserRuleContext {
 }
 
 class MathExpressionContext extends ParserRuleContext {
-  List<MathOperandContext> mathOperands() => getRuleContexts<MathOperandContext>();
-  MathOperandContext? mathOperand(int i) => getRuleContext<MathOperandContext>(i);
-  TerminalNode? MathOperator() => getToken(CFloor1Parser.TOKEN_MathOperator, 0);
+  List<MathExpressionContext> mathExpressions() => getRuleContexts<MathExpressionContext>();
+  MathExpressionContext? mathExpression(int i) => getRuleContext<MathExpressionContext>(i);
+  MathOperandContext? mathOperand() => getRuleContext<MathOperandContext>(0);
+  TerminalNode? MathOperatorPrioMult() => getToken(CFloor1Parser.TOKEN_MathOperatorPrioMult, 0);
+  TerminalNode? MathOperatorPrioAdd() => getToken(CFloor1Parser.TOKEN_MathOperatorPrioAdd, 0);
   MathExpressionContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_mathExpression;
@@ -581,7 +645,6 @@ class MathExpressionContext extends ParserRuleContext {
 class MathOperandContext extends ParserRuleContext {
   TerminalNode? Number() => getToken(CFloor1Parser.TOKEN_Number, 0);
   VariableAccessorContext? variableAccessor() => getRuleContext<VariableAccessorContext>(0);
-  MathExpressionContext? mathExpression() => getRuleContext<MathExpressionContext>(0);
   MathOperandContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_mathOperand;

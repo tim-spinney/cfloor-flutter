@@ -7,7 +7,6 @@ import 'function_invocation.dart';
 
 class MathOperand {
   final TextInterval textRange;
-  final MathExpression? mathExpression;
   final VariableAccessor? variableAccessor;
   final String? numberText;
   final MathFunctionExpression? mathFunction;
@@ -16,7 +15,6 @@ class MathOperand {
 
   MathOperand(
       this.textRange,
-      this.mathExpression,
       this.variableAccessor,
       this.numberText,
       {

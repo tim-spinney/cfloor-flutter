@@ -340,8 +340,8 @@ class GenericCompiler extends VariableDeclarationManager {
       );
       return targetRegister.toSource();
     } else if(ctx.comparator != null) {
-      final leftDataSource = _handleMathOperand(ctx.mathOperands.first);
-      final rightDataSource = _handleMathOperand(ctx.mathOperands.last);
+      final leftDataSource = _handleMathExpression(ctx.mathExpressions.first);
+      final rightDataSource = _handleMathExpression(ctx.mathExpressions.last);
       // TODO: recycle register, but have to convert register's data type on recycling somehow
       final targetRegister = _registerManager.allocateRegister(DataType.bool.toCompositeType());
       _addInstruction(
@@ -371,9 +371,7 @@ class GenericCompiler extends VariableDeclarationManager {
   }
 
   DataSource _handleMathOperand(MathOperand ctx) {
-    if (ctx.mathExpression != null) {
-      return _handleMathExpression(ctx.mathExpression!);
-    } else if (ctx.variableAccessor != null) {
+    if (ctx.variableAccessor != null) {
       return _handleVariableAccessor(ctx.variableAccessor!);
     } else if (ctx.numberText != null) {
       return ConstantDataSource.fromNumericConstant(ctx.numberText!);
@@ -389,21 +387,21 @@ class GenericCompiler extends VariableDeclarationManager {
   }
 
   DataSource _handleMathExpression(MathExpression ctx) {
-    final leftOperand = ctx.left!;
-    final leftDataSource = _handleMathOperand(leftOperand);
-    final mathOperator = ctx.operator;
-    if(mathOperator == null) {
-      return leftDataSource;
+    if(ctx is MathExpressionBaseCase) {
+      return _handleMathOperand(ctx.operand);
     }
-    final rightOperand = ctx.right!;
-    final rightDataSource = _handleMathOperand(rightOperand);
+    if(ctx is! MathExpressionRecursive) {
+      throw UnsupportedError("Unrecognized math expression type ${ctx.runtimeType}");
+    }
+    final leftDataSource = _handleMathExpression(ctx.left);
+    final rightDataSource = _handleMathExpression(ctx.right);
     final targetRegister = _registerManager.recycleOrAllocateRegister(
       leftDataSource,
       rightDataSource,
       combineNumericDataTypes(leftDataSource.dataType.dataType, rightDataSource.dataType.dataType, ctx.textRange).toCompositeType()
     );
 
-    if(mathOperator == MathOperator.modulo) {
+    if(ctx.operator == MathOperator.modulo) {
       // modulo is a special case because it only works on integers
       if(leftDataSource.dataType.dataType != DataType.int || rightDataSource.dataType.dataType != DataType.int) {
         semanticErrorCollector.add('Type mismatch at ${ctx.textRange.startPosition}: modulo operator only works on integers.');
@@ -413,7 +411,7 @@ class GenericCompiler extends VariableDeclarationManager {
     _addInstruction(
         MathInstruction(
           ctx.textRange,
-          mathOperator,
+          ctx.operator,
           leftDataSource,
           rightDataSource,
           targetRegister,

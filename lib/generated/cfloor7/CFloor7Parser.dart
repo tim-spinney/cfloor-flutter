@@ -1,7 +1,5 @@
 // Generated from grammars/CFloor7.g4 by ANTLR 4.13.2
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
-import 'dart:math';
-
 import 'package:antlr4/antlr4.dart';
 
 import 'CFloor7Listener.dart';
@@ -37,8 +35,8 @@ class CFloor7Parser extends Parser {
                    TOKEN_T__30 = 31, TOKEN_T__31 = 32, TOKEN_T__32 = 33, 
                    TOKEN_BinaryBooleanOperator = 34, TOKEN_UnaryBooleanOperator = 35, 
                    TOKEN_BooleanLiteral = 36, TOKEN_Comparator = 37, TOKEN_Number = 38, 
-                   TOKEN_MathOperator = 39, TOKEN_StringLiteral = 40, TOKEN_WS = 41, 
-                   TOKEN_Identifier = 42;
+                   TOKEN_MathOperatorPrioMult = 39, TOKEN_MathOperatorPrioAdd = 40, 
+                   TOKEN_StringLiteral = 41, TOKEN_WS = 42, TOKEN_Identifier = 43;
 
   @override
   final List<String> ruleNames = [
@@ -64,7 +62,8 @@ class CFloor7Parser extends Parser {
       null, null, null, null, null, null, null, null, null, null, null, 
       null, null, null, null, null, null, null, null, null, null, null, 
       null, "BinaryBooleanOperator", "UnaryBooleanOperator", "BooleanLiteral", 
-      "Comparator", "Number", "MathOperator", "StringLiteral", "WS", "Identifier"
+      "Comparator", "Number", "MathOperatorPrioMult", "MathOperatorPrioAdd", 
+      "StringLiteral", "WS", "Identifier"
   ];
   static final Vocabulary VOCABULARY = VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -242,7 +241,7 @@ class CFloor7Parser extends Parser {
       case 1:
         enterOuterAlt(_localctx, 1);
         state = 101;
-        mathExpression();
+        mathExpression(0);
         break;
       case 2:
         enterOuterAlt(_localctx, 2);
@@ -415,7 +414,7 @@ class CFloor7Parser extends Parser {
       state = 139;
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
-      if ((((_la) & ~0x3f) == 0 && ((BigInt.one << _la) & BigInt.from(5884101005570)) != BigInt.zero)) {
+      if ((((_la) & ~0x3f) == 0 && ((1 << _la) & 11381659144450) != 0)) {
         state = 138;
         expression();
       }
@@ -436,7 +435,7 @@ class CFloor7Parser extends Parser {
     dynamic _localctx = MathOperandContext(context, state);
     enterRule(_localctx, 20, RULE_mathOperand);
     try {
-      state = 152;
+      state = 148;
       errorHandler.sync(this);
       switch (interpreter!.adaptivePredict(tokenStream, 9, context)) {
       case 1:
@@ -452,25 +451,16 @@ class CFloor7Parser extends Parser {
       case 3:
         enterOuterAlt(_localctx, 3);
         state = 145;
-        match(TOKEN_T__0);
-        state = 146;
-        mathExpression();
-        state = 147;
-        match(TOKEN_T__1);
+        mathFunctionExpression();
         break;
       case 4:
         enterOuterAlt(_localctx, 4);
-        state = 149;
-        mathFunctionExpression();
+        state = 146;
+        stringLengthExpression();
         break;
       case 5:
         enterOuterAlt(_localctx, 5);
-        state = 150;
-        stringLengthExpression();
-        break;
-      case 6:
-        enterOuterAlt(_localctx, 6);
-        state = 151;
+        state = 147;
         functionInvocation();
         break;
       }
@@ -488,31 +478,31 @@ class CFloor7Parser extends Parser {
     dynamic _localctx = BooleanOperandContext(context, state);
     enterRule(_localctx, 22, RULE_booleanOperand);
     try {
-      state = 161;
+      state = 157;
       errorHandler.sync(this);
       switch (interpreter!.adaptivePredict(tokenStream, 10, context)) {
       case 1:
         enterOuterAlt(_localctx, 1);
-        state = 154;
+        state = 150;
         match(TOKEN_BooleanLiteral);
         break;
       case 2:
         enterOuterAlt(_localctx, 2);
-        state = 155;
+        state = 151;
         variableAccessor();
         break;
       case 3:
         enterOuterAlt(_localctx, 3);
-        state = 156;
+        state = 152;
         match(TOKEN_T__0);
-        state = 157;
+        state = 153;
         booleanExpression();
-        state = 158;
+        state = 154;
         match(TOKEN_T__1);
         break;
       case 4:
         enterOuterAlt(_localctx, 4);
-        state = 160;
+        state = 156;
         functionInvocation();
         break;
       }
@@ -531,23 +521,23 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 24, RULE_forLoop);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 163;
+      state = 159;
       match(TOKEN_T__6);
-      state = 164;
+      state = 160;
       match(TOKEN_T__0);
-      state = 165;
+      state = 161;
       typedAssignment();
-      state = 166;
+      state = 162;
       match(TOKEN_T__4);
-      state = 167;
+      state = 163;
       booleanExpression();
-      state = 168;
+      state = 164;
       match(TOKEN_T__4);
-      state = 169;
+      state = 165;
       assignment();
-      state = 170;
+      state = 166;
       match(TOKEN_T__1);
-      state = 171;
+      state = 167;
       block();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -563,7 +553,7 @@ class CFloor7Parser extends Parser {
     dynamic _localctx = TypeContext(context, state);
     enterRule(_localctx, 26, RULE_type);
     try {
-      state = 178;
+      state = 174;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_T__15:
@@ -571,16 +561,16 @@ class CFloor7Parser extends Parser {
       case TOKEN_T__17:
       case TOKEN_T__18:
         enterOuterAlt(_localctx, 1);
-        state = 173;
+        state = 169;
         primitive();
         break;
       case TOKEN_T__7:
         enterOuterAlt(_localctx, 2);
-        state = 174;
+        state = 170;
         match(TOKEN_T__7);
-        state = 175;
+        state = 171;
         primitive();
-        state = 176;
+        state = 172;
         match(TOKEN_T__8);
         break;
       default:
@@ -601,17 +591,17 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 28, RULE_arrayInitializer);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 180;
+      state = 176;
       match(TOKEN_T__7);
-      state = 181;
+      state = 177;
       primitive();
-      state = 182;
+      state = 178;
       match(TOKEN_T__8);
-      state = 183;
+      state = 179;
       match(TOKEN_T__9);
-      state = 184;
+      state = 180;
       match(TOKEN_Number);
-      state = 185;
+      state = 181;
       match(TOKEN_T__10);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -628,35 +618,35 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 30, RULE_arrayLiteral);
     int _la;
     try {
-      state = 200;
+      state = 196;
       errorHandler.sync(this);
       switch (interpreter!.adaptivePredict(tokenStream, 13, context)) {
       case 1:
         enterOuterAlt(_localctx, 1);
-        state = 187;
+        state = 183;
         match(TOKEN_T__11);
-        state = 188;
+        state = 184;
         match(TOKEN_T__12);
         break;
       case 2:
         enterOuterAlt(_localctx, 2);
-        state = 189;
+        state = 185;
         match(TOKEN_T__11);
-        state = 190;
+        state = 186;
         arrayLiteralElement();
-        state = 195;
+        state = 191;
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
         while (_la == TOKEN_T__3) {
-          state = 191;
+          state = 187;
           match(TOKEN_T__3);
-          state = 192;
+          state = 188;
           arrayLiteralElement();
-          state = 197;
+          state = 193;
           errorHandler.sync(this);
           _la = tokenStream.LA(1)!;
         }
-        state = 198;
+        state = 194;
         match(TOKEN_T__12);
         break;
       }
@@ -676,9 +666,9 @@ class CFloor7Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 202;
+      state = 198;
       _la = tokenStream.LA(1)!;
-      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 1443109011456) != 0))) {
+      if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 2542620639232) != 0))) {
       errorHandler.recoverInline(this);
       } else {
         if ( tokenStream.LA(1)! == IntStream.EOF ) matchedEOF = true;
@@ -700,11 +690,11 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 34, RULE_assignment);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 204;
+      state = 200;
       variableAccessor();
-      state = 205;
+      state = 201;
       match(TOKEN_T__13);
-      state = 206;
+      state = 202;
       expression();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -721,11 +711,11 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 36, RULE_arrayAccessExpression);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 208;
+      state = 204;
       match(TOKEN_T__9);
-      state = 209;
-      mathExpression();
-      state = 210;
+      state = 205;
+      mathExpression(0);
+      state = 206;
       match(TOKEN_T__10);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -740,19 +730,18 @@ class CFloor7Parser extends Parser {
   VariableAccessorContext variableAccessor() {
     dynamic _localctx = VariableAccessorContext(context, state);
     enterRule(_localctx, 38, RULE_variableAccessor);
-    int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 212;
+      state = 208;
       match(TOKEN_Identifier);
-      state = 214;
+      state = 210;
       errorHandler.sync(this);
-      _la = tokenStream.LA(1)!;
-      if (_la == TOKEN_T__9) {
-        state = 213;
+      switch (interpreter!.adaptivePredict(tokenStream, 14, context)) {
+      case 1:
+        state = 209;
         arrayAccessExpression();
+        break;
       }
-
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
@@ -768,9 +757,9 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 40, RULE_typedAssignment);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 216;
+      state = 212;
       type();
-      state = 217;
+      state = 213;
       assignment();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -787,15 +776,15 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 42, RULE_whileLoop);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 219;
+      state = 215;
       match(TOKEN_T__14);
-      state = 220;
+      state = 216;
       match(TOKEN_T__0);
-      state = 221;
+      state = 217;
       booleanExpression();
-      state = 222;
+      state = 218;
       match(TOKEN_T__1);
-      state = 223;
+      state = 219;
       block();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -813,7 +802,7 @@ class CFloor7Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 225;
+      state = 221;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 983040) != 0))) {
       errorHandler.recoverInline(this);
@@ -837,36 +826,36 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 46, RULE_booleanExpression);
     int _la;
     try {
-      state = 238;
+      state = 234;
       errorHandler.sync(this);
       switch (interpreter!.adaptivePredict(tokenStream, 16, context)) {
       case 1:
         enterOuterAlt(_localctx, 1);
-        state = 227;
+        state = 223;
         match(TOKEN_UnaryBooleanOperator);
-        state = 228;
+        state = 224;
         booleanOperand();
         break;
       case 2:
         enterOuterAlt(_localctx, 2);
-        state = 229;
-        mathOperand();
-        state = 230;
+        state = 225;
+        mathExpression(0);
+        state = 226;
         match(TOKEN_Comparator);
-        state = 231;
-        mathOperand();
+        state = 227;
+        mathExpression(0);
         break;
       case 3:
         enterOuterAlt(_localctx, 3);
-        state = 233;
+        state = 229;
         booleanOperand();
-        state = 236;
+        state = 232;
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
         if (_la == TOKEN_BinaryBooleanOperator) {
-          state = 234;
+          state = 230;
           match(TOKEN_BinaryBooleanOperator);
-          state = 235;
+          state = 231;
           booleanOperand();
         }
 
@@ -888,19 +877,19 @@ class CFloor7Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 240;
+      state = 236;
       match(TOKEN_T__11);
-      state = 242; 
+      state = 238; 
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
       do {
-        state = 241;
+        state = 237;
         statement();
-        state = 244; 
+        state = 240; 
         errorHandler.sync(this);
         _la = tokenStream.LA(1)!;
-      } while ((((_la) & ~0x3f) == 0 && ((BigInt.one << _la) & BigInt.from(4406638510528)) != BigInt.zero));
-      state = 246;
+      } while ((((_la) & ~0x3f) == 0 && ((1 << _la) & 8804685021632) != 0));
+      state = 242;
       match(TOKEN_T__12);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -917,15 +906,15 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 50, RULE_ifStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 248;
+      state = 244;
       match(TOKEN_T__19);
-      state = 249;
+      state = 245;
       match(TOKEN_T__0);
-      state = 250;
+      state = 246;
       booleanExpression();
-      state = 251;
+      state = 247;
       match(TOKEN_T__1);
-      state = 252;
+      state = 248;
       block();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -942,9 +931,9 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 52, RULE_elseBlock);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 254;
+      state = 250;
       match(TOKEN_T__20);
-      state = 255;
+      state = 251;
       block();
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -963,27 +952,27 @@ class CFloor7Parser extends Parser {
     try {
       int _alt;
       enterOuterAlt(_localctx, 1);
-      state = 257;
+      state = 253;
       ifStatement();
-      state = 262;
+      state = 258;
       errorHandler.sync(this);
       _alt = interpreter!.adaptivePredict(tokenStream, 18, context);
       while (_alt != 2 && _alt != ATN.INVALID_ALT_NUMBER) {
         if (_alt == 1) {
-          state = 258;
+          state = 254;
           match(TOKEN_T__20);
-          state = 259;
+          state = 255;
           ifStatement(); 
         }
-        state = 264;
+        state = 260;
         errorHandler.sync(this);
         _alt = interpreter!.adaptivePredict(tokenStream, 18, context);
       }
-      state = 266;
+      state = 262;
       errorHandler.sync(this);
       _la = tokenStream.LA(1)!;
       if (_la == TOKEN_T__20) {
-        state = 265;
+        state = 261;
         elseBlock();
       }
 
@@ -1002,11 +991,11 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 56, RULE_stringLengthExpression);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 268;
+      state = 264;
       match(TOKEN_T__21);
-      state = 269;
+      state = 265;
       variableAccessor();
-      state = 270;
+      state = 266;
       match(TOKEN_T__1);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -1024,7 +1013,7 @@ class CFloor7Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 272;
+      state = 268;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 58720256) != 0))) {
       errorHandler.recoverInline(this);
@@ -1049,7 +1038,7 @@ class CFloor7Parser extends Parser {
     int _la;
     try {
       enterOuterAlt(_localctx, 1);
-      state = 274;
+      state = 270;
       _la = tokenStream.LA(1)!;
       if (!((((_la) & ~0x3f) == 0 && ((1 << _la) & 8522825728) != 0))) {
       errorHandler.recoverInline(this);
@@ -1058,11 +1047,11 @@ class CFloor7Parser extends Parser {
         errorHandler.reportMatch(this);
         consume();
       }
-      state = 275;
+      state = 271;
       match(TOKEN_T__0);
-      state = 276;
-      mathExpression();
-      state = 277;
+      state = 272;
+      mathExpression(0);
+      state = 273;
       match(TOKEN_T__1);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -1079,11 +1068,11 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 62, RULE_declAssignStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 279;
+      state = 275;
       type();
-      state = 280;
+      state = 276;
       assignment();
-      state = 281;
+      state = 277;
       match(TOKEN_T__4);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -1100,9 +1089,9 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 64, RULE_assignStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 283;
+      state = 279;
       assignment();
-      state = 284;
+      state = 280;
       match(TOKEN_T__4);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -1119,31 +1108,31 @@ class CFloor7Parser extends Parser {
     enterRule(_localctx, 66, RULE_writeStatement);
     try {
       enterOuterAlt(_localctx, 1);
-      state = 286;
+      state = 282;
       match(TOKEN_T__32);
-      state = 287;
+      state = 283;
       match(TOKEN_T__0);
-      state = 291;
+      state = 287;
       errorHandler.sync(this);
       switch (tokenStream.LA(1)!) {
       case TOKEN_Identifier:
-        state = 288;
+        state = 284;
         variableAccessor();
         break;
       case TOKEN_Number:
-        state = 289;
+        state = 285;
         match(TOKEN_Number);
         break;
       case TOKEN_StringLiteral:
-        state = 290;
+        state = 286;
         match(TOKEN_StringLiteral);
         break;
       default:
         throw NoViableAltException(this);
       }
-      state = 293;
+      state = 289;
       match(TOKEN_T__1);
-      state = 294;
+      state = 290;
       match(TOKEN_T__4);
     } on RecognitionException catch (re) {
       _localctx.exception = re;
@@ -1155,36 +1144,112 @@ class CFloor7Parser extends Parser {
     return _localctx;
   }
 
-  MathExpressionContext mathExpression() {
-    dynamic _localctx = MathExpressionContext(context, state);
-    enterRule(_localctx, 68, RULE_mathExpression);
-    int _la;
+  MathExpressionContext mathExpression([int _p = 0]) {
+    final _parentctx = context;
+    final _parentState = state;
+    dynamic _localctx = MathExpressionContext(context, _parentState);
+    var _prevctx = _localctx;
+    var _startState = 68;
+    enterRecursionRule(_localctx, 68, RULE_mathExpression, _p);
     try {
+      int _alt;
       enterOuterAlt(_localctx, 1);
-      state = 296;
-      mathOperand();
-      state = 299;
+      state = 298;
       errorHandler.sync(this);
-      _la = tokenStream.LA(1)!;
-      if (_la == TOKEN_MathOperator) {
+      switch (tokenStream.LA(1)!) {
+      case TOKEN_T__0:
+        state = 293;
+        match(TOKEN_T__0);
+        state = 294;
+        mathExpression(0);
+        state = 295;
+        match(TOKEN_T__1);
+        break;
+      case TOKEN_T__21:
+      case TOKEN_T__25:
+      case TOKEN_T__26:
+      case TOKEN_T__27:
+      case TOKEN_T__28:
+      case TOKEN_T__29:
+      case TOKEN_T__30:
+      case TOKEN_T__31:
+      case TOKEN_Number:
+      case TOKEN_Identifier:
         state = 297;
-        match(TOKEN_MathOperator);
-        state = 298;
         mathOperand();
+        break;
+      default:
+        throw NoViableAltException(this);
       }
-
+      context!.stop = tokenStream.LT(-1);
+      state = 308;
+      errorHandler.sync(this);
+      _alt = interpreter!.adaptivePredict(tokenStream, 23, context);
+      while (_alt != 2 && _alt != ATN.INVALID_ALT_NUMBER) {
+        if (_alt == 1) {
+          if (parseListeners != null) triggerExitRuleEvent();
+          _prevctx = _localctx;
+          state = 306;
+          errorHandler.sync(this);
+          switch (interpreter!.adaptivePredict(tokenStream, 22, context)) {
+          case 1:
+            _localctx = MathExpressionContext(_parentctx, _parentState);
+            pushNewRecursionContext(_localctx, _startState, RULE_mathExpression);
+            state = 300;
+            if (!(precpred(context, 3))) {
+              throw FailedPredicateException(this, "precpred(context, 3)");
+            }
+            state = 301;
+            match(TOKEN_MathOperatorPrioMult);
+            state = 302;
+            mathExpression(4);
+            break;
+          case 2:
+            _localctx = MathExpressionContext(_parentctx, _parentState);
+            pushNewRecursionContext(_localctx, _startState, RULE_mathExpression);
+            state = 303;
+            if (!(precpred(context, 2))) {
+              throw FailedPredicateException(this, "precpred(context, 2)");
+            }
+            state = 304;
+            match(TOKEN_MathOperatorPrioAdd);
+            state = 305;
+            mathExpression(3);
+            break;
+          } 
+        }
+        state = 310;
+        errorHandler.sync(this);
+        _alt = interpreter!.adaptivePredict(tokenStream, 23, context);
+      }
     } on RecognitionException catch (re) {
       _localctx.exception = re;
       errorHandler.reportError(this, re);
       errorHandler.recover(this, re);
     } finally {
-      exitRule();
+      unrollRecursionContexts(_parentctx);
     }
     return _localctx;
   }
 
+  @override
+  bool sempred(RuleContext? _localctx, int ruleIndex, int predIndex) {
+    switch (ruleIndex) {
+    case 34:
+      return _mathExpression_sempred(_localctx as MathExpressionContext?, predIndex);
+    }
+    return true;
+  }
+  bool _mathExpression_sempred(dynamic _localctx, int predIndex) {
+    switch (predIndex) {
+      case 0: return precpred(context, 3);
+      case 1: return precpred(context, 2);
+    }
+    return true;
+  }
+
   static const List<int> _serializedATN = [
-      4,1,42,302,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
+      4,1,43,312,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,
       2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,
       14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,
       2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,
@@ -1194,97 +1259,101 @@ class CFloor7Parser extends Parser {
       8,3,1,4,1,4,1,4,1,5,1,5,1,5,1,5,1,5,1,5,1,5,3,5,109,8,5,1,6,1,6,1,
       6,1,6,1,6,5,6,116,8,6,10,6,12,6,119,9,6,3,6,121,8,6,1,6,1,6,1,7,1,
       7,1,7,1,7,1,7,1,7,1,7,1,7,3,7,133,8,7,1,8,1,8,1,8,1,9,1,9,3,9,140,
-      8,9,1,9,1,9,1,10,1,10,1,10,1,10,1,10,1,10,1,10,1,10,1,10,3,10,153,
-      8,10,1,11,1,11,1,11,1,11,1,11,1,11,1,11,3,11,162,8,11,1,12,1,12,1,
-      12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,13,1,13,1,13,1,13,1,13,3,13,
-      179,8,13,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,15,1,15,1,15,1,15,1,
-      15,1,15,5,15,194,8,15,10,15,12,15,197,9,15,1,15,1,15,3,15,201,8,15,
-      1,16,1,16,1,17,1,17,1,17,1,17,1,18,1,18,1,18,1,18,1,19,1,19,3,19,215,
-      8,19,1,20,1,20,1,20,1,21,1,21,1,21,1,21,1,21,1,21,1,22,1,22,1,23,1,
-      23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,3,23,237,8,23,3,23,239,8,23,
-      1,24,1,24,4,24,243,8,24,11,24,12,24,244,1,24,1,24,1,25,1,25,1,25,1,
-      25,1,25,1,25,1,26,1,26,1,26,1,27,1,27,1,27,5,27,261,8,27,10,27,12,
-      27,264,9,27,1,27,3,27,267,8,27,1,28,1,28,1,28,1,28,1,29,1,29,1,30,
-      1,30,1,30,1,30,1,30,1,31,1,31,1,31,1,31,1,32,1,32,1,32,1,33,1,33,1,
-      33,1,33,1,33,3,33,292,8,33,1,33,1,33,1,33,1,34,1,34,1,34,3,34,300,
-      8,34,1,34,0,0,35,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,
-      36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,0,4,3,0,36,36,38,
-      38,40,40,1,0,16,19,1,0,23,25,1,0,26,32,307,0,71,1,0,0,0,2,77,1,0,0,
-      0,4,86,1,0,0,0,6,96,1,0,0,0,8,98,1,0,0,0,10,108,1,0,0,0,12,110,1,0,
-      0,0,14,132,1,0,0,0,16,134,1,0,0,0,18,137,1,0,0,0,20,152,1,0,0,0,22,
-      161,1,0,0,0,24,163,1,0,0,0,26,178,1,0,0,0,28,180,1,0,0,0,30,200,1,
-      0,0,0,32,202,1,0,0,0,34,204,1,0,0,0,36,208,1,0,0,0,38,212,1,0,0,0,
-      40,216,1,0,0,0,42,219,1,0,0,0,44,225,1,0,0,0,46,238,1,0,0,0,48,240,
-      1,0,0,0,50,248,1,0,0,0,52,254,1,0,0,0,54,257,1,0,0,0,56,268,1,0,0,
-      0,58,272,1,0,0,0,60,274,1,0,0,0,62,279,1,0,0,0,64,283,1,0,0,0,66,286,
-      1,0,0,0,68,296,1,0,0,0,70,72,3,2,1,0,71,70,1,0,0,0,72,73,1,0,0,0,73,
-      71,1,0,0,0,73,74,1,0,0,0,74,75,1,0,0,0,75,76,5,0,0,1,76,1,1,0,0,0,
-      77,78,3,4,2,0,78,79,5,42,0,0,79,80,5,1,0,0,80,81,3,6,3,0,81,82,5,2,
-      0,0,82,83,3,48,24,0,83,3,1,0,0,0,84,87,3,26,13,0,85,87,5,3,0,0,86,
-      84,1,0,0,0,86,85,1,0,0,0,87,5,1,0,0,0,88,93,3,8,4,0,89,90,5,4,0,0,
-      90,92,3,8,4,0,91,89,1,0,0,0,92,95,1,0,0,0,93,91,1,0,0,0,93,94,1,0,
-      0,0,94,97,1,0,0,0,95,93,1,0,0,0,96,88,1,0,0,0,96,97,1,0,0,0,97,7,1,
-      0,0,0,98,99,3,26,13,0,99,100,5,42,0,0,100,9,1,0,0,0,101,109,3,68,34,
-      0,102,109,3,58,29,0,103,109,5,40,0,0,104,109,3,46,23,0,105,109,3,28,
-      14,0,106,109,3,30,15,0,107,109,3,12,6,0,108,101,1,0,0,0,108,102,1,
-      0,0,0,108,103,1,0,0,0,108,104,1,0,0,0,108,105,1,0,0,0,108,106,1,0,
-      0,0,108,107,1,0,0,0,109,11,1,0,0,0,110,111,5,42,0,0,111,120,5,1,0,
-      0,112,117,3,38,19,0,113,114,5,4,0,0,114,116,3,38,19,0,115,113,1,0,
-      0,0,116,119,1,0,0,0,117,115,1,0,0,0,117,118,1,0,0,0,118,121,1,0,0,
-      0,119,117,1,0,0,0,120,112,1,0,0,0,120,121,1,0,0,0,121,122,1,0,0,0,
-      122,123,5,2,0,0,123,13,1,0,0,0,124,133,3,66,33,0,125,133,3,64,32,0,
-      126,133,3,62,31,0,127,133,3,54,27,0,128,133,3,42,21,0,129,133,3,24,
-      12,0,130,133,3,16,8,0,131,133,3,18,9,0,132,124,1,0,0,0,132,125,1,0,
-      0,0,132,126,1,0,0,0,132,127,1,0,0,0,132,128,1,0,0,0,132,129,1,0,0,
-      0,132,130,1,0,0,0,132,131,1,0,0,0,133,15,1,0,0,0,134,135,3,12,6,0,
-      135,136,5,5,0,0,136,17,1,0,0,0,137,139,5,6,0,0,138,140,3,10,5,0,139,
-      138,1,0,0,0,139,140,1,0,0,0,140,141,1,0,0,0,141,142,5,5,0,0,142,19,
-      1,0,0,0,143,153,5,38,0,0,144,153,3,38,19,0,145,146,5,1,0,0,146,147,
-      3,68,34,0,147,148,5,2,0,0,148,153,1,0,0,0,149,153,3,60,30,0,150,153,
-      3,56,28,0,151,153,3,12,6,0,152,143,1,0,0,0,152,144,1,0,0,0,152,145,
-      1,0,0,0,152,149,1,0,0,0,152,150,1,0,0,0,152,151,1,0,0,0,153,21,1,0,
-      0,0,154,162,5,36,0,0,155,162,3,38,19,0,156,157,5,1,0,0,157,158,3,46,
-      23,0,158,159,5,2,0,0,159,162,1,0,0,0,160,162,3,12,6,0,161,154,1,0,
-      0,0,161,155,1,0,0,0,161,156,1,0,0,0,161,160,1,0,0,0,162,23,1,0,0,0,
-      163,164,5,7,0,0,164,165,5,1,0,0,165,166,3,40,20,0,166,167,5,5,0,0,
-      167,168,3,46,23,0,168,169,5,5,0,0,169,170,3,34,17,0,170,171,5,2,0,
-      0,171,172,3,48,24,0,172,25,1,0,0,0,173,179,3,44,22,0,174,175,5,8,0,
-      0,175,176,3,44,22,0,176,177,5,9,0,0,177,179,1,0,0,0,178,173,1,0,0,
-      0,178,174,1,0,0,0,179,27,1,0,0,0,180,181,5,8,0,0,181,182,3,44,22,0,
-      182,183,5,9,0,0,183,184,5,10,0,0,184,185,5,38,0,0,185,186,5,11,0,0,
-      186,29,1,0,0,0,187,188,5,12,0,0,188,201,5,13,0,0,189,190,5,12,0,0,
-      190,195,3,32,16,0,191,192,5,4,0,0,192,194,3,32,16,0,193,191,1,0,0,
-      0,194,197,1,0,0,0,195,193,1,0,0,0,195,196,1,0,0,0,196,198,1,0,0,0,
-      197,195,1,0,0,0,198,199,5,13,0,0,199,201,1,0,0,0,200,187,1,0,0,0,200,
-      189,1,0,0,0,201,31,1,0,0,0,202,203,7,0,0,0,203,33,1,0,0,0,204,205,
-      3,38,19,0,205,206,5,14,0,0,206,207,3,10,5,0,207,35,1,0,0,0,208,209,
-      5,10,0,0,209,210,3,68,34,0,210,211,5,11,0,0,211,37,1,0,0,0,212,214,
-      5,42,0,0,213,215,3,36,18,0,214,213,1,0,0,0,214,215,1,0,0,0,215,39,
-      1,0,0,0,216,217,3,26,13,0,217,218,3,34,17,0,218,41,1,0,0,0,219,220,
-      5,15,0,0,220,221,5,1,0,0,221,222,3,46,23,0,222,223,5,2,0,0,223,224,
-      3,48,24,0,224,43,1,0,0,0,225,226,7,1,0,0,226,45,1,0,0,0,227,228,5,
-      35,0,0,228,239,3,22,11,0,229,230,3,20,10,0,230,231,5,37,0,0,231,232,
-      3,20,10,0,232,239,1,0,0,0,233,236,3,22,11,0,234,235,5,34,0,0,235,237,
-      3,22,11,0,236,234,1,0,0,0,236,237,1,0,0,0,237,239,1,0,0,0,238,227,
-      1,0,0,0,238,229,1,0,0,0,238,233,1,0,0,0,239,47,1,0,0,0,240,242,5,12,
-      0,0,241,243,3,14,7,0,242,241,1,0,0,0,243,244,1,0,0,0,244,242,1,0,0,
-      0,244,245,1,0,0,0,245,246,1,0,0,0,246,247,5,13,0,0,247,49,1,0,0,0,
-      248,249,5,20,0,0,249,250,5,1,0,0,250,251,3,46,23,0,251,252,5,2,0,0,
-      252,253,3,48,24,0,253,51,1,0,0,0,254,255,5,21,0,0,255,256,3,48,24,
-      0,256,53,1,0,0,0,257,262,3,50,25,0,258,259,5,21,0,0,259,261,3,50,25,
-      0,260,258,1,0,0,0,261,264,1,0,0,0,262,260,1,0,0,0,262,263,1,0,0,0,
-      263,266,1,0,0,0,264,262,1,0,0,0,265,267,3,52,26,0,266,265,1,0,0,0,
-      266,267,1,0,0,0,267,55,1,0,0,0,268,269,5,22,0,0,269,270,3,38,19,0,
-      270,271,5,2,0,0,271,57,1,0,0,0,272,273,7,2,0,0,273,59,1,0,0,0,274,
-      275,7,3,0,0,275,276,5,1,0,0,276,277,3,68,34,0,277,278,5,2,0,0,278,
-      61,1,0,0,0,279,280,3,26,13,0,280,281,3,34,17,0,281,282,5,5,0,0,282,
-      63,1,0,0,0,283,284,3,34,17,0,284,285,5,5,0,0,285,65,1,0,0,0,286,287,
-      5,33,0,0,287,291,5,1,0,0,288,292,3,38,19,0,289,292,5,38,0,0,290,292,
-      5,40,0,0,291,288,1,0,0,0,291,289,1,0,0,0,291,290,1,0,0,0,292,293,1,
-      0,0,0,293,294,5,2,0,0,294,295,5,5,0,0,295,67,1,0,0,0,296,299,3,20,
-      10,0,297,298,5,39,0,0,298,300,3,20,10,0,299,297,1,0,0,0,299,300,1,
-      0,0,0,300,69,1,0,0,0,22,73,86,93,96,108,117,120,132,139,152,161,178,
-      195,200,214,236,238,244,262,266,291,299
+      8,9,1,9,1,9,1,10,1,10,1,10,1,10,1,10,3,10,149,8,10,1,11,1,11,1,11,
+      1,11,1,11,1,11,1,11,3,11,158,8,11,1,12,1,12,1,12,1,12,1,12,1,12,1,
+      12,1,12,1,12,1,12,1,13,1,13,1,13,1,13,1,13,3,13,175,8,13,1,14,1,14,
+      1,14,1,14,1,14,1,14,1,14,1,15,1,15,1,15,1,15,1,15,1,15,5,15,190,8,
+      15,10,15,12,15,193,9,15,1,15,1,15,3,15,197,8,15,1,16,1,16,1,17,1,17,
+      1,17,1,17,1,18,1,18,1,18,1,18,1,19,1,19,3,19,211,8,19,1,20,1,20,1,
+      20,1,21,1,21,1,21,1,21,1,21,1,21,1,22,1,22,1,23,1,23,1,23,1,23,1,23,
+      1,23,1,23,1,23,1,23,3,23,233,8,23,3,23,235,8,23,1,24,1,24,4,24,239,
+      8,24,11,24,12,24,240,1,24,1,24,1,25,1,25,1,25,1,25,1,25,1,25,1,26,
+      1,26,1,26,1,27,1,27,1,27,5,27,257,8,27,10,27,12,27,260,9,27,1,27,3,
+      27,263,8,27,1,28,1,28,1,28,1,28,1,29,1,29,1,30,1,30,1,30,1,30,1,30,
+      1,31,1,31,1,31,1,31,1,32,1,32,1,32,1,33,1,33,1,33,1,33,1,33,3,33,288,
+      8,33,1,33,1,33,1,33,1,34,1,34,1,34,1,34,1,34,1,34,3,34,299,8,34,1,
+      34,1,34,1,34,1,34,1,34,1,34,5,34,307,8,34,10,34,12,34,310,9,34,1,34,
+      0,1,68,35,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,
+      42,44,46,48,50,52,54,56,58,60,62,64,66,68,0,4,3,0,36,36,38,38,41,41,
+      1,0,16,19,1,0,23,25,1,0,26,32,318,0,71,1,0,0,0,2,77,1,0,0,0,4,86,1,
+      0,0,0,6,96,1,0,0,0,8,98,1,0,0,0,10,108,1,0,0,0,12,110,1,0,0,0,14,132,
+      1,0,0,0,16,134,1,0,0,0,18,137,1,0,0,0,20,148,1,0,0,0,22,157,1,0,0,
+      0,24,159,1,0,0,0,26,174,1,0,0,0,28,176,1,0,0,0,30,196,1,0,0,0,32,198,
+      1,0,0,0,34,200,1,0,0,0,36,204,1,0,0,0,38,208,1,0,0,0,40,212,1,0,0,
+      0,42,215,1,0,0,0,44,221,1,0,0,0,46,234,1,0,0,0,48,236,1,0,0,0,50,244,
+      1,0,0,0,52,250,1,0,0,0,54,253,1,0,0,0,56,264,1,0,0,0,58,268,1,0,0,
+      0,60,270,1,0,0,0,62,275,1,0,0,0,64,279,1,0,0,0,66,282,1,0,0,0,68,298,
+      1,0,0,0,70,72,3,2,1,0,71,70,1,0,0,0,72,73,1,0,0,0,73,71,1,0,0,0,73,
+      74,1,0,0,0,74,75,1,0,0,0,75,76,5,0,0,1,76,1,1,0,0,0,77,78,3,4,2,0,
+      78,79,5,43,0,0,79,80,5,1,0,0,80,81,3,6,3,0,81,82,5,2,0,0,82,83,3,48,
+      24,0,83,3,1,0,0,0,84,87,3,26,13,0,85,87,5,3,0,0,86,84,1,0,0,0,86,85,
+      1,0,0,0,87,5,1,0,0,0,88,93,3,8,4,0,89,90,5,4,0,0,90,92,3,8,4,0,91,
+      89,1,0,0,0,92,95,1,0,0,0,93,91,1,0,0,0,93,94,1,0,0,0,94,97,1,0,0,0,
+      95,93,1,0,0,0,96,88,1,0,0,0,96,97,1,0,0,0,97,7,1,0,0,0,98,99,3,26,
+      13,0,99,100,5,43,0,0,100,9,1,0,0,0,101,109,3,68,34,0,102,109,3,58,
+      29,0,103,109,5,41,0,0,104,109,3,46,23,0,105,109,3,28,14,0,106,109,
+      3,30,15,0,107,109,3,12,6,0,108,101,1,0,0,0,108,102,1,0,0,0,108,103,
+      1,0,0,0,108,104,1,0,0,0,108,105,1,0,0,0,108,106,1,0,0,0,108,107,1,
+      0,0,0,109,11,1,0,0,0,110,111,5,43,0,0,111,120,5,1,0,0,112,117,3,38,
+      19,0,113,114,5,4,0,0,114,116,3,38,19,0,115,113,1,0,0,0,116,119,1,0,
+      0,0,117,115,1,0,0,0,117,118,1,0,0,0,118,121,1,0,0,0,119,117,1,0,0,
+      0,120,112,1,0,0,0,120,121,1,0,0,0,121,122,1,0,0,0,122,123,5,2,0,0,
+      123,13,1,0,0,0,124,133,3,66,33,0,125,133,3,64,32,0,126,133,3,62,31,
+      0,127,133,3,54,27,0,128,133,3,42,21,0,129,133,3,24,12,0,130,133,3,
+      16,8,0,131,133,3,18,9,0,132,124,1,0,0,0,132,125,1,0,0,0,132,126,1,
+      0,0,0,132,127,1,0,0,0,132,128,1,0,0,0,132,129,1,0,0,0,132,130,1,0,
+      0,0,132,131,1,0,0,0,133,15,1,0,0,0,134,135,3,12,6,0,135,136,5,5,0,
+      0,136,17,1,0,0,0,137,139,5,6,0,0,138,140,3,10,5,0,139,138,1,0,0,0,
+      139,140,1,0,0,0,140,141,1,0,0,0,141,142,5,5,0,0,142,19,1,0,0,0,143,
+      149,5,38,0,0,144,149,3,38,19,0,145,149,3,60,30,0,146,149,3,56,28,0,
+      147,149,3,12,6,0,148,143,1,0,0,0,148,144,1,0,0,0,148,145,1,0,0,0,148,
+      146,1,0,0,0,148,147,1,0,0,0,149,21,1,0,0,0,150,158,5,36,0,0,151,158,
+      3,38,19,0,152,153,5,1,0,0,153,154,3,46,23,0,154,155,5,2,0,0,155,158,
+      1,0,0,0,156,158,3,12,6,0,157,150,1,0,0,0,157,151,1,0,0,0,157,152,1,
+      0,0,0,157,156,1,0,0,0,158,23,1,0,0,0,159,160,5,7,0,0,160,161,5,1,0,
+      0,161,162,3,40,20,0,162,163,5,5,0,0,163,164,3,46,23,0,164,165,5,5,
+      0,0,165,166,3,34,17,0,166,167,5,2,0,0,167,168,3,48,24,0,168,25,1,0,
+      0,0,169,175,3,44,22,0,170,171,5,8,0,0,171,172,3,44,22,0,172,173,5,
+      9,0,0,173,175,1,0,0,0,174,169,1,0,0,0,174,170,1,0,0,0,175,27,1,0,0,
+      0,176,177,5,8,0,0,177,178,3,44,22,0,178,179,5,9,0,0,179,180,5,10,0,
+      0,180,181,5,38,0,0,181,182,5,11,0,0,182,29,1,0,0,0,183,184,5,12,0,
+      0,184,197,5,13,0,0,185,186,5,12,0,0,186,191,3,32,16,0,187,188,5,4,
+      0,0,188,190,3,32,16,0,189,187,1,0,0,0,190,193,1,0,0,0,191,189,1,0,
+      0,0,191,192,1,0,0,0,192,194,1,0,0,0,193,191,1,0,0,0,194,195,5,13,0,
+      0,195,197,1,0,0,0,196,183,1,0,0,0,196,185,1,0,0,0,197,31,1,0,0,0,198,
+      199,7,0,0,0,199,33,1,0,0,0,200,201,3,38,19,0,201,202,5,14,0,0,202,
+      203,3,10,5,0,203,35,1,0,0,0,204,205,5,10,0,0,205,206,3,68,34,0,206,
+      207,5,11,0,0,207,37,1,0,0,0,208,210,5,43,0,0,209,211,3,36,18,0,210,
+      209,1,0,0,0,210,211,1,0,0,0,211,39,1,0,0,0,212,213,3,26,13,0,213,214,
+      3,34,17,0,214,41,1,0,0,0,215,216,5,15,0,0,216,217,5,1,0,0,217,218,
+      3,46,23,0,218,219,5,2,0,0,219,220,3,48,24,0,220,43,1,0,0,0,221,222,
+      7,1,0,0,222,45,1,0,0,0,223,224,5,35,0,0,224,235,3,22,11,0,225,226,
+      3,68,34,0,226,227,5,37,0,0,227,228,3,68,34,0,228,235,1,0,0,0,229,232,
+      3,22,11,0,230,231,5,34,0,0,231,233,3,22,11,0,232,230,1,0,0,0,232,233,
+      1,0,0,0,233,235,1,0,0,0,234,223,1,0,0,0,234,225,1,0,0,0,234,229,1,
+      0,0,0,235,47,1,0,0,0,236,238,5,12,0,0,237,239,3,14,7,0,238,237,1,0,
+      0,0,239,240,1,0,0,0,240,238,1,0,0,0,240,241,1,0,0,0,241,242,1,0,0,
+      0,242,243,5,13,0,0,243,49,1,0,0,0,244,245,5,20,0,0,245,246,5,1,0,0,
+      246,247,3,46,23,0,247,248,5,2,0,0,248,249,3,48,24,0,249,51,1,0,0,0,
+      250,251,5,21,0,0,251,252,3,48,24,0,252,53,1,0,0,0,253,258,3,50,25,
+      0,254,255,5,21,0,0,255,257,3,50,25,0,256,254,1,0,0,0,257,260,1,0,0,
+      0,258,256,1,0,0,0,258,259,1,0,0,0,259,262,1,0,0,0,260,258,1,0,0,0,
+      261,263,3,52,26,0,262,261,1,0,0,0,262,263,1,0,0,0,263,55,1,0,0,0,264,
+      265,5,22,0,0,265,266,3,38,19,0,266,267,5,2,0,0,267,57,1,0,0,0,268,
+      269,7,2,0,0,269,59,1,0,0,0,270,271,7,3,0,0,271,272,5,1,0,0,272,273,
+      3,68,34,0,273,274,5,2,0,0,274,61,1,0,0,0,275,276,3,26,13,0,276,277,
+      3,34,17,0,277,278,5,5,0,0,278,63,1,0,0,0,279,280,3,34,17,0,280,281,
+      5,5,0,0,281,65,1,0,0,0,282,283,5,33,0,0,283,287,5,1,0,0,284,288,3,
+      38,19,0,285,288,5,38,0,0,286,288,5,41,0,0,287,284,1,0,0,0,287,285,
+      1,0,0,0,287,286,1,0,0,0,288,289,1,0,0,0,289,290,5,2,0,0,290,291,5,
+      5,0,0,291,67,1,0,0,0,292,293,6,34,-1,0,293,294,5,1,0,0,294,295,3,68,
+      34,0,295,296,5,2,0,0,296,299,1,0,0,0,297,299,3,20,10,0,298,292,1,0,
+      0,0,298,297,1,0,0,0,299,308,1,0,0,0,300,301,10,3,0,0,301,302,5,39,
+      0,0,302,307,3,68,34,4,303,304,10,2,0,0,304,305,5,40,0,0,305,307,3,
+      68,34,3,306,300,1,0,0,0,306,303,1,0,0,0,307,310,1,0,0,0,308,306,1,
+      0,0,0,308,309,1,0,0,0,309,69,1,0,0,0,310,308,1,0,0,0,24,73,86,93,96,
+      108,117,120,132,139,148,157,174,191,196,210,232,234,240,258,262,287,
+      298,306,308
   ];
 
   static final ATN _ATN =
@@ -1465,7 +1534,6 @@ class ReturnStatementContext extends ParserRuleContext {
 class MathOperandContext extends ParserRuleContext {
   TerminalNode? Number() => getToken(CFloor7Parser.TOKEN_Number, 0);
   VariableAccessorContext? variableAccessor() => getRuleContext<VariableAccessorContext>(0);
-  MathExpressionContext? mathExpression() => getRuleContext<MathExpressionContext>(0);
   MathFunctionExpressionContext? mathFunctionExpression() => getRuleContext<MathFunctionExpressionContext>(0);
   StringLengthExpressionContext? stringLengthExpression() => getRuleContext<StringLengthExpressionContext>(0);
   FunctionInvocationContext? functionInvocation() => getRuleContext<FunctionInvocationContext>(0);
@@ -1679,8 +1747,8 @@ class BooleanExpressionContext extends ParserRuleContext {
   TerminalNode? UnaryBooleanOperator() => getToken(CFloor7Parser.TOKEN_UnaryBooleanOperator, 0);
   List<BooleanOperandContext> booleanOperands() => getRuleContexts<BooleanOperandContext>();
   BooleanOperandContext? booleanOperand(int i) => getRuleContext<BooleanOperandContext>(i);
-  List<MathOperandContext> mathOperands() => getRuleContexts<MathOperandContext>();
-  MathOperandContext? mathOperand(int i) => getRuleContext<MathOperandContext>(i);
+  List<MathExpressionContext> mathExpressions() => getRuleContexts<MathExpressionContext>();
+  MathExpressionContext? mathExpression(int i) => getRuleContext<MathExpressionContext>(i);
   TerminalNode? Comparator() => getToken(CFloor7Parser.TOKEN_Comparator, 0);
   TerminalNode? BinaryBooleanOperator() => getToken(CFloor7Parser.TOKEN_BinaryBooleanOperator, 0);
   BooleanExpressionContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
@@ -1853,9 +1921,11 @@ class WriteStatementContext extends ParserRuleContext {
 }
 
 class MathExpressionContext extends ParserRuleContext {
-  List<MathOperandContext> mathOperands() => getRuleContexts<MathOperandContext>();
-  MathOperandContext? mathOperand(int i) => getRuleContext<MathOperandContext>(i);
-  TerminalNode? MathOperator() => getToken(CFloor7Parser.TOKEN_MathOperator, 0);
+  List<MathExpressionContext> mathExpressions() => getRuleContexts<MathExpressionContext>();
+  MathExpressionContext? mathExpression(int i) => getRuleContext<MathExpressionContext>(i);
+  MathOperandContext? mathOperand() => getRuleContext<MathOperandContext>(0);
+  TerminalNode? MathOperatorPrioMult() => getToken(CFloor7Parser.TOKEN_MathOperatorPrioMult, 0);
+  TerminalNode? MathOperatorPrioAdd() => getToken(CFloor7Parser.TOKEN_MathOperatorPrioAdd, 0);
   MathExpressionContext([ParserRuleContext? parent, int? invokingState]) : super(parent, invokingState);
   @override
   int get ruleIndex => RULE_mathExpression;

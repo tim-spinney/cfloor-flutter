@@ -12,7 +12,7 @@ BooleanLiteral: 'true' | 'false' ;
 
 Comparator: '==' | '!=' | '<' | '<=' | '>' | '>=' ;
 
-expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression ;
+expression: booleanExpression | mathExpression | readFunctionExpression | StringLiteral ;
 
 primitive: 'int' | 'float' | 'string' | 'bool' ;
 
@@ -20,7 +20,7 @@ booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' ;
 
 booleanExpression:
     UnaryBooleanOperator booleanOperand |
-    mathOperand Comparator mathOperand |
+    mathExpression Comparator mathExpression |
     booleanOperand (BinaryBooleanOperator booleanOperand)? ;
 
 /* TODO: consider moving below into a separate level and letting this level be boolean vars only */

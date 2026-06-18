@@ -90,19 +90,28 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
 
   MathOperand _toMathOperand(MathOperandContext ctx) => MathOperand(
     ctx.textRange,
-    ctx.mathExpression() != null ? _toMathExpression(ctx.mathExpression()!) : null,
     ctx.variableAccessor() != null ? _toVariableAccessor(ctx.variableAccessor()!) : null,
     ctx.Number()?.text,
     mathFunction: ctx.mathFunctionExpression() != null ? _toMathFunctionExpression(ctx.mathFunctionExpression()!) : null,
     lengthFunction: ctx.stringLengthExpression() != null ? _toLengthFunctionExpression(ctx.stringLengthExpression()!) : null,
   );
 
-  MathExpression _toMathExpression(MathExpressionContext ctx) => MathExpression(
-    ctx.textRange,
-    ctx.mathOperand(0) != null ? _toMathOperand(ctx.mathOperand(0)!) : null,
-    ctx.mathOperand(1) != null ? _toMathOperand(ctx.mathOperand(1)!) : null,
-    ctx.MathOperator() != null ? MathOperator.bySymbol[ctx.MathOperator()!.text]! : null,
-  );
+  MathExpression _toMathExpression(MathExpressionContext ctx) {
+    if(ctx.mathOperand() != null) {
+      return MathExpressionBaseCase(ctx.textRange, _toMathOperand(ctx.mathOperand()!));
+    }
+    if(ctx.mathExpressions().length == 1) { // parenthetical expression
+      return _toMathExpression(ctx.mathExpression(0)!);
+    }
+    // binary operation
+    final operator = ctx.MathOperatorPrioMult() ?? ctx.MathOperatorPrioAdd();
+    return MathExpressionRecursive(
+      ctx.textRange,
+      _toMathExpression(ctx.mathExpression(0)!),
+      _toMathExpression(ctx.mathExpression(1)!),
+      MathOperator.bySymbol[operator!.text]!,
+    );
+  }
 
   VariableAccessor _toVariableAccessor(VariableAccessorContext ctx) => VariableAccessor(
     ctx.textRange,
@@ -171,7 +180,7 @@ class CFloor4TreeWalker extends CFloor4BaseListener implements InstructionGenera
     ctx.BinaryBooleanOperator() == null ? null : BooleanOperator.bySymbol[ctx.BinaryBooleanOperator()!.text]!,
     ctx.Comparator() == null ? null : ComparisonOperator.bySymbol[ctx.Comparator()!.text]!,
     ctx.booleanOperands().map((operand) => _toBooleanOperand(operand)).toList(),
-    ctx.mathOperands().map((operand) => _toMathOperand(operand)).toList(),
+    ctx.mathExpressions().map((expression) => _toMathExpression(expression)).toList(),
   );
 
   BooleanOperand _toBooleanOperand(BooleanOperandContext ctx) => BooleanOperand(

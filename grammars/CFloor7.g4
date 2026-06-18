@@ -23,6 +23,6 @@ functionInvocationStatement: functionInvocation ';' ;
 returnStatement: 'return' expression? ';' ;
 
 /* TODO: ditch mathFunctionExpression and stringLengthExpression at this level, treat as built-in functions */
-mathOperand: Number | variableAccessor | ( '(' mathExpression ')') | mathFunctionExpression | stringLengthExpression | functionInvocation ;
+mathOperand: Number | variableAccessor | mathFunctionExpression | stringLengthExpression | functionInvocation ;
 
 booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' | functionInvocation ;
