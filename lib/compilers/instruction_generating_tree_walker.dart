@@ -24,9 +24,9 @@ class RegisterManager {
   RegisterDataDestination allocateRegister(CompositeDataType dataType) => RegisterDataDestination(dataType, _nextRegister++);
 
   RegisterDataDestination recycleOrAllocateRegister(DataSource left, DataSource right, CompositeDataType dataType) {
-    if(left is RegisterMemorySource) {
+    if(left is RegisterMemorySource && left.dataType == dataType) {
       return left.toDestination();
-    } else if(right is RegisterMemorySource) {
+    } else if(right is RegisterMemorySource && right.dataType == dataType) {
       return right.toDestination();
     } else {
       return allocateRegister(dataType);
