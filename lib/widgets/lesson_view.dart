@@ -126,12 +126,11 @@ class _LessonViewState extends State<_LessonView> {
     if(widget.lesson.showTutorial) {
       WidgetsBinding.instance
           .addPostFrameCallback((_) =>
-          ShowCaseWidget.of(context).startShowCase([
+          ShowcaseView.get().startShowCase([
             _introText,
             _code,
             _objectiveText,
             _run,
-            _step,
           ]));
     }
   }
@@ -166,7 +165,6 @@ class _LessonViewState extends State<_LessonView> {
   _compileAndStart() {
     final compileResult = compileCFloor(_sourceCodeController.text, LanguageLevel.cfloor1);
     setState(() {
-      _latestCompileResult = compileResult;
       if (compileResult.errors.isEmpty && compileResult.instructions.isNotEmpty) {
         compileResult.builtInVariables.forEach((name, constant) {
           _virtualMachine.memory.addGlobalVariable(name, constant.value);
@@ -177,7 +175,12 @@ class _LessonViewState extends State<_LessonView> {
             )
         );
         _virtualMachine.start(compileResult.entryPoint);
+        if(widget.lesson.showTutorial && _latestCompileResult == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) =>
+              ShowcaseView.get().startShowCase([_step,]));
+        }
       }
+      _latestCompileResult = compileResult;
     });
   }
 
@@ -186,8 +189,7 @@ class _LessonViewState extends State<_LessonView> {
       setState(() {
         _hasPressedStepButton = true;
         WidgetsBinding.instance.addPostFrameCallback((_) =>
-            ShowCaseWidget.of(context)
-                .startShowCase([_output, _nextLessonKey]));
+            ShowcaseView.get().startShowCase([_output, _nextLessonKey]));
       });
     }
     try {
