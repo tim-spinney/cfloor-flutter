@@ -1,4 +1,5 @@
 import 'package:cfloor_flutter/compilers/compiler.dart';
+import 'package:cfloor_flutter/compilers/wrappers/data_source.dart';
 import 'package:cfloor_flutter/compilers/wrappers/instructions.dart';
 
 import '../virtual_machines/virtual_machine.dart';
@@ -35,7 +36,7 @@ class Lesson {
   });
 }
 
-final allLessons = { for (final lesson in [lesson1, lesson2, lesson3, lesson4, lesson5]) lesson.id : lesson };
+final allLessons = { for (final lesson in [lesson1, lesson2, lesson3, lesson4, lesson5, lesson6]) lesson.id : lesson };
 
 final lesson1 = Lesson(
   id: 1,
@@ -203,4 +204,68 @@ int width = read_int();
     )
   ],
   prerequisiteLessonId: 4,
+);
+
+
+final lesson6 = Lesson(
+  id: 6,
+  explanation: '''
+# Lesson 6: writing output
+So far we've been using the list of variables in the output panel to look at program results. However, there are a few situations where we'd like to
+print a message instead:
+1. We want to present information in a specific order.
+2. We want to show a message to the user that isn't just a variable (e.g. a prompt for what they should enter for the next `read_int`).
+3. A variable's value changes over time and we want to show a snapshot of its current value.
+4. Later in your journey, once you reach level four, you'll also have variables that only exist during part of the program which you way want to display before they disappear.
+
+The `write` function is like the reverse of `read_int`. Instead of getting a value from the user and giving it to the program, it takes a value from the program and displays it to the user:
+```
+write(1234);
+write(side_length);
+write("Hello!");
+```
+You can `write` a number, a variable, or some text. To write text, we put the text in quotation marks to indicate that it's literal text and not the name of a variable.
+
+Below is the code for calculating the volume of a box. Try adding `write` statements before each `read_int` to tell the user what number they should enter and once again
+at the end to display the calculated volume.
+''',
+  initialCode: '''
+  
+int width = read_int();
+
+int height = read_int();
+
+int depth = read_int();
+int volume = width * height * depth;
+
+''',
+  isEditable: true,
+  objectives: [
+    LessonObjective(
+        description: 'Read in three values.',
+        validator: (vm, compileResult) => compileResult.instructions.whereType<ReadInstruction>().length >= 3
+    ),
+    LessonObjective(
+        description: 'Write a message before each read_int.',
+        validator: (vm, compileResult) {
+          if(compileResult.instructions.length < 2) {
+            return false;
+          }
+          for(var i = 1; i < compileResult.instructions.length; i++) {
+            if(compileResult.instructions[i] is ReadInstruction && compileResult.instructions[i-1] is! WriteInstruction) {
+              return false;
+            }
+          }
+          return true;
+        }
+    ),
+    LessonObjective(
+        description: 'Write the variable named "volume".',
+        validator: (vm, compileResult) =>
+          compileResult.instructions.whereType<WriteInstruction>().any(
+            (write) => write.source is VariableMemorySource && (write.source as VariableMemorySource).variableName == "volume"
+          )
+    ),
+  ],
+  prerequisiteLessonId: 5,
 );
