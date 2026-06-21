@@ -11,5 +11,5 @@ class Constant {
 
 const builtInMathConstants = {
   'pi': Constant(DataType.float, pi),
-  'e': Constant(DataType.float, e),
+  'euler': Constant(DataType.float, e),
 };
