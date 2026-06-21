@@ -78,7 +78,12 @@ class LessonViewPage extends StatelessWidget {
                       child: IconButton(
                         onPressed: () {
                           lessonProvider.advanceLesson();
-                          context.go('/lessons/${lessonId + 1}');
+                          final nextId = lessonId + 1;
+                          if(allLessons.containsKey(nextId)) {
+                            context.go('/lessons/$nextId');
+                          } else {
+                            context.go('/lessons');
+                          }
                         },
                         icon: Icon(Icons.forward, color: Theme.of(context).colorScheme.onPrimary,),
                         tooltip: 'Next lesson',
@@ -163,7 +168,7 @@ class _LessonViewState extends State<_LessonView> {
   }
 
   _compileAndStart() {
-    final compileResult = compileCFloor(_sourceCodeController.text, LanguageLevel.cfloor1);
+    final compileResult = compileCFloor(_sourceCodeController.text, widget.lesson.level);
     setState(() {
       if (compileResult.errors.isEmpty && compileResult.instructions.isNotEmpty) {
         compileResult.builtInVariables.forEach((name, constant) {
