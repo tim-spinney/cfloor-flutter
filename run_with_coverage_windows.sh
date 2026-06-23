@@ -7,5 +7,5 @@
 # pub global activate coverage
 flutter pub global run full_coverage
 flutter test --branch-coverage
-reportgenerator "-reports:./coverage/lcov.info" "-targetdir:./coverage_report" '-filefilters:-lib\generated\**'
+reportgenerator "-reports:./coverage/lcov.info" "-targetdir:./coverage_report" #'-filefilters:-lib\generated\**'
 start ./coverage_report/index.html

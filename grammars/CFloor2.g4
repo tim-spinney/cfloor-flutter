@@ -12,7 +12,7 @@ primitive: 'int' | 'float' ;
    levels' options, but that is more often going to be an accident or confusing to the user
    than helpful. It does make it easier to make the grammars independent should we want to
    re-order or make feature sets fully independent (e.g. we don't _really_ need floats before
-   we support booleans).
+   we support boolean).
 
    Option: previous levels declare level-specific non-terminals:
      level1MathOperand: Number | variableAccessor | ( '(' mathExpression ')') ;

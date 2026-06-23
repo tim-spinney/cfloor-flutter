@@ -11,7 +11,7 @@ const _dataTypeDescription = {
 
 class ExecutionConsole extends StatefulWidget {
   final ConsoleState consoleState;
-  final void Function(dynamic input) submitInput;
+  final void Function(dynamic input)  submitInput;
 
   const ExecutionConsole({
     super.key,

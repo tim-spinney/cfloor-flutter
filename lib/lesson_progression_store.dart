@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

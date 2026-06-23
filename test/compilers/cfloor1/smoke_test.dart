@@ -80,4 +80,16 @@ main() {
     final add = mathInstructions.firstWhere((instruction) => instruction.operator == MathOperator.plus);
     expect((add.destination as RegisterDataDestination).register, (mult.right as RegisterMemorySource).register);
   });
+  
+  test('generates a read instruction for read_int', () {
+    const source = '''
+    int x = read_int();
+    ''';
+
+    final errorCollector = SyntaxErrorCollector();
+    final instructionGenerator = compileCFloor1(source, errorCollector);
+    
+    expect(instructionGenerator.semanticErrorCollector.errors, isEmpty);
+    expect(instructionGenerator.instructions, anyElement(isA<ReadInstruction>()));
+  });
 }

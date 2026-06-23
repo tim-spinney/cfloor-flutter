@@ -31,11 +31,5 @@ void _parseAndWalk(String sourceText, SyntaxErrorCollector errorCollector, CFloo
       )
   );
   parser.addErrorListener(errorCollector);
-  try {
-    ParseTreeWalker.DEFAULT.walk(listener, parser.program());
-  } catch(e) {
-    if(kDebugMode) {
-      print('Unhandled error while walking parse tree: $e');
-    }
-  }
+  ParseTreeWalker.DEFAULT.walk(listener, parser.program());
 }

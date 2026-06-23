@@ -16,12 +16,6 @@ InstructionGenerator compileCFloor6(String sourceText, SyntaxErrorCollector erro
   );
   parser.addErrorListener(errorCollector);
   final instructionGenerator = CFloor6TreeWalker();
-  try {
-    ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
-  } catch(e) {
-    if(kDebugMode) {
-      print('Unhandled error while walking parse tree: $e');
-    }
-  }
+  ParseTreeWalker.DEFAULT.walk(instructionGenerator, parser.program());
   return instructionGenerator;
 }
