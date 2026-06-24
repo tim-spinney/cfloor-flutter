@@ -7,7 +7,7 @@ main() {
   test('compiles a program that uses floats', () {
     const source = '''
     int r = read_int();
-    float area = 0;
+    float area = read_float();
     area = r * 3.1415926535;
     int areaish = floor(area);
     write(areaish);
