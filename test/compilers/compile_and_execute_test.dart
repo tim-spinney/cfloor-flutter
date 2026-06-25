@@ -46,12 +46,6 @@ main() {
     }
 
     test('language level 7 with all features', () {
-      const _la = 42;
-      final x = (_la) & ~0x3f;
-      final y = (1 << _la);
-      final z = (1 << _la) & 5884101005570;
-      print('$x $y $z');
-
       final instructionGenerator = compile();
       final consoleState = ConsoleState();
       final virtualMachine = VirtualMachine(consoleState);

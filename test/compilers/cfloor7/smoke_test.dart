@@ -69,4 +69,80 @@ main() {
     final callInstruction = instructionGenerator.instructions.firstWhere((instruction) => instruction is CallInstruction) as CallInstruction;
     expect(callInstruction.destinationInstructionIndex, 0);
   });
+
+  test('recognizes math and string functions as normal functions', () {
+    const source = '''
+    void main() {
+      float two = 2;
+      float f = sqrt(two);
+      int i = round(f);
+      string s = "length";
+      int l = length(s);
+    }
+    ''';
+    final errorCollector = SyntaxErrorCollector();
+
+    final instructionGenerator = compileCFloor7(source, errorCollector);
+
+    expect(errorCollector.errors, isEmpty);
+    expect(instructionGenerator.semanticErrorCollector.errors, isEmpty);
+    expect(instructionGenerator.instructions.whereType<MathFunctionInstruction>(), hasLength(2));
+    expect(instructionGenerator.instructions, anyElement(isA<StringLengthInstruction>()));
+  });
+
+  test('recognizes read functions as normal functions', () {
+    const source = '''
+    void main() {
+      int i = read_int();
+      float f = read_float();
+      string s = read_string();
+    }
+    ''';
+    final errorCollector = SyntaxErrorCollector();
+
+    final instructionGenerator = compileCFloor7(source, errorCollector);
+
+    expect(errorCollector.errors, isEmpty);
+    expect(instructionGenerator.semanticErrorCollector.errors, isEmpty);
+    expect(instructionGenerator.instructions.whereType<ReadInstruction>(), hasLength(3));
+  });
+
+  test('rejects overloading built-in function names', () {
+    const source = '''
+    int round(float n) {
+      return 0;
+    }
+    
+    void main() {
+      float two = 2;
+      int i = round(two);
+    }
+    ''';
+    final errorCollector = SyntaxErrorCollector();
+
+    final instructionGenerator = compileCFloor7(source, errorCollector);
+
+    expect(instructionGenerator.semanticErrorCollector.errors, isNotEmpty);
+  });
+
+  test('rejects multiple declarations that use the same function name', () {
+    const source = '''
+    void foo() {
+      write("foo");
+    }
+    
+    void foo() {
+      write("foo");
+    }
+    
+    void main() {
+      foo();
+    }
+    ''';
+    final errorCollector = SyntaxErrorCollector();
+
+    final instructionGenerator = compileCFloor7(source, errorCollector);
+
+    expect(instructionGenerator.semanticErrorCollector.errors, isNotEmpty);
+  });
 }

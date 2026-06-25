@@ -2,7 +2,7 @@ import '../text_interval.dart';
 import '../../language_core/data_type.dart';
 
 class FunctionDefinition {
-  final TextInterval textRange;
+  final TextInterval? textRange;
   final String name;
   final Map<String, CompositeDataType> parameters;
   final CompositeDataType returnType;

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cfloor_flutter/language_core/cfloor_array.dart';
+import 'package:collection/collection.dart';
 
 import '../wrappers/expression.dart';
 import '../wrappers/function_invocation.dart';
@@ -197,7 +198,7 @@ class GenericCompiler extends VariableDeclarationManager {
 
   void endFunctionDefinition(FunctionDefinition ctx) {
     if(ctx.returnType.dataType == DataType.voidType) {
-      _addInstruction(ReturnInstruction(ctx.textRange, null));
+      _addInstruction(ReturnInstruction(ctx.textRange!, null));
     }
   }
 
@@ -498,10 +499,14 @@ class GenericCompiler extends VariableDeclarationManager {
   }
 
   DataSource? _handleFunctionInvocation(FunctionInvocation ctx) {
-    final functionDefinition = _functionDefinitions!.firstWhere((element) => element.name == ctx.functionName);
+    final functionDefinition = _functionDefinitions!.firstWhereOrNull((element) => element.name == ctx.functionName);
+    if(functionDefinition == null) {
+      semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: call to unrecognized function "${ctx.functionName}".');
+      throw Exception('No function matches name ${ctx.functionName}.');
+    }
     if(functionDefinition.parameters.length != ctx.arguments.length) {
       semanticErrorCollector.add('Semantic error at ${ctx.textRange.startPosition}: function "${ctx.functionName}" expects ${functionDefinition.parameters.length} arguments, but ${ctx.arguments.length} were provided.');
-      throw Exception('Incorrect number of arguments provided to function.');
+      throw Exception('Incorrect number of arguments provided to function ${ctx.functionName}.');
     }
     final sourceDestinationPairs = <(DataSource, VariableDataDestination)>[];
     for(int i = 0; i < ctx.arguments.length; i++) {

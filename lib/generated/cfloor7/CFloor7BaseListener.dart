@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor7.g4 by ANTLR 4.13.2
+// Generated from grammars/CFloor7.g4 by ANTLR 4.13.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -97,6 +97,30 @@ class CFloor7BaseListener implements CFloor7Listener {
   /// The default implementation does nothing.
   @override
   void exitMathOperand(MathOperandContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterMathFunctionExpression(MathFunctionExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitMathFunctionExpression(MathFunctionExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterStringLengthExpression(StringLengthExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
+
+  /// The default implementation does nothing.
+  @override
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override
@@ -233,30 +257,6 @@ class CFloor7BaseListener implements CFloor7Listener {
   /// The default implementation does nothing.
   @override
   void exitIfBlock(IfBlockContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterStringLengthExpression(StringLengthExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitStringLengthExpression(StringLengthExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void enterMathFunctionExpression(MathFunctionExpressionContext ctx) {}
-
-  /// The default implementation does nothing.
-  @override
-  void exitMathFunctionExpression(MathFunctionExpressionContext ctx) {}
 
   /// The default implementation does nothing.
   @override

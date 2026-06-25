@@ -1,6 +1,8 @@
 import 'package:antlr4/antlr4.dart';
+import 'package:cfloor_flutter/compilers/math_function.dart';
 import 'package:cfloor_flutter/generated/cfloor7/CFloor7BaseListener.dart';
 import 'package:cfloor_flutter/generated/cfloor7/CFloor7Parser.dart';
+import 'package:collection/collection.dart';
 import '../wrappers/function_invocation.dart';
 import '../wrappers/array_literal.dart';
 import '../../language_core/boolean_operator.dart';
@@ -8,7 +10,6 @@ import '../built_in_globals.dart';
 import '../comparison_operator.dart';
 import '../../compilers/instruction_generating_tree_walker.dart';
 import '../../language_core/data_type.dart';
-import '../math_function.dart';
 import '../math_operator.dart';
 import '../../compilers/semantic_error_collector.dart';
 import '../wrappers/assignment.dart';
@@ -19,9 +20,7 @@ import '../wrappers/function_definition.dart';
 import '../wrappers/identifier.dart';
 import '../wrappers/if_block.dart';
 import '../wrappers/instructions.dart';
-import '../wrappers/length_function_expression.dart';
 import '../wrappers/math_expression.dart';
-import '../wrappers/math_function_expression.dart';
 import '../wrappers/math_operand.dart';
 import '../wrappers/read_expression.dart';
 import '../wrappers/return_statement.dart';
@@ -38,10 +37,10 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
   final Map<String, int> _functionStartIndices = {};
   final List<FunctionDefinition> _functionDefinitions;
 
-  CFloor7TreeWalker(this._functionDefinitions);
+  CFloor7TreeWalker(this._functionDefinitions, { SemanticErrorCollector? errorCollector }) : semanticErrorCollector = errorCollector ?? SemanticErrorCollector();
 
   @override
-  final semanticErrorCollector = SemanticErrorCollector();
+  final SemanticErrorCollector semanticErrorCollector;
 
   @override
   get builtInVariables => builtInMathConstants;
@@ -97,14 +96,39 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     for(int i = 0; i < instructions.length; i++) {
       if(instructions[i] is CallInstruction) {
         final callInstruction = instructions[i] as CallInstruction;
-        final destinationIndex = _functionStartIndices[callInstruction.targetFunctionName]!;
-        instructions[i] = CallInstruction(
-          callInstruction.textInterval,
-          callInstruction.targetFunctionName,
-          callInstruction.variablesToCopy,
-          destinationIndex,
-          callInstruction.returnValueDestination,
-        );
+        final destinationIndex = _functionStartIndices[callInstruction.targetFunctionName];
+        if(destinationIndex == null) { // built-in function
+          // TODO: replace these with some sort of "native" flag on CallInstruction and push recognition into VM
+          if(callInstruction.targetFunctionName == 'length') {
+            instructions[i] = StringLengthInstruction(
+              callInstruction.textInterval,
+              callInstruction.variablesToCopy.first.$1,
+              callInstruction.returnValueDestination!,
+            );
+          } else if(callInstruction.targetFunctionName.startsWith('read')) {
+            final targetType = callInstruction.targetFunctionName.split('_')[1];
+            instructions[i] = ReadInstruction(callInstruction.textInterval, callInstruction.returnValueDestination!, DataType.byName(targetType));
+          } else {
+            final mathFunction = MathFunction.values.firstWhereOrNull((mathFunction) => mathFunction.name == callInstruction.targetFunctionName);
+            if(mathFunction == null) {
+              throw Exception('Not yet supported: call to built-in function ${callInstruction.targetFunctionName}');
+            }
+            instructions[i] = MathFunctionInstruction(
+              callInstruction.textInterval,
+              mathFunction,
+              callInstruction.variablesToCopy.first.$1,
+              callInstruction.returnValueDestination!,
+            );
+          }
+        } else {
+          instructions[i] = CallInstruction(
+            callInstruction.textInterval,
+            callInstruction.targetFunctionName,
+            callInstruction.variablesToCopy,
+            destinationIndex,
+            callInstruction.returnValueDestination,
+          );
+        }
       }
     }
   }
@@ -179,8 +203,6 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     ctx.textRange,
     ctx.variableAccessor() != null ? _toVariableAccessor(ctx.variableAccessor()!) : null,
     ctx.Number()?.text,
-    mathFunction: ctx.mathFunctionExpression() != null ? _toMathFunctionExpression(ctx.mathFunctionExpression()!) : null,
-    lengthFunction: ctx.stringLengthExpression() != null ? _toLengthFunctionExpression(ctx.stringLengthExpression()!) : null,
     functionInvocation: ctx.functionInvocation() != null ? _toFunctionInvocation(ctx.functionInvocation()!) : null,
   );
 
@@ -221,9 +243,7 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
   );
 
   Expression _toExpression(ExpressionContext ctx) {
-    if(ctx.readFunctionExpression() != null) {
-      return _toReadExpression(ctx.readFunctionExpression()!);
-    } else if(ctx.mathExpression() != null) {
+    if(ctx.mathExpression() != null) {
       return _toMathExpression(ctx.mathExpression()!);
     } else if(ctx.StringLiteral() != null) {
       return _toStringLiteral(ctx.StringLiteral()!);
@@ -255,25 +275,9 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
     ctx.text!,
   );
 
-  ReadExpression _toReadExpression(ReadFunctionExpressionContext ctx) => ReadExpression(
-    ctx.textRange,
-    ctx.text,
-  );
-
-  MathFunctionExpression _toMathFunctionExpression(MathFunctionExpressionContext ctx) => MathFunctionExpression(
-    ctx.textRange,
-    MathFunction.values.firstWhere((fn) => fn.name == ctx.text.split('(')[0]),
-    ctx.mathExpression() != null ? _toMathExpression(ctx.mathExpression()!) : null,
-  );
-
   StringLiteral _toStringLiteral(TerminalNode ctx) => StringLiteral(
     ctx.textRange,
     ctx.text!,
-  );
-
-  LengthFunctionExpression _toLengthFunctionExpression(StringLengthExpressionContext ctx) => LengthFunctionExpression(
-    ctx.textRange,
-    _toVariableAccessor(ctx.variableAccessor()!),
   );
 
   IfBlock _toIfBlock(IfBlockContext ctx) => IfBlock(

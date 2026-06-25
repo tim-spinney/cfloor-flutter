@@ -1,4 +1,4 @@
-// Generated from grammars/CFloor7.g4 by ANTLR 4.13.2
+// Generated from grammars/CFloor7.g4 by ANTLR 4.13.0
 // ignore_for_file: unused_import, unused_local_variable, prefer_single_quotes
 import 'package:antlr4/antlr4.dart';
 
@@ -83,6 +83,27 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor7Parser.mathOperand].
   /// [ctx] the parse tree
   void exitMathOperand(MathOperandContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.mathFunctionExpression].
+  /// [ctx] the parse tree
+  void enterMathFunctionExpression(MathFunctionExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.mathFunctionExpression].
+  /// [ctx] the parse tree
+  void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.stringLengthExpression].
+  /// [ctx] the parse tree
+  void enterStringLengthExpression(StringLengthExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.stringLengthExpression].
+  /// [ctx] the parse tree
+  void exitStringLengthExpression(StringLengthExpressionContext ctx);
+
+  /// Enter a parse tree produced by [CFloor7Parser.readFunctionExpression].
+  /// [ctx] the parse tree
+  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx);
+  /// Exit a parse tree produced by [CFloor7Parser.readFunctionExpression].
+  /// [ctx] the parse tree
+  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.booleanOperand].
   /// [ctx] the parse tree
@@ -202,27 +223,6 @@ abstract class CFloor7Listener extends ParseTreeListener {
   /// Exit a parse tree produced by [CFloor7Parser.ifBlock].
   /// [ctx] the parse tree
   void exitIfBlock(IfBlockContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.stringLengthExpression].
-  /// [ctx] the parse tree
-  void enterStringLengthExpression(StringLengthExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.stringLengthExpression].
-  /// [ctx] the parse tree
-  void exitStringLengthExpression(StringLengthExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.readFunctionExpression].
-  /// [ctx] the parse tree
-  void enterReadFunctionExpression(ReadFunctionExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.readFunctionExpression].
-  /// [ctx] the parse tree
-  void exitReadFunctionExpression(ReadFunctionExpressionContext ctx);
-
-  /// Enter a parse tree produced by [CFloor7Parser.mathFunctionExpression].
-  /// [ctx] the parse tree
-  void enterMathFunctionExpression(MathFunctionExpressionContext ctx);
-  /// Exit a parse tree produced by [CFloor7Parser.mathFunctionExpression].
-  /// [ctx] the parse tree
-  void exitMathFunctionExpression(MathFunctionExpressionContext ctx);
 
   /// Enter a parse tree produced by [CFloor7Parser.declAssignStatement].
   /// [ctx] the parse tree

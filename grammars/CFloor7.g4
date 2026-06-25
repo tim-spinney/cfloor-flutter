@@ -12,7 +12,7 @@ parameterList: (parameter (',' parameter)*)? ;
 
 parameter: type Identifier ;
 
-expression: mathExpression | readFunctionExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral | functionInvocation ;
+expression: mathExpression | StringLiteral | booleanExpression | arrayInitializer | arrayLiteral | functionInvocation ;
 
 functionInvocation: Identifier '(' (variableAccessor (',' variableAccessor)*)? ')' ;
 
@@ -22,7 +22,14 @@ functionInvocationStatement: functionInvocation ';' ;
 
 returnStatement: 'return' expression? ';' ;
 
-/* TODO: ditch mathFunctionExpression and stringLengthExpression at this level, treat as built-in functions */
-mathOperand: Number | variableAccessor | mathFunctionExpression | stringLengthExpression | functionInvocation ;
+mathOperand: Number | variableAccessor | functionInvocation ;
+
+/* Hack: these expressions are no longer reachable from the rest of the grammar starting at this
+   level but we need to re-define them so they no longer have inline tokens. Without this the names
+   of built-in functions from lower levels won't be recognized as Identifier tokens for functionInvocation.
+*/
+mathFunctionExpression: functionInvocation;
+stringLengthExpression: functionInvocation;
+readFunctionExpression: functionInvocation;
 
 booleanOperand: BooleanLiteral | variableAccessor | '(' booleanExpression ')' | functionInvocation ;
