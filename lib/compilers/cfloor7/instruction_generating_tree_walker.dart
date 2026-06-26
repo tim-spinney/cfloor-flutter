@@ -98,26 +98,18 @@ class CFloor7TreeWalker extends CFloor7BaseListener with HasEntryPoint implement
         final callInstruction = instructions[i] as CallInstruction;
         final destinationIndex = _functionStartIndices[callInstruction.targetFunctionName];
         if(destinationIndex == null) { // built-in function
-          // TODO: replace these with some sort of "native" flag on CallInstruction and push recognition into VM
-          if(callInstruction.targetFunctionName == 'length') {
-            instructions[i] = StringLengthInstruction(
-              callInstruction.textInterval,
-              callInstruction.variablesToCopy.first.$1,
-              callInstruction.returnValueDestination!,
-            );
-          } else if(callInstruction.targetFunctionName.startsWith('read')) {
+          /* TODO: Create a flag or separate instruction type for functions that are (effectively) async.
+             The read_<type> functions fit this category as they need user input before completing.
+           */
+          if(callInstruction.targetFunctionName.startsWith('read')) {
             final targetType = callInstruction.targetFunctionName.split('_')[1];
             instructions[i] = ReadInstruction(callInstruction.textInterval, callInstruction.returnValueDestination!, DataType.byName(targetType));
           } else {
-            final mathFunction = MathFunction.values.firstWhereOrNull((mathFunction) => mathFunction.name == callInstruction.targetFunctionName);
-            if(mathFunction == null) {
-              throw Exception('Not yet supported: call to built-in function ${callInstruction.targetFunctionName}');
-            }
-            instructions[i] = MathFunctionInstruction(
+            instructions[i] = BuiltInFunctionInstruction(
               callInstruction.textInterval,
-              mathFunction,
-              callInstruction.variablesToCopy.first.$1,
-              callInstruction.returnValueDestination!,
+              callInstruction.targetFunctionName,
+              callInstruction.variablesToCopy.map((e) => e.$1).toList(),
+              callInstruction.returnValueDestination,
             );
           }
         } else {

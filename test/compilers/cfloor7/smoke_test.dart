@@ -86,8 +86,8 @@ main() {
 
     expect(errorCollector.errors, isEmpty);
     expect(instructionGenerator.semanticErrorCollector.errors, isEmpty);
-    expect(instructionGenerator.instructions.whereType<MathFunctionInstruction>(), hasLength(2));
-    expect(instructionGenerator.instructions, anyElement(isA<StringLengthInstruction>()));
+    expect(instructionGenerator.instructions.whereType<BuiltInFunctionInstruction>(), hasLength(3));
+    expect(instructionGenerator.instructions.whereType<BuiltInFunctionInstruction>().map((instruction) => instruction.targetFunctionName), containsAllInOrder(['sqrt', 'round', 'length']));
   });
 
   test('recognizes read functions as normal functions', () {

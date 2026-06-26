@@ -16,6 +16,16 @@ import 'execution_exception.dart';
 import 'virtual_machine.dart';
 import 'virtual_memory.dart';
 
+final _builtInFunctions = <String, Function>{
+  'ceil': (double n) => n.ceil(),
+  'floor': (double n) => n.floor(),
+  'round': (double n) => n.round(),
+  'sqrt': sqrt,
+  'sin': sin,
+  'cos': cos,
+  'length': (String s) => s.length,
+};
+
 sealed class VMInstruction {
   final TextRange textRange;
   VMInstruction(this.textRange);
@@ -143,6 +153,13 @@ sealed class VMInstruction {
               instruction.textInterval.toRange(),
               instruction.returnValueSource == null ? null : VMDataSource.fromDataSource(instruction.returnValueSource!, virtualMachine.memory),
               virtualMachine,
+            ),
+        BuiltInFunctionInstruction() =>
+            VMBuiltInFunctionInstruction(
+              instruction.textInterval.toRange(),
+              _builtInFunctions[instruction.targetFunctionName]!,
+              instruction.args.map((arg) => VMDataSource.fromDataSource(arg, virtualMachine.memory)).toList(),
+              instruction.returnValueDestination == null ? null : VMDataDestination.fromDataDestination(instruction.returnValueDestination!, virtualMachine.memory),
             ),
       };
 }
@@ -438,5 +455,19 @@ class VMReturnInstruction extends VMInstruction {
       _virtualMachine.jumpToLastReturn();
       (_virtualMachine.currentInstruction as VMCallInstruction).returnValueDestination!.set(valueCopy);
     }
+  }
+}
+
+class VMBuiltInFunctionInstruction extends VMInstruction {
+  final Function _function;
+  final List<VMDataSource> _args;
+  final VMDataDestination? _returnValueDestination;
+
+  VMBuiltInFunctionInstruction(super.textRange, this._function, this._args, this._returnValueDestination);
+
+  @override
+  void evaluate() {
+    final result = Function.apply(_function, _args.map((source) => source.get()).toList());
+    _returnValueDestination?.set(result);
   }
 }

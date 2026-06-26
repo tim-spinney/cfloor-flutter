@@ -136,3 +136,11 @@ class ReturnInstruction extends Instruction {
 
   ReturnInstruction(super.textRange, this.returnValueSource);
 }
+
+class BuiltInFunctionInstruction extends Instruction {
+  final String targetFunctionName;
+  final List<DataSource> args;
+  final DataDestination? returnValueDestination;
+
+  BuiltInFunctionInstruction(super.textInterval, this.targetFunctionName, this.args, this.returnValueDestination);
+}
